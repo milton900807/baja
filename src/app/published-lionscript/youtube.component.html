@@ -1,0 +1,15 @@
+
+  <button *ngIf="closeButton" (click)="closeButton()" class="close-btn">
+    Close
+  </button>
+
+<div class="video-container">
+  <iframe [src]="embedUrl | safeUrl" frameborder="0"
+    allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+    allowfullscreen>
+  </iframe>
+
+</div>
+  <button *ngIf="closeButton" (click)="closeButton()" class="close-btn">
+    Close
+  </button>

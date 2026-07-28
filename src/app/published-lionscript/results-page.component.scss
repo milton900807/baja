@@ -1,0 +1,5 @@
+// Set custom-autofill inputs to have no background and red text.
+input.custom-autofill {
+  // @include cdk-text-field-autofill-color(transparent, red);
+}
+// Define a mixin that accepts a theme and outputs the theme-specific styles.

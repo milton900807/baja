@@ -1,0 +1,37 @@
+<div class='panel panel-heading'>
+
+
+    <div class="dropdown">
+        <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+            Download
+            <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+            <li style="padding: 3px; cursor: pointer" (click)="downloadAll()">  <b> All monomers </b> (sdf)</li>
+            <li style="padding: 3px; cursor: pointer"  (click)="downloadPublic()"> <b> Public monomers</b> (sdf)</li>
+        </ul>
+    </div>
+
+    <!--<div class="panel panel-danger">-->
+    <div class="table-responsive" style="font-size: small">
+        <div class="table">
+            <tbody style="padding-left: 5px; height: 100%">
+            <tr class="active" style="padding: 0px">
+                <td width="650px">
+                    <!-- <ketcher-2  [monomer_manager]="monomer_manager"
+                               (structure)="structureUpdate($event)" (substructureof)="showSubstructureHits($event)"
+                               [app_control]="appman"></ketcher-2> -->
+
+                </td>
+                <td *ngIf="monomer_db" style="width: 300px; overflow: hidden">
+                    <filter-monomers [substructureList]="substructureList" (update)="term = $event"
+                                     (ispublic)="ispub = $event"></filter-monomers>
+                    <monomer-group [monomer_db]="monomer_db" [monomer_manager]="monomer_manager" monomer_type="any"
+                                   [searchTerm]="" [ispublic]="false" [canDelete]="true"></monomer-group>
+
+                </td>
+            </tr>
+            </tbody>
+        </div>
+    </div>
+</div>

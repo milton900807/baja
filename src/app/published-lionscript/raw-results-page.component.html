@@ -1,0 +1,5 @@
+<div *ngIf='results != null'>
+    <div *ngFor='let l of results; let i=index'>
+        <div> {{toJSON ( l )}} </div>
+    </div>
+</div>

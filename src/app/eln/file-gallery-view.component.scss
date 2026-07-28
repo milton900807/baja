@@ -1,0 +1,18 @@
+.folder-list-container{
+}
+a:hover {
+    cursor: default;
+    }
+
+#folder-action-menu-item-button-group {
+    width: 100%;
+}
+
+#missing-template-message-container {
+    width: 100%;
+    display: flex;
+    font-size: 1.5em;
+    justify-content: center;
+    align-items: center;
+    color: red;
+}

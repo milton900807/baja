@@ -1,0 +1,33 @@
+<div
+  *ngFor="let card_item_row of card_items_list"
+  class="d-flex flex-row flex-wrap"
+  [style.margin]="margin"
+  [style.padding-left]="padding_left"
+  [style.padding-top]="padding_top"
+  [style.width]="width"
+  [style.overflow]="'auto'"
+>
+  <div
+    *ngFor="let card_item of card_item_row"
+    class="d-flex flex-column"
+    [style.width]="card_item.width"
+    [style.padding]="padding"
+    [style.border]="border"
+  >
+    <h5 *ngIf="card_item.title" class="card-title">{{ card_item.title }}</h5>
+    <h6 *ngIf="card_item?.sub_title" class="card-subtitle mb-2 text-muted">
+      {{ card_item?.sub_title }}
+    </h6>
+
+    <card-single [wid]="card_item.component"></card-single>
+
+    <a
+      *ngIf="card_item?.button"
+      href="#"
+      (click)="exec(card_item)"
+      class="btn btn-primary mt-2"
+    >
+      {{ card_item.button.name }}
+    </a>
+  </div>
+</div>

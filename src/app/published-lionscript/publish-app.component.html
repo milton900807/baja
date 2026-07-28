@@ -1,0 +1,74 @@
+<div *ngIf="branches !=null && branches.all!=null && branches?.all.length > 0">
+
+    <h5> Current Branch: {{ branches.current }} <font *ngIf="branches.detached" color="red">
+            Detached
+        </font>
+    </h5>
+    {{ formateTime (git_show?.latest.date) }}
+    <hr>
+
+    <div *ngIf="mark_release" class="panel panel-default"
+        style="background-color:rgb(144, 146, 143); margin: 10; width: 60%; padding: 10px;">
+        <div>
+            <div class="panel panel-default">
+                Release tag
+
+                <div class="panel-body" style="padding: 20px;">
+                    Version
+                    <input id="input_version" type="text" class="form-control" [(ngModel)]="input_version" />
+                    Annotation
+                    <input id="input_annotation" type="text" class="form-control" [(ngModel)]="input_annotation" />
+                    <button type="button" class="btn btn-primary btn-sm" id="tag_button" (click)="tag()">
+                        <font color="white"> Save </font>
+                    </button>
+                    <button type="button" class="btn btn-primary btn-sm" (click)="mark_release = false">
+                        <font color="White">Cancel</font>
+                    </button>
+
+                    <hr>
+                    <div *ngIf="git_tags!=null">
+                        <font *ngIf="git_tags !=null " color="lightBlue"> Latest tag:
+                            {{git_tags?.latest}}
+                        </font>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div *ngIf="!mark_release">
+        <button type="button" class="btn btn-warning btn-sm" (click)="save_release()">
+            <font color="White"> Push Release </font>
+        </button>
+    </div>
+
+
+    <ul class="list-group list-group-flush" style="list-style-type:none;">
+        <li class="list-group-item py-0" *ngFor='let b of git_tags.all; let i=index'
+            style='width: 100%; padding-top: 2; padding-bottom: 2'>
+            <table class="table" style='width: 100%'>
+                <tbody>
+                    <tr width="100%">
+                        <td style="padding:1" width="10%">
+                            {{b}}
+                        </td>
+                        <td style="padding:1" width="30%">
+                            <button type="button" class="btn btn-link btn-sm" id={{i}} (click)="checkoutBranch(b)">
+                                <font color="BLUE">{{b}}</font>
+                            </button>
+                        </td>
+                        <td style="padding:1" width="60%">
+                            <div>
+                                <font color="black">
+                                </font>
+                            </div>
+
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+        </li>
+    </ul>
+</div>
+<!-- <ng-template #mytemplate pub-comp-list></ng-template> -->

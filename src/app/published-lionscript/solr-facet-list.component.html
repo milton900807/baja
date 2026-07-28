@@ -1,0 +1,23 @@
+<div *ngIf="show_search">
+    <div class="input-group">
+        <div class="input-group-btn">
+            <span class="btn btn-default">
+                <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+            </span>
+        </div>
+        <input type="text" [(ngModel)]="search_string" (ngModelChange)="update()"  class="form-control" autocomplete="off" autocorrect="off" autocapitalize="off"
+            spellcheck="false" aria-label="...">
+        <div class="input-group-btn">
+            <button type="submit" (click)="search()" class="btn btn-default">Search</button>
+        </div>
+    </div>
+</div>
+<div *ngIf="facet_field_results && facet_field_results.length > 0" class='tabContainer' style="width: 90%;">
+    <ul>
+        <li *ngFor='let facet_obj of facet_field_results; let i=index'>
+            <div class="btn btn-secondary-outline btn-xs" id={{i}} type="input" (click)="select(facet_obj)" #inputfield>
+                {{facet_obj?.name}} <font color="blue"> ( {{facet_obj?.count}} ) </font>
+            </div>
+        </li>
+    </ul>
+</div>

@@ -1,0 +1,118 @@
+﻿<!--
+//////////////////////////////////////////////////////////////////////////////////
+//
+// HELM Editor
+// Copyright (C) 2016 Pistoia (www.pistoiaalliance.org)
+// http://www.scilligence.com/
+//
+//////////////////////////////////////////////////////////////////////////////////
+-->
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>JSDraw - A Javascript Chemical Structure Editor/Viewer</title>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <script type="text/javascript" src='./pako/pako.js'></script>
+  <script src="//ajax.googleapis.com/ajax/libs/dojo/1.10.4/dojo/dojo.js"></script>
+  <script type="text/javascript" src='./JSDraw/Scilligence.JSDraw2.Lite.js'></script>
+  <script type="text/javascript" src='./JSDraw/Scilligence.JSDraw2.Resources.js'></script>
+  <script type="text/javascript" src='./JSDraw/Pistoia.HELM.js'></script>
+  <script type='text/javascript' src='http://192.168.128.52/WebService/service/ajaxtool/get?cmd=helm.monomer.downloadjson'></script>
+
+  <!-- Load Monomer Library -->
+  <!--
+    <script type='text/javascript' src='./HELMToolkitWS/Service/?cmd=helm.monomer.downloadjson'></script>
+    <script type='text/javascript' src='./HELMToolkitWS/Service/?cmd=helm.rules.downloadjson'></script>
+    -->
+  <!-- Static Library -->
+  <!--<script type='text/javascript' src='./JSDraw/helm/MonomerLib.js'></script>-->
+
+</head>
+
+<body style="font-family:Arial; margin: 0">
+
+  <div id="toolbar"></div>
+
+  <!-- HELM App -->
+  <div id="div1" style="margin: 5px; margin-top: 15px"></div>
+  <script type="text/javascript">
+    function getParameterByName(name, url) {
+      if (!url) {
+        url = window.location.href;
+      }
+      name = name.replace(/[\[\]]/g, "\\$&");
+      var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+        results = regex.exec(url);
+      if (!results) return null;
+      if (!results[2]) return '';
+      return decodeURIComponent(results[2].replace(/\+/g, " "));
+    }
+
+
+    var hlmstr = getParameterByName("helm");
+
+    var app;
+    scil.ready(function () {
+      org.helm.webeditor.MolViewer.molscale = 0.8;
+      app = new scil.helm.App("div1", { showabout: false, mexfontsize: "90%", mexrnapinontab: true, topmargin: 20, mexmonomerstab: true, sequenceviewonly: false, mexfavoritefirst: true, mexfilter: true });
+      var helm_function = app.getHELM;
+      var set_helm_function = app.setHELM;
+
+      if (hlmstr) {
+        hlmstr = hlmstr.replace(/['"]+/g, '');
+        console.log(hlmstr);
+        app.canvas.setHelm(hlmstr);
+      }
+    });
+
+
+
+    function getHelmStr() { return app.canvas.getHelm(); }
+    function setHelmStr(helm) { app.canvas.setHelm(helm); }
+
+
+    function appendHelm(helm) {
+
+      var pl = app.canvas.helm;
+      pl.setSequence(helm, null, pl.getDefaultNodeType(org.helm.webeditor.HELM.SUGAR), pl.getDefaultNodeType(org.helm.webeditor.HELM.LINKER), true);
+
+
+    }
+
+
+    function clearCanvas() {
+      var pl = app.canvas.helm;
+      pl.jsd.clear();
+      pl.jsd.refresh();
+
+    }
+    function getHELMSequence() {
+      return app.sequence.innerText;
+    }
+
+
+
+
+
+    window.addEventListener("message",
+      function (e) {
+        {
+          console.log(" app.html: e " + Object.keys(e));
+          console.log(" app.html: e " + (e));
+          if (e.origin == 'http://arraybase') {
+            e.source.postMessage('helm', getHelmStr());
+          }
+        }
+      },
+      false);
+  </script>
+
+
+
+
+
+</body>
+
+</html>

@@ -1,0 +1,24 @@
+<mat-radio-button
+  *ngFor="let button of buttons"
+  class="radio-button"
+  [value]="button.label"
+  [disabled]="disabled || button.disabled"
+  (click)="update($event, button)"
+  (mouseenter)="button.isHover = true"
+  (mouseleave)="button.isHover = false"
+  [class.hovered]="button.isHover"
+  [class.no-media]="!button.svg && !button.icon"
+>
+  <span class="label-text label-top-left">
+    {{ button.label }}
+  </span>
+
+  <img *ngIf="button.svg" [src]="button.svg" class="svg-img" alt="" />
+  <img *ngIf="!button.svg && button.icon" [src]="button.icon" class="img-icon" alt="" />
+
+  <div class="text-block" [class.has-description]="button.description">
+    <span *ngIf="button.description" class="description-text">
+      {{ button.description }}
+    </span>
+  </div>
+</mat-radio-button>

@@ -1,0 +1,61 @@
+.sidenav {
+  padding: 0;
+  border: none;
+  margin: 0;
+  height: 100%; /* 100% Full-height */
+  width: 135px; /* 0 width - change this with JavaScript */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Stay on top */
+  background-color:  #d4d4d4; /* #002D62; Black*/
+  overflow-x: hidden; /* Disable horizontal scroll */
+  padding-top: 0px; /* Place content 60px from the top */
+  transition: 0.5s; /* 0.5 second transition effect to slide in the sidenav */
+}
+
+@media (min-width: 700px){
+  .navbar li {
+      margin-left : 1em;
+      margin-right : 1em;
+  }
+}
+/* The navigation menu links */
+.sidenav a {
+  padding: 2px 2px 8px 1px;
+  /* text-decoration: none; */
+  font-size: 13px;
+  /* color: #A2AAAD; */
+  color: black;
+  display: block;
+  justify-content: left;
+  text-justify: left;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+/* When you mouse over the navigation links, change their color */
+.sidenav a:hover {
+  color: #f1f1f1;
+}
+.list-group-item{
+
+  /* background-color:  #002D62; padre blue */
+  background-color:  #d4d4d4; /*padre blue*/
+}
+.list-group {
+  background-color:  #d4d4d4; /*padre blue*/
+}
+/* On smaller screens, where height is less than 450px, change the style of the sidenav (less padding and a smaller font size) */
+@media screen and (max-height: 450px) {
+  .sidenav {padding-top: 15px;}
+  .sidenav a {font-size: 15px;}
+}
+.eln-container{
+  height: 100%; /* 100% Full-height */
+  width: 90%; /* 0 width - change this with JavaScript */
+  z-index: 1; /* Stay on top */
+  top: 0; /* Stay at the top */
+  background-color: #ffff; /* Black*/
+  padding-top: 10px; /* Place content 60px from the top */
+  /* margin-left: 140px; */
+  transition: 0.5s; /* 0.5 second transition effect to slide in the sidenav */
+}

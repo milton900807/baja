@@ -1,0 +1,15 @@
+<div style="padding-top:3px">
+    <mat-form-field class="ex">
+        <input matInput type="text" [(ngModel)]="init_text_value" (ngModelChange)="updateValue($event)" [matAutocomplete]="auto">
+        <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onOptionSelected($event)">
+            <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
+              {{ option }}
+            </mat-option>
+          </mat-autocomplete>
+    </mat-form-field>
+</div>
+<div *ngIf="showButton" class="panel panel-default" style="align-items: right; border: NONE; padding: 2px;">
+    <button *ngIf="showButton" type="button" class="btn btn-outline-secondary btn-sm" (click)="apply( taparam.value )">
+        {{button_label}}
+    </button>
+</div>

@@ -1,0 +1,12 @@
+<div *ngIf='list!=null && list.length>0'>
+    <input id="typeahead-basic" type="text" class="form-control" [(ngModel)]="model" [ngbTypeahead]="listFunction" />
+</div>
+<div *ngIf='list==null || list.length==0'>
+    <input type="text" [(ngModel)]="search" ngxTypeahead [taUrl]="url" [taParams]="params" [taItemTpl]="itemTpl" (taSelected)="handleResultSelected($event)"
+        class="form-control" placeholder="" [taApi]="http" aria-label="title" autocomplete="off" autocorrect="off">
+
+    <hr>
+</div>
+<ng-template #itemTpl let-result>
+    <strong> {{ result.result }}</strong>
+</ng-template>

@@ -1,0 +1,64 @@
+<div class="pdf-viewer">
+
+  <!-- HEADER -->
+  <mat-toolbar class="pdf-toolbar" color="primary" *ngIf="title || closeButton || pdfUrl">
+    <span class="pdf-title" *ngIf="title">{{ title }}</span>
+    <span class="spacer"></span>
+
+    <button
+      mat-stroked-button
+      *ngIf="pdfUrl"
+      type="button"
+      (click)="downloadPdf()"
+      aria-label="Download PDF"
+    >
+      <mat-icon>download</mat-icon>
+      Download
+    </button>
+
+    <button
+      mat-icon-button
+      *ngIf="closeButton"
+      type="button"
+      (click)="closeButton()"
+      aria-label="Close viewer"
+    >
+      <mat-icon>close</mat-icon>
+    </button>
+  </mat-toolbar>
+
+  <!-- LOADING -->
+  <mat-progress-bar *ngIf="loading" mode="indeterminate"></mat-progress-bar>
+
+  <!-- ERROR -->
+  <mat-card *ngIf="error" class="pdf-error-card" appearance="outlined">
+    <mat-card-content>
+      <mat-icon class="error-icon" aria-hidden="true">error</mat-icon>
+      <span class="error-text">{{ error }}</span>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- PDF FRAME -->
+  <mat-card *ngIf="pdfUrl" class="pdf-frame-card" appearance="outlined">
+    <mat-card-content class="pdf-frame-wrapper">
+      <iframe
+        [src]="pdfUrl"
+        class="pdf-iframe"
+        title="PDF Viewer"
+      ></iframe>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- BOTTOM CLOSE BUTTON -->
+  <div *ngIf="closeButton" class="pdf-bottom-close-container">
+    <button
+      mat-raised-button
+      color="warn"
+      type="button"
+      (click)="closeButton()"
+    >
+      Close Viewer
+    </button>
+  </div>
+
+</div>

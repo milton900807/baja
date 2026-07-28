@@ -1,0 +1,11 @@
+
+<div class="card" style="width: 19rem;" *ngIf="ionscriptlist && ionscriptlist.length > 0" style="width: 90%;">
+    <ul class="list-group list-group-flush" style="list-style-type:none;">
+        <li class="list-group-item py-0" *ngFor='let rule of ionscriptlist; let i=index'>
+            <button type="button" class="btn btn-link btn-sm" id={{i}} (click)="loadAndSelect(rule)">
+                    <font  *ngIf="rule.rule_type!='directory'" color="BLUE">{{rule.rule_name}}</font> 
+                    <font *ngIf="rule.rule_type==='directory'" color="BLACK">{{rule.rule_name}}/</font> 
+                </button>
+        </li>
+    </ul>
+</div>

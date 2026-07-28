@@ -1,0 +1,14 @@
+<table class="table">
+  <thead>
+    <tr>
+      <th *ngFor="let column of columns" scope="col">#</th>
+      <!-- <th scope="col">{{ column.name }}</th> -->
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let row of rows">
+      <th scope="row">1</th>
+      <td *ngFor="let val of row">val.name</td>
+    </tr>
+  </tbody>
+</table>

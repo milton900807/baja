@@ -1,0 +1,47 @@
+<div *ngIf='edit' class="input-group" style="width: 600px">
+    <div class="input-group-prepend">
+        <span class="input-group-text">Name</span>
+    </div>
+    <input type="text" [(ngModel)]="name" class="form-control" aria-label="">
+    <button type="button" (click)="closeEdit ()" class="btn btn-warning">Apply </button>
+</div>
+
+<!-- <div *ngIf='editLink' class="input-group" style="width: 600px">
+    <div class="input-group-prepend">
+        <span class="input-group-text">Link</span>
+    </div>
+    <input type="text" [(ngModel)]="link" class="form-control" aria-label="">
+    <button type="button" (click)="closeEditLink ()" class="btn btn-warning">Apply Link </button>
+</div> -->
+
+<div *ngIf='editLink' class="input-group" style="width: 600px">
+    <div>
+
+    </div>
+    <button type="button" (click)="closeEditLink ()" class="btn btn-warning-sm">Apply Link </button>
+</div>
+
+
+
+<div class="btn-toolbar mb-3" role="toolbar" aria-label="Toolbar with button groups">
+    <div class="btn-group" role="group" aria-label="Basic example">
+        <button type="button" class="btn btn-link-sm">{{name}}</button>
+        <!-- <button type="button" (click)="editName()" class="btn btn-link-sm">
+            [<img src="assets/img/icons/png/text.png">]
+        </button> -->
+        <!-- <button *ngIf="editLink" type="button" (click)="closeEditLink()" class="btn btn-secondary-sm"><img
+                src="assets/img/icons/png/link-intact-2x.png"></button> -->
+        <!-- <button *ngIf="!editLink" type="button" (click)="openEditLink()" class="btn btn-secondary-sm"><img
+                src="assets/img/icons/png/link-intact-2x.png"></button> -->
+        <!-- <button type="button" (click)="openFolder()" class="btn btn-secondary-sm"><img
+                src="assets/img/icons/png/folder-2x.png"></button> -->
+
+        <button type="button" (click)="openSharePointLink()" class="btn btn-secondary-sm"><img
+                src="assets/img/icons/png/link-intact-2x.png"></button>
+
+    </div>
+</div>
+<div style="padding-left: 39px; width: 200px;">
+    <ng-template navi #root>
+    </ng-template>
+</div>

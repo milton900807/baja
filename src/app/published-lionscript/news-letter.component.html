@@ -1,0 +1,110 @@
+<div class="newsletter-wrapper" *ngIf="hasItems; else emptyState">
+  <!-- Masthead -->
+  <header class="masthead">
+    <div class="masthead-left">
+      <h1 class="masthead-title">
+        {{ title || '' }}
+      </h1>
+      <div class="masthead-subtitle" *ngIf="showDate">
+        {{ today | date: 'fullDate' }}
+      </div>
+    </div>
+
+    <div class="masthead-right">
+      <!-- Pager for multiple source URLs -->
+      <div class="source-pager" *ngIf="hasMultipleSources">
+        <button
+          mat-icon-button
+          (click)="goPrev()"
+          [disabled]="!canGoPrev"
+          aria-label="Previous story set"
+        >
+          <mat-icon>chevron_left</mat-icon>
+        </button>
+
+        <span class="source-index">
+          {{ currentSourceLabel }}
+        </span>
+
+        <button
+          mat-icon-button
+          (click)="goNext()"
+          [disabled]="!canGoNext"
+          aria-label="Next story set"
+        >
+          <mat-icon>chevron_right</mat-icon>
+        </button>
+      </div>
+
+      <button
+        *ngIf="closeButton"
+        mat-icon-button
+        (click)="closeButton()"
+        aria-label="Close newsletter"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+  </header>
+
+  <mat-divider></mat-divider>
+
+  <!-- Layout: main story + secondary columns -->
+  <section class="content-grid">
+    <!-- Lead story (first item) -->
+    <article class="main-story" *ngIf="items[0] as lead">
+      <h2 class="story-headline">
+        <ng-container *ngIf="getItemLink(lead) as leadHref; else noLeadLink">
+          <a
+            [href]="leadHref"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {{ lead.title }}
+          </a>
+        </ng-container>
+        <ng-template #noLeadLink>
+          {{ lead.title }}
+        </ng-template>
+      </h2>
+
+      <p class="story-body">
+        {{ lead.desc }}...
+      </p>
+    </article>
+
+    <!-- Secondary stories -->
+    <section class="secondary-stories" *ngIf="items.length > 1">
+      <article
+        class="secondary-story"
+        *ngFor="let item of items | slice:1"
+      >
+        <h3 class="secondary-headline">
+          <ng-container *ngIf="getItemLink(item) as itemHref; else noUrl">
+            <a
+              [href]="itemHref"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {{ item.title }}
+            </a>
+          </ng-container>
+          <ng-template #noUrl>
+            {{ item.title }}
+          </ng-template>
+        </h3>
+
+
+        <p class="secondary-body">
+          {{ item.desc }}
+        </p>
+      </article>
+    </section>
+  </section>
+</div>
+
+<ng-template #emptyState>
+  <div class="newsletter-empty">
+    <p>No news items to display.</p>
+  </div>
+</ng-template>

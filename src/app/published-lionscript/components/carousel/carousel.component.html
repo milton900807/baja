@@ -1,0 +1,14 @@
+<div class="carousel-wrapper" *ngIf="images.length">
+  <div class="carousel-image" [class.fade-in]="fade" [class.fade-out]="!fade">
+    <img 
+      [src]="images[currentIndex]" 
+      alt="Slide {{ currentIndex + 1 }}"
+      (click)="onImageClick(currentIndex)" />
+  </div>
+
+  <div class="carousel-controls">
+    <button (click)="prev()">⟨</button>
+    <span>{{ currentIndex + 1 }} / {{ images.length }}</span>
+    <button (click)="next()">⟩</button>
+  </div>
+</div>

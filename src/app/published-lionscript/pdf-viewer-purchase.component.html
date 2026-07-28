@@ -1,0 +1,49 @@
+<div class="pdf-viewer">
+
+  <mat-toolbar class="pdf-toolbar" color="primary" *ngIf="title || showCloseButton || pdfUrl">
+    <span class="pdf-title" *ngIf="title">{{ title }}</span>
+    <span class="spacer"></span>
+
+    <button mat-stroked-button *ngIf="pdfUrl" type="button" (click)="downloadPdf()" aria-label="Download PDF">
+      <mat-icon>download</mat-icon>
+      <span>Download</span>
+    </button>
+
+
+    <button mat-raised-button color="accent" *ngIf="showPurchaseButton" type="button" (click)="onPurchase()"
+      aria-label="Purchase PDF">
+      <mat-icon>shopping_cart</mat-icon>
+      <span>Purchase</span>
+    </button>
+
+
+    <button mat-icon-button *ngIf="showCloseButton" type="button" (click)="onClose()" aria-label="Close viewer">
+      <mat-icon>close</mat-icon>
+    </button>
+  </mat-toolbar>
+
+  <mat-progress-bar *ngIf="loading" mode="indeterminate" class="pdf-loading-bar"></mat-progress-bar>
+
+  <mat-card *ngIf="error" class="pdf-error-card" appearance="outlined">
+    <mat-card-content>
+      <mat-icon class="error-icon">error</mat-icon>
+      <span class="error-text">{{ error }}</span>
+    </mat-card-content>
+  </mat-card>
+
+  <div class="pdf-content" *ngIf="!error">
+    <mat-card *ngIf="pdfUrl" class="pdf-frame-card" appearance="outlined">
+      <mat-card-content class="pdf-frame-wrapper">
+        <iframe [src]="pdfUrl" class="pdf-iframe" title="PDF Viewer">
+        </iframe>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <div *ngIf="showCloseButton" class="pdf-bottom-close-container">
+    <button mat-raised-button color="warn" type="button" (click)="onClose()">
+      Close Viewer
+    </button>
+  </div>
+
+</div>

@@ -1,0 +1,42 @@
+<div class="wf" role="status" aria-live="polite" *ngIf="status === 'working'">
+  <div class="wf__row">
+    <div class="wf__top">
+      <div class="wf__title">
+        <span class="wf__label">{{ message || defaultMessage }}</span>
+        <span class="wf__percent" *ngIf="mode === 'determinate' && percent !== null">
+          {{ percent }}%
+        </span>
+      </div>
+
+      <button
+        type="button"
+        class="wf__toggle"
+        *ngIf="showToggle"
+        (click)="toggleDetails()"
+        [attr.aria-expanded]="detailsOpen"
+      >
+        {{ detailsOpen ? 'Hide details' : 'Show details' }}
+      </button>
+    </div>
+
+    <div
+      class="wf__bar"
+      [class.wf__bar--indeterminate]="mode === 'indeterminate'"
+      [attr.aria-valuemin]="mode === 'determinate' ? 0 : null"
+      [attr.aria-valuemax]="mode === 'determinate' ? 100 : null"
+      [attr.aria-valuenow]="mode === 'determinate' ? percent : null"
+    >
+      <div
+        class="wf__fill"
+        *ngIf="mode === 'determinate'"
+        [style.width.%]="percent ?? 0"
+      ></div>
+
+      <div class="wf__indeterminate" *ngIf="mode === 'indeterminate'"></div>
+    </div>
+
+    <div class="wf__details" *ngIf="detailsOpen && detailsText">
+      <pre class="wf__pre">{{ detailsText }}</pre>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,8 @@
+<div *ngIf='status_text != null'>
+    {{status_text}}
+</div>
+
+<div [innerHTML]="test_directive">
+</div>
+<ng-template results-page [results]="results"></ng-template>
+<button (click)='next ()'> next </button>

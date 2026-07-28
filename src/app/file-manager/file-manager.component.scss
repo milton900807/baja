@@ -1,0 +1,67 @@
+.tile {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tile-inner {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.file-or-folder-icon {
+  font-size: 24px !important;
+  width: 24px;
+  height: 24px;
+  line-height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 150ms ease, filter 150ms ease;
+  transform-origin: center;
+}
+
+.tile-label {
+  font-size: large;
+  text-align: center;
+  width: 100%;
+  line-height: 1.2;
+}
+
+.folder-hover {
+  outline: 2px dashed #666;
+  outline-offset: -4px;
+  border-radius: 8px;
+}
+
+.folder-icon-hover {
+  transform: scale(1.35);
+  filter: drop-shadow(0 10px 24px rgba(0,0,0,.45));
+  pointer-events: none;
+}
+
+.drop-overlay {
+  animation: fadeInScale 120ms ease-out;
+}
+
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.menu-anchor {
+  pointer-events: none !important;
+}

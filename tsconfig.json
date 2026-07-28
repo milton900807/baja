@@ -1,0 +1,43 @@
+/* To learn more about this file see: https://angular.io/config/tsconfig. */
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "baseUrl": "./",
+    "outDir": "./dist/out-tsc",
+    "forceConsistentCasingInFileNames": true,
+    "strict": false,
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "sourceMap": true,
+    "declaration": false,
+    "downlevelIteration": false,
+    "experimentalDecorators": true,
+    "moduleResolution": "node",
+    "importHelpers": true,
+    "target": "ES2022",
+    "module": "es2015",
+    "esModuleInterop": false,
+    "useDefineForClassFields": false,
+    "skipLibCheck": true,
+    "lib": [
+      "ES2022",
+      "DOM"
+    ] // ensure DOM lib is included so ArrayBuffer/TypedArrays are present
+  },
+  "paths": {
+    "@angular/*": [
+      "./node_modules/@angular/*"
+    ],
+    "@azure/msal-angular": [
+      "./node_modules/@azure/msal-angular/dist"
+    ]
+  },
+  "angularCompilerOptions": {
+    "enableI18nLegacyMessageIdFormat": false,
+    "strictInjectionParameters": false,
+    "strictInputAccessModifiers": false,
+    "strictTemplates": false
+  }
+}

@@ -1,0 +1,42 @@
+<!-- <div class="navbar navbar-expand-lg navbar-light bg-light" style="width: 50%;">
+    <div *ngFor="let b of config.menuButtons" class="btn-group  mr-2" role="group" aria-label="Basic example">
+        <button class="btn btn-secondary btn-xsm" (click)="execFunction(b.ionFunction)"
+            style="padding-left: 2px; padding-right: 3px;">
+            {{b.name}} </button>
+    </div>
+</div> -->
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="d-flex p-2 bd-highlight">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo01"
+            aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent" >
+            <ul class="navbar-nav me-auto mb-2 mb-sm-0" >
+                <li *ngFor="let b of config.menuButtons" class="b.class">
+                    <a class="nav-link active" aria-current="page" href="#" (click)="execFunction(b.ionFunction)">
+                        {{b.name}} </a>
+                </li>
+            </ul>
+
+            <div ngbDropdown *ngFor="let b of config.dropDownMenus" class="d-inline-block" style="font-size: small"
+                (mouseenter)="file_menu()" (mouseout)="mouse_out_file()">
+                <button class="btn btn-secondary" id="dropdownBasic1" ngbDropdownToggle style="font-size: small">
+                    {{b.name}}
+                </button>
+                <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
+                    <button *ngFor="let c of b.menuButtons" ngbDropdownItem (click)="execFunction(c.ionFunction)">
+                        {{c.name}}</button>
+                </div>
+            </div>
+
+
+
+            <form *ngIf="searchTool" class="d-flex">
+                <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                <button class="btn btn-outline-success" type="submit">Search</button>
+            </form>
+        </div>
+    </div>
+</nav>

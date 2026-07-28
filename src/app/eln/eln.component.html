@@ -1,0 +1,71 @@
+<div style="background:white; height:100%; overflow: auto;">
+    <h5>Experiment ID: {{experimentID}} <div *ngIf="experimentTypes && experimentTypes.length > 0">Experiment Type:
+            {{experimentTypesDisplay}}</div></h5>
+    <div *ngIf="mode === 'recent-documents'">
+        <div *ngIf="recent_files">
+            <div class="panel panel-default">
+                <div class="panel-heading"> Recent edits... </div>
+                <div class="panel-body">
+                </div>
+            </div>
+
+        </div>
+        <div *ngIf="recent_files == null ">
+            <working-feedback></working-feedback>
+        </div>
+    </div>
+    <div *ngIf="mode === 'exp' && (!ismobile)">
+        <table class="table">
+            <tr>
+                <td>
+                    <div [innerHTML]="displayHTML">
+                    </div>
+                </td>
+                <td *ngIf="filegallery != null">
+                    <!-- <signed-doc *ngIf="mainDoc!=null" [doc]="mainDoc" [config]="documentSigningConfig"></signed-doc> -->
+                    <file-gallery [data]="filegallery"></file-gallery>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div *ngIf="mode === 'exp' && (ismobile)">
+        <table class="table">
+            <tr>
+                <td *ngIf="filegallery != null">
+                    <file-gallery [data]="filegallery"></file-gallery>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div [innerHTML]="displayHTML">
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+
+
+
+    <div *ngIf="mode === 'attach-files'">
+        <div style="height: 300px">
+            Drop files for experiment {{experiment_id}}.
+            <!-- <file-drop (onFileDrop)="dropped($event)" (onFileOver)="fileOver($event)" (onFileLeave)="fileLeave($event)"> -->
+            <!-- </file-drop> -->
+            <div class="upload-table">
+                <table class="table">
+                    <thead>
+                    </thead>
+                    <tbody class="upload-name-style">
+                        <tr *ngFor="let item of files; let i=index">
+                            <td>
+                                <strong>{{ item.relativePath }}</strong>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

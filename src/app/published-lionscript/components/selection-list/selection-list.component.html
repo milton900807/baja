@@ -1,0 +1,57 @@
+<!-- selection-list.component.html -->
+<mat-card class="selection-card" [style.padding-top]="padding_top">
+  <mat-card-header *ngIf="title">
+    <mat-card-title>{{ title }}</mat-card-title>
+  </mat-card-header>
+
+  <mat-card-content>
+    <mat-selection-list
+      #selectionList
+      [multiple]="!singleSelect"
+      (selectionChange)="onSelectionChange($event)"
+      class="w-full"
+      role="listbox"
+      aria-label="Selection list"
+    >
+      <mat-list-option
+        *ngFor="let item of listItems; trackBy: trackByItem"
+        [value]="item"
+        [ngStyle]="{ 'background-color': getOptionBackground(item) }"
+        class="selection-option"
+      >
+        <!-- Label / header -->
+        <div matLine class="item-title" [class.bracketed]="isBracketed(item)">
+          {{ item }}
+        </div>
+
+        <!-- Subtext / description (smaller) -->
+        <div
+          matLine
+          #listItem
+          class="item-desc"
+          *ngIf="getDesc(item) as desc"
+        >
+          {{ desc }}
+        </div>
+      </mat-list-option>
+    </mat-selection-list>
+  </mat-card-content>
+
+  <mat-card-actions *ngIf="displayButton" align="end">
+    <button
+      mat-raised-button
+      color="primary"
+      *ngIf="showButton"
+      (click)="submit()"
+      [disabled]="Array.isArray(selectedItems) && selectedItems.length === 0"
+    >
+      {{ submitButtonLabel }}
+    </button>
+  </mat-card-actions>
+</mat-card>
+
+<!-- Optional helper for empty state -->
+<div class="empty" *ngIf="!listItems || listItems.length === 0">
+  <mat-icon aria-hidden="true">inbox</mat-icon>
+  <span>No items to display</span>
+</div>

@@ -1,0 +1,8 @@
+<div *ngIf="list != null && list.length>0" style="padding-top:1px">
+    <div class="btn-group" role="group" aria-label="...">
+        <button *ngFor="let b of list" type="button" (click)="clickButton (b)" [disabled]="disabled" [class]="style">
+             <img *ngIf="b[ 'icon']!=null" [src]="getIcon(b)"> 
+                 {{b.label}} 
+        </button>
+    </div>
+</div>

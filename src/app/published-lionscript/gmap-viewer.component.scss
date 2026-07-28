@@ -1,0 +1,44 @@
+div {
+    height: 100%;
+    width: 100%;
+    // resize: vertical;
+    // overflow: auto;
+};
+.nav-pills > .a:hover {
+    background-color: lightgray;
+}
+.nav-pills > .active > a, .nav-pills > .active > a:hover {
+    background-color:lightseagreen;
+}
+.content {
+	display: flex;
+	font-weight: 100;
+	font-family: Helvetica;
+
+	ul {
+		list-style-type: none;
+		margin: 0;
+		padding: 0;
+		width: 150px;
+		background-color: black;
+		border-right: 1px solid gray;
+
+		li {
+			line-height: 1.5em;
+			color: white;
+			cursor: pointer;
+			padding: 0 5px;
+
+			&:hover {
+				background-color: lighten(rgba(0, 0, 0, 0.26), 20%)
+			}
+		}
+	}
+  .my-code-editor {
+    width: 100%;
+	height: 450px;
+	background-color: aliceblue;
+		display: block;
+   border: 4px solid #aaf;
+	}
+}

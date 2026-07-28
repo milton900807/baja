@@ -1,0 +1,41 @@
+[
+    {
+        "runParameters": {
+            "editdistance": 0,
+            "strand": "+-",
+            "genomes": [
+                {
+                    "gid": "/mnt/genomes/Homo_sapiens.GRCh38.dna.primary_assembly.4bit",
+                    "glink": "test"
+                }
+            ],
+            "runMode": "editdistance"
+        },
+        "oligoQuery": [
+            {
+                "id": 235279,
+                "synthesisSequence": "CTAGTCGGTCGCGGGCTT"
+            },
+            {
+                "id": 235280,
+                "synthesisSequence": "GAGCTAGTCGGTCGCGGG"
+            },
+            {
+                "id": 235281,
+                "synthesisSequence": "AGGGAGCTAGTCGGTCGC"
+            },
+            {
+                "id": 235282,
+                "synthesisSequence": "CGGAGGGAGCTAGTCGGT"
+            },
+            {
+                "id": 1701141535459734,
+                "synthesisSequence": "GTCCTCGTGGTGGTCT"
+            },
+            {
+                "id": 1701141576741497,
+                "synthesisSequence": "GGTCCTCGTGGTGGTC"
+            }
+        ]
+    }
+]

@@ -1,0 +1,7 @@
+<section class="content" id="content" >
+
+    <div *ngIf="showEditor" style="padding:1">
+        <ngx-monaco-editor class="my-code-editor" [(ngModel)]="data" [options]="editorOptions" (onInit)="onInit($event)" #editor>
+        </ngx-monaco-editor>
+    </div>
+</section>

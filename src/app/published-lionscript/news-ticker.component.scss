@@ -1,0 +1,76 @@
+.toolbar {
+  position: relative;
+  overflow: hidden;
+  padding-inline: 12px;
+  min-height: 48px;
+  background-color: white !important;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.12);
+}
+
+.label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  margin-right: 16px;
+  white-space: nowrap;
+
+  mat-icon {
+    font-size: 18px;
+    height: 18px;
+    width: 18px;
+  }
+}
+
+.ticker-container {
+  position: relative;
+  overflow: hidden;
+  flex: 1;
+  white-space: nowrap;
+}
+
+/* Single, clean ticker style */
+.ticker {
+  display: inline-block;
+  white-space: nowrap;
+  /* fallback duration if Input not set/working */
+  animation-name: ticker-scroll;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  animation-play-state: running;
+}
+
+@keyframes ticker-scroll {
+  0% {
+    transform: translateX(15%);   // start just off-screen on the right
+  }
+  100% {
+    transform: translateX(-15%);  // end just off-screen on the left
+  }
+}
+
+.ticker-item {
+  display: inline-block;
+  margin-right: 12px;
+  font-size: 14px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.ticker-item:hover {
+  text-decoration: underline;
+}
+
+.separator {
+  margin: 0 12px;
+  opacity: 0.5;
+}
+
+/* Pause animation on hover */
+.ticker-container:hover .ticker {
+  animation-play-state: paused;
+}
+
+.spacer {
+  flex: 0 0 auto;
+}

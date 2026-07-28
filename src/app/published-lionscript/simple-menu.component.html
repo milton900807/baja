@@ -1,0 +1,63 @@
+<!-- simple-menu.component.html -->
+<mat-toolbar class="white-toolbar" [class]="mat_tools">
+  <!-- Left side: Title and Menu -->
+  <div class="left-section">
+    <!-- Title -->
+    <div *ngIf="title" class="toolbar-title">
+      <span class="title-text">{{ title }}</span>
+    </div>
+
+    <!-- Menu items -->
+    <div class="menu-wrapper" *ngIf="menus?.length > 0">
+      <ng-container *ngFor="let item of menus">
+        <!-- Dropdown menu -->
+        <ng-container *ngIf="item?.items?.length > 0">
+          <app-menu-item #menu [items]="item.items"></app-menu-item>
+          <button mat-button *ngIf="menu?.childMenu" [matMenuTriggerFor]="menu.childMenu">
+            {{ item.label }}
+          </button>
+        </ng-container>
+
+        <!-- Leaf node -->
+        <ng-container *ngIf="!item.items || item.items.length === 0">
+          <button mat-button color="menu_button_color">{{ item.label }}</button>
+        </ng-container>
+      </ng-container>
+    </div>
+  </div>
+
+  <!-- Right side: Command input with highlighted display text -->
+  <span *ngIf="cmd && isPrimaryCommandInput" class="span-container">
+    <mat-form-field appearance="outline" class="compact-text-field highlight-wrapper">
+      <!-- Overlay that mirrors input value and applies bracket highlighting -->
+      <div class="highlight-display" [class.is-empty]="!cmdCtrl?.value"
+        [innerHTML]="cmdCtrl?.value ? (cmdCtrl.value | highlightBrackets) : placeholder" aria-hidden="true"></div>
+
+      <input matInput #textInput [formControl]="cmdCtrl" [placeholder]="placeholder" [matAutocomplete]="auto"
+        [matAutocompleteDisabled]="!shouldAutocomplete" autocomplete="off"
+        (input)="onKeyUp($event); $event.stopPropagation()" (click)="onKeyUp($event); $event.stopPropagation()"
+        (keydown)="onCmdKeyDown($event)" (keyup)="$event.stopPropagation()" (keypress)="$event.stopPropagation()"
+        (focus)="caretInWindow = true" (blur)="caretInWindow = false" spellcheck="false" autocorrect="off"
+        autocapitalize="off" />
+
+
+      <!-- Inline "Save" button -->
+      <button mat-icon-button matSuffix color="primary" aria-label="Save" (click)="submitText()">
+        <mat-icon>thumb-up</mat-icon>
+      </button>
+
+
+
+
+      <mat-autocomplete #auto="matAutocomplete" class="cmd-panel" [displayWith]="displayCmd" (opened)="onPanelOpened()"
+        (optionSelected)="onOptionSelected($event)">
+        <mat-option *ngFor="let opt of (filteredCmds$ | async) || []" [value]="opt">
+          {{ opt.label }}
+        </mat-option>
+        <mat-option *ngIf="((filteredCmds$ | async) || []).length === 0" disabled>
+          No matches
+        </mat-option>
+      </mat-autocomplete>
+    </mat-form-field>
+  </span>
+</mat-toolbar>

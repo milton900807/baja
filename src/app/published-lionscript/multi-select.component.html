@@ -1,0 +1,10 @@
+<div [style.padding-top]="padding_top">
+    <label> {{title}} </label>
+    <div style="padding:2px" (change)="update($event)" >
+        <div *ngFor='let l of list' class="form-check form-check-inline">
+            <input (click)="check(l)" class="form-check-input" type="checkbox" [id]="l" [value]="l">
+            <label class="form-check-label" [for]="l"> {{l}} </label>
+        </div>
+    </div>
+    <button *ngIf="showButton" type="button" (click)="submit()" class="btn btn-danger btn-sm"> {{button_label}} </button>
+</div>

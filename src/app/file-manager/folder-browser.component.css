@@ -1,0 +1,11 @@
+@use "@material/card";
+
+@include card.core-styles;
+
+:host { 
+    .mat-icon {
+      margin: 0;
+     font-size: 17px;
+     width: 100px;
+   }
+  }

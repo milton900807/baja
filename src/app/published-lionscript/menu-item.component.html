@@ -1,0 +1,9 @@
+<mat-menu #childMenu="matMenu" [overlapTrigger]="false">
+  <span *ngFor="let child of items">
+    <span >
+      <button mat-menu-item (click)="click(child)">
+        <span>{{child?.label}}</span>
+      </button>
+    </span>
+  </span>
+</mat-menu>

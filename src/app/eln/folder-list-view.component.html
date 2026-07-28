@@ -1,0 +1,85 @@
+<table style="width:100%">
+    <tr>
+        <td width="80%">
+            <div class="folder-list-container" style="background:white; height:100%;">
+                <div class="panel panel-default" style="width: 95%">
+                    <div class="panel-heading"> {{ title }} </div>
+                    <div class="panel-body">
+                        <table style="width:100%">
+                            <tr>
+                                <th> Exp-ID </th>
+                                <th> Title </th>
+                                <th>Created</th>
+                                <th>Last Mod</th>
+                                <th>Author </th>
+                            </tr>
+                            <tr *ngFor="let d of folder_list">
+                                <td>
+                                    <div ngbDropdown class="d-inline-block">
+                                        <button class="btn btn-outline-primary" id="dropdownBasic1" ngbDropdownToggle>
+                                            {{d.name}}
+                                        </button>
+                                        <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
+                                            <a class="dropdown-item" (click)="list(d)"> Show Files</a>
+                                            <a class="dropdown-item">Open </a>
+                                            <a class="dropdown-item">Search</a>
+                                            <a class="dropdown-item">Separated link</a>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>   {{ d?.title }} </td>
+                                <td> {{d.createdDateTime}} </td>
+                                <td> {{d.lastModifiedDateTime}} </td>
+                                <td> {{d.createdBy}} </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+
+
+
+<ng-template #folder_contents_panel let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title"> Experiment files </h4>
+        <button type="button" class="close" aria-label="Close" (click)="close()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+
+        <div *ngIf="selected_folder_children!=null" class="panel panel-default" style="width: 100%">
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item" *ngFor="let fc of selected_folder_children">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-sm-6" style="width:450px">
+                                <a (click)="load(fc)">{{fc["name"]}} </a>
+                                <font color='blue' size="small"> ({{format ( fc["lastModifiedDateTime"])}})</font>
+                            </div>
+                            <div class="col-sm">
+                                <div class="btn-group" role="group" aria-label="actions.">
+                                    <button type="button" (click)="download (fc)" class="btn btn-outline-secondary btn-sm">
+                                        <img src="assets/img/icons/png/data-transfer-download.png">
+                                    </button>
+                                    <button type="button" (click)="open(fc)" class="btn btn-outline-secondary btn-sm">
+                                        <img src="assets/img/icons/png/file.png">
+                                    </button>
+                                    <button type="button" (click)="tag(fc)" class="btn btn-outline-secondary btn-sm">
+                                        <img src="assets/img/icons/png/double-quote-serif-right.png">
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+    </div>
+</ng-template>

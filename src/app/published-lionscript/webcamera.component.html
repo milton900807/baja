@@ -1,0 +1,11 @@
+      <webcam  [trigger]="invokeObservable"
+        (imageCapture)="captureImg($event)"
+      ></webcam>
+    <div class="col-md-12">
+      <button class="btn btn-danger" (click)="getSnapshot()">
+        Capture Image
+      </button>
+    </div>
+    <div class="col-12">
+      <img [src]="webcamImage?.imageAsDataUrl" height="400px" />
+    </div>

@@ -1,0 +1,6 @@
+<div *ngIf="visibility === 'Hide'" style="padding-top:1px">
+    <label> {{title}} </label>
+    <select  class="form-control" [(ngModel)]="selected" name="selected">
+        <option *ngFor='let l of list' value="{{l}}">{{l}}</option>
+    </select>
+</div>

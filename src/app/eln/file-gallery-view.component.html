@@ -1,0 +1,127 @@
+<div *ngIf="detailView" #file_folder_view>
+    <div [id]="directory" style="width:100%">
+        <table style="width:100%">
+            <tr>
+                <td style="font-size: small">
+                    Drive ID:
+                    <font color="blue">
+                        {{driveId}}
+                    </font>
+                </td>
+            </tr>
+            <tr>
+                <td style="font-size: small">
+                    Path:
+                    <font color="blue">
+                        {{directory}}
+                    </font>
+                </td>
+            </tr>
+        </table>
+        <table style="width:100%">
+            <tr>
+                <td width="80%">
+                    <div class="folder-list-container" style="background:white; height:100%;">
+                        <div class="panel panel-default" style="width: 95%">
+                            <div class="panel-heading"> {{ title }} </div>
+                            <div class="panel-body" style="font-size: small">
+                                <table style="width:100%">
+                                    <tr>
+                                        <th>Name </th>
+                                        <th>File ID</th>
+                                        <th>Created By</th>
+                                        <th>Created On</th>
+                                        <th>Last Mod</th>
+                                        <th> Type, Size </th>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </table>
+        <ul *ngFor="let d of files">
+            <div *ngIf="d.folder">
+                <file-gallery [path]="'/drives/'+driveId+'/items/'+d.id+'/children'" [detailView]="true"></file-gallery>
+            </div>
+        </ul>
+    </div>
+</div>
+<table *ngIf="!detailView" style="width:100%">
+    <tr>
+        <td width="80%">
+            <div class="folder-list-container" style="background: white; height:100%; overflow: auto;">
+                <div class="panel panel-default" style="width: 95%">
+                    <div class="panel-heading"> {{ title }} </div>
+                    <div class="panel-body" style="font-size: small">
+                        <div id='folder-action-menu-item-button-group' class="btn-group" role="group"
+                            aria-label="Basic example" style="padding-bottom: 20px">
+                            <button *ngFor="let b of folderActionMenuItems" type="button"
+                                class="btn btn-outline-secondary btn-sm" (click)="runFunction(b)">
+                                {{b['label']}}
+                                <img src="/assets/img/icons/png/plus.png">
+                            </button>
+                            <!-- <div id=missing-template-message-container>
+                                <span *ngIf=missingAnimalStudyTemplate>Animal study template is missing</span>
+                            </div> -->
+                        </div>
+                        <div class="btn-group" role="group" aria-label="e" style="width: 100%; padding-bottom: 20px">
+                            <button *ngIf="showFolderButton" class="btn btn-warning  btn btn" type="button"
+                                (click)="goToSharepointFolder()"> Open Folder </button>
+                            <button *ngIf="showFolderButton" class="btn btn-warning  btn btn" type="button"
+                                (click)="refresh()"> Refresh Folder </button>
+                        </div>
+                        <table style="width:100%">
+                            <tr>
+                                <th>Name </th>
+                                <th></th>
+                                <th>Size</th>
+                                <th>Created By</th>
+                                <th>Last Mod</th>
+                            </tr>
+                            <tr *ngFor="let d of  (files | foldersFilter:'hide')">
+                                <td>
+
+                                    <div class="btn-group" role="group" aria-label="Basic example">
+                                        <button mat-button [matMenuTriggerFor]="animals">
+                                            <img src="{{d | fileicon }}">
+                                            {{d.name }}
+                                            <mat-menu #animals="matMenu">
+                                                <button *ngFor="let fc of dataMenuActions[getFileType ( d.name )]"
+                                                    mat-menu-item (click)="executeAction ( fc, d )"> {{fc.name}}
+                                                </button>
+                                            </mat-menu>
+                                        </button>
+                                    </div>
+                                </td>
+                                <td>
+                                    <ng-container
+                                        *ngIf='dataTypeActions[d.datatype] && dataTypeActions[d.datatype].length > 0'>
+                                        <div  class="d-inline-block" style="font-size: small">
+                                            <button class="btn btn-outline-primary" id="dropdownBasic1"
+                                            mat-menu-item  style="font-size: small">
+                                                {{ d.datatype }}
+                                            </button>
+                                            <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
+                                                <button *ngFor="let fc of dataTypeActions[d.datatype]" ngbDropdownItem
+                                                    (click)="exec(fc.ionfunction)"> {{fc.name}} </button>
+                                            </div>
+                                        </div>
+                                    </ng-container>
+                                    <!-- {{ d.datatype  }} -->
+
+                                    <!-- <img src="{{d.name | fileicon }}"> -->
+                                </td>
+                                <td> {{bytesToSize(d.size)}} </td>
+                                <td> {{d.createdBy.user.displayName }} </td>
+                                <td> {{d.lastModifiedDateTime | date }} </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+<!-- <data-drop *ngIf="showDataDrop" (drop)="filedrop($event)"></data-drop> -->

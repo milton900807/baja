@@ -1,0 +1,14 @@
+<div *ngIf="visibility === 'Hide'" style="padding-top:1px">
+    {{title}}
+    <form>
+
+        <div class="form-group">
+            <label *ngIf='title && title != null && title.length > 0' for="exampleFormControlTextarea2">{{title}}</label>
+            <textarea class="form-control rounded-0" #taparam id="eex" rows="3" [value]="data"></textarea>
+        </div>
+    </form>
+</div>
+    <button type="button" class="btn btn-default btn-xs" (click)="setVis()">
+        {{visibility}}
+    </button>
+    <hr>

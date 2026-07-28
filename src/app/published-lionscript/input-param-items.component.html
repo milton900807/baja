@@ -1,0 +1,37 @@
+<mat-form-field *ngFor="let label of input_labels" class="example-form">
+    <label>{{ label }}:</label>
+
+    <input
+        matInput
+        type="text"
+        color="warn"
+        [value]="input_param[label]"
+        [id]="label"
+        aria-describedby=""
+        placeholder=""
+        (focus)="onInputFocus($event)"
+        (blur)="onInputBlur($event)"
+        (keydown)="stopEvent($event)"
+        (keyup)="stopEvent($event)"
+        (keypress)="stopEvent($event)"
+        (input)="applyParam(label, $event.target.value, $event)"
+        (paste)="handlePaste($event)">
+</mat-form-field>
+
+<hr>
+
+<div *ngIf="buttons != null && buttons.length > 0"
+     class="btn-group"
+     role="group"
+     aria-label="Basic example">
+    <button
+        mat-button
+        color="primary"
+        *ngFor="let button of buttons"
+        type="button"
+        (click)="exec(button); $event.stopPropagation()">
+        {{ button['label'] }}
+    </button>
+</div>
+
+<hr>

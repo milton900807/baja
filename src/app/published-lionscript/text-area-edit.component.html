@@ -1,0 +1,26 @@
+<mat-form-field style="width: 100%; height: 100%;" appearance="fill">
+    <mat-label>{{title}}</mat-label>
+    <textarea
+        matInput
+        id="eex"
+        [value]="init_text"
+        [(ngModel)]="value"
+        [contentEditable]="editable"
+        (change)="updateValue($event.target.value)"
+        [rows]="rows"
+        style="width: 100%; height: auto; box-sizing: border-box;"
+        (keydown)="onKeydown($event)"
+        ></textarea>
+</mat-form-field>
+
+<div *ngIf="showButton" class="panel panel-default" style="display: flex; justify-content: flex-end; padding: 2px; width: 100%; border: none;">
+    <button
+        mat-raised-button
+        type="button"
+        class="btn btn-outline-secondary btn-sm"
+        [disabled]="!isValid"
+        (click)="apply()"
+    >
+        {{button_label}}
+    </button>
+</div>

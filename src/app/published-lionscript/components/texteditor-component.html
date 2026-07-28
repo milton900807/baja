@@ -1,0 +1,210 @@
+<div
+  *ngIf="mode === 'simple'"
+  style="padding: 5; border: rgb(255, 255, 255) solid 2px; overflow: hidden; height: 100%; width: 100%;   flex: 1 1 auto; display: flex; 
+  flex-direction: column; width: 100%; 
+  padding: 0px; padding-bottom: 0; border: 0px solid rgb(255, 255, 255);"
+  [style.height]="height">
+  <ngx-monaco-editor
+    [(ngModel)]="code"
+    [options]="editorOptions"
+    (onInit)="onInit($event)"
+    spellcheck="false"
+    style="height: 100%; width: 100%; padding-bottom: 0; font-size: xx-small;"
+    #codeEditor
+  >
+  </ngx-monaco-editor>
+</div>
+
+<div
+  *ngIf="mode==='complex'"
+  style="padding: 0; overflow: hidden; height: 900px"
+>
+  <ul
+    ngbNav
+    #nav="ngbNav"
+    [(activeId)]="active"
+    class="nav-tabs"
+    style="overflow: hidden"
+  >
+    <li [ngbNavItem]="1" style="overflow: hidden">
+      <a ngbNavLink>Code</a>
+      <ng-template ngbNavContent>
+        <nav class="nav" style="overflow: hidden; height: 40px">
+          <ul class="nav">
+            <li class="nav-item">
+              <div
+                class="btn-group"
+                role="group"
+                aria-label="Basic mixed styles example"
+                style="height: 90%; overflow: hidden; resize: none"
+              >
+                <button
+                  type="button"
+                  (click)="openModal(content, 'Save')"
+                  class="btn btn-outline-secondary btn-sm"
+                >
+                  Save
+                </button>
+                <button type="button" 
+                (click)="openModal(content, 'Open')"
+                class="btn btn-outline-secondary btn-sm">
+                  Open
+                </button>
+                <button type="button" class="btn btn-outline-secondary btn-sm">
+                  Clear
+                </button>
+              </div>
+            </li>
+            <li class="nav-item">
+            </li>
+            <li class="nav-item"></li>
+            <li class="nav-item"></li>
+          </ul>
+        </nav>
+
+        <ngx-monaco-editor
+          class="my-code-editor"
+          [(ngModel)]="code"
+          [options]="editorOptions"
+          (onInit)="onInit($event)"
+          spellcheck="false"
+          [style]="style"
+          [contentEditable]="editable"
+          #editor
+        >
+        </ngx-monaco-editor>
+      </ng-template>
+    </li>
+    <li [ngbNavItem]="2">
+      <a ngbNavLink>Data</a>
+      <ng-template ngbNavContent>
+        <div class="input-group mb-3" style="height: 38px">
+          <span class="input-group-text" id="basic-addon1"> Name </span>
+          <input
+            type="text"
+            [(ngModel)]="file_title"
+            class="form-control"
+            placeholder="name"
+            aria-label="name"
+            aria-describedby="basic-addon1"
+          />
+        </div>
+        <ngx-monaco-editor
+          class="my-code-editor"
+          [options]="editorOptions"
+          (onInit)="onInit($event)"
+          spellcheck="false"
+          [style]="style"
+          #data_editor
+        >
+        </ngx-monaco-editor>
+      </ng-template>
+    </li>
+
+    <li [ngbNavItem]="3">
+      <a ngbNavLink>Files</a>
+      <ng-template ngbNavContent>
+        <folder-browser
+          [path]="folderPath"
+          (fileSelected)="loadFile($event)"
+        ></folder-browser>
+      </ng-template>
+    </li>
+    <li [ngbNavItem]="4">
+      <a ngbNavLink>Logs</a>
+      <ng-template ngbNavContent>
+        <div class="input-group mb-3" style="height: 38px">
+          <span class="input-group-text" id="basic-addon1"> Name </span>
+          <input
+            type="text"
+            [(ngModel)]="io_title"
+            class="form-control"
+            placeholder="name"
+            aria-label="name"
+            aria-describedby="basic-addon1"
+          />
+        </div>
+
+        <ngx-monaco-editor
+          class="my-code-editor"
+          [(ngModel)]="output"
+          [options]="logOptions"
+          (onInit)="onInit($event)"
+          spellcheck="false"
+          [style]="style"
+          #output_editor
+        >
+        </ngx-monaco-editor>
+      </ng-template>
+    </li>
+    <li [ngbNavItem]="5">
+      <a ngbNavLink>Selection</a>
+      <ng-template ngbNavContent>
+        <ngx-monaco-editor
+          class="my-code-editor"
+          [(ngModel)]="selectedObjects"
+          [options]="logOptions"
+          (onInit)="onInit($event)"
+          spellcheck="false"
+          [style]="style"
+          #output_editor
+        >
+        </ngx-monaco-editor>
+      </ng-template>
+    </li>
+
+  </ul>
+
+  <div
+    [ngbNavOutlet]="nav"
+    [style]="editorpanelstyle"
+    [style.height]="height"
+  ></div>
+</div>
+
+<!-- Modal -->
+<ng-template #content let-modal style="height: height; width: 100%">
+  <div
+    class="modal-header"
+    style="height: 50px; resize: none; overflow: hidden"
+  >
+    <!-- <h4 class="modal-title" id="modal-basic-title"></h4> -->
+    <button
+      type="button"
+      class="close"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    >
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body" style="overflow: visible;">
+    <folder-browser
+      style="height:300px"
+      [path]="folderPath"
+      [mode]="selectFolder"
+      (currentPathE)="setPath ($event)"
+      (fileSelected)="loadFile($event)"
+    ></folder-browser>
+    <div *ngIf="modal_mode==='Save'" class="input-group mb-3" style="height: 38px">
+      <span class="input-group-text" id="basic-addon1"> Name </span>
+      <input
+        type="text"
+        [(ngModel)]="fileName"
+        class="form-control"
+        placeholder="name"
+        aria-label="name"
+        aria-describedby="basic-addon1"
+      />
+    </div>
+  </div>
+  <div *ngIf="modal_mode==='Save'" class="modal-footer" style="height: 110px; resize: none">
+    <button
+      type="button"
+      class="btn btn-outline-dark"
+      (click)="save(currentPath, fileName)"
+    >
+      Save
+    </button>
+  </div>
+</ng-template>

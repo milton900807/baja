@@ -1,0 +1,29 @@
+<div class='panel panel-heading'>
+    <!--<div class="panel panel-danger">-->
+       <h4 color="blue"> {{monomer_manager?.selectedMonomer?.name}} [{{monomer_manager?.selectedMonomer?.symbol}}] </h4>
+
+        
+        
+
+        <div class="table-responsive" style="font-size: small">
+        <div class="table">
+            <tbody style="padding-left: 2px">
+            <tr class="default">
+                <td style="width: 850px; padding: 2px">
+
+
+
+                    <ketcher-2 [monomer_manager]="monomer_manager"
+                            (structure)="structureUpdate($event)"  (substructureof)="showSubstructureHits($event)" [app_control]="appman"></ketcher-2>
+
+                </td>
+                <td *ngIf="monomer_db" style="width: 430px">
+                    <div class="btn-toolbar" role="toolbar" aria-label="...">
+                    </div>
+                    <monomer-list [monomer_db]="monomer_db" [monomer_manager]="monomer_manager" [app_control]="appman"></monomer-list>
+                </td>
+            </tr>
+            </tbody>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,25 @@
+<section 
+  class="button-section buffer-height"
+  [ngStyle]="{ 'background': backgroundStyle }"
+>
+  <div
+    class="button-container"
+    [id]="useStyledButtons ? 'toggle-container' : null"
+    role="group"
+    aria-label="Actions"
+  >
+    <button
+      *ngFor="let b of buttons"
+      type="button"
+      class="btn"
+      [ngClass]="useStyledButtons ? 'btn--success' : 'btn--primary'"
+      [disabled]="b.disabled"
+      [attr.aria-disabled]="b.disabled"
+      (click)="click(b)"
+    >
+      <span class="btn__label">{{ b.label }}</span>
+    </button>
+  </div>
+
+  <hr *ngIf="!useStyledButtons" />
+</section>

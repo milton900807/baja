@@ -1,0 +1,64 @@
+<div class="default" style="background: white; height: 100%">
+  <nav class="navbar navbar-expand-sm navbar-light bg-light">
+    <div *ngIf="folder_details != null" class="container-fluid">
+      <div class="collapse navbar-collapse" id="navbarNav">
+        {{ folder_details.name }}
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <button class="btn btn-light btn-sm" (click)="refresh()">
+              <img src="/assets/img/icons/png/reload-2x.png" />
+            </button>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <table class="table">
+    <tr>
+      <td>
+        <table style="width: 100%; height: 100%">
+          <tr>
+            <td width="80%">
+              <div
+                class="folder-list-container"
+                style="background: white; height: 100%"
+              >
+                <div class="panel panel-default" style="width: 95%">
+                  <div class="panel-heading">{{ title }}</div>
+                  <div class="panel-body" style="font-size: small">
+                    <div
+                      id="folder-action-menu-item-button-group"
+                      class="btn-group"
+                      role="group"
+                      aria-label="Basic example"
+                      style="padding-bottom: 20px"
+                    >
+                      <button
+                        *ngFor="let b of folderActionMenuItems"
+                        type="button"
+                        class="btn btn-outline-secondary btn-sm"
+                        (click)="runFunction(b)"
+                      >
+                        {{ b["label"] }}
+                        <img src="/assets/img/icons/png/plus.png" />
+                      </button>
+                    </div>
+
+                    <select class="form-select" aria-label="Default select example">
+                      <option selected>Open this select menu</option>
+                      <option *ngFor="let d of folders" value="d.id"> 
+                                                 {{ d.name }}
+                      </option>
+                    </select>
+
+                  </div>
+                </div>
+              </div>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</div>

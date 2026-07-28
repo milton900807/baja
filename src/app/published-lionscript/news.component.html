@@ -1,0 +1,20 @@
+<div class="news-item">
+  <div class="title">
+    <a *ngIf="item.url; else plain"
+       [href]="item.url"
+       target="_blank"
+       rel="noopener noreferrer">
+      {{ item.title }}
+    </a>
+    <ng-template #plain>
+      {{ item.title }}
+    </ng-template>
+  </div>
+
+  <div class="meta" *ngIf="item.timestamp || item.source">
+    <span *ngIf="item.source" class="source">{{ item.source }}</span>
+    <span *ngIf="item.timestamp" class="timestamp">
+      {{ item.timestamp | date:'mediumDate' }}
+    </span>
+  </div>
+</div>

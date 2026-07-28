@@ -1,0 +1,23 @@
+<mat-form-field appearance="fill">
+  <mat-label>Select date range</mat-label>
+  <mat-date-range-input [rangePicker]="rangePicker">
+    <input matStartDate placeholder="Start date" [(ngModel)]="selectedDateRange.start" (dateChange)="onDateChange()" />
+    <input matEndDate placeholder="End date" [(ngModel)]="selectedDateRange.end" (dateChange)="onDateChange()" />
+  </mat-date-range-input>
+  <mat-datepicker-toggle matSuffix [for]="rangePicker"></mat-datepicker-toggle>
+  <mat-date-range-picker #rangePicker></mat-date-range-picker>
+</mat-form-field>
+
+
+<div>
+  <button (click)="initiateMicrosoftLogin()">Connect Microsoft Calendar</button>
+
+  <div *ngIf="events.length > 0">
+    <h3>Upcoming Events</h3>
+    <ul>
+      <li *ngFor="let event of events">
+        {{ event.subject }} - {{ event.start.dateTime }}
+      </li>
+    </ul>
+  </div>
+</div>

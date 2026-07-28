@@ -1,0 +1,56 @@
+/* app.component.css */
+
+#toggle-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+  }
+  
+  #toggle-container button {
+    margin-top: 10px;
+    padding: 6px;
+    font-size: small;
+    border-radius: 5px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  #toggle-container button:hover {
+    background-color: #45a049;
+  }
+  
+  button {
+    margin-top: 5px;
+    padding: 4px;
+    font-size: small;
+    border-radius: 3px;
+    border: 1px solid #ddd;
+    background-color: rgb(0, 87, 163);
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  button:hover {
+    background-color: rgb(0, 87, 163);
+  }
+  
+  section {
+    display: block;
+    margin: 15px;
+    padding: 20px;
+    background: linear-gradient(to right, #000000, #ffffff);
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border: 1px solid #ddd;
+  }
+  
+  section + section {
+    margin-top: 25px;
+  }
+  

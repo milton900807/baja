@@ -1,0 +1,76 @@
+<div [style.background-color]="backgroundcolor" style="overflow: hidden; border: none; height: 100%;">
+  <mat-card style="width: 100%; box-sizing: border-box; height: 100%;">
+    
+    <div style="display: flex; align-items: center; justify-content: space-between; padding: 8px 12px;">
+      <div style="font-weight: 600;">
+        {{ currentPath || '/' }}
+      </div>
+
+      <button mat-button *ngIf="canNavigateUp" (click)="navigateUp()">
+        Up
+      </button>
+    </div>
+
+    <hr>
+
+    <div *ngIf="showSearch" style="padding: 0 12px 12px 12px;">
+      <mat-form-field appearance="outline" style="width: 100%;">
+        <mat-label>Search</mat-label>
+        <input matInput placeholder="Search files or folders">
+      </mat-form-field>
+    </div>
+
+    <div
+      style="
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 12px;
+        padding: 12px;
+      "
+    >
+      <div
+        *ngFor="let element of (fileElements | async)"
+        (click)="element.isFolder ? navigateToFolder(element) : fileClick(element)"
+        style="
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          padding: 12px;
+          border: 1px solid #ddd;
+          border-radius: 8px;
+          cursor: pointer;
+          background: white;
+        "
+      >
+
+        <!-- 💰 Publish folder (CASE-INSENSITIVE) -->
+        <mat-icon *ngIf="element.isFolder && element.name?.toLowerCase() === 'publish'; else normalFolder">
+          attach_money
+        </mat-icon>
+
+        <!-- 📁 Normal folder -->
+        <ng-template #normalFolder>
+          <mat-icon *ngIf="element.isFolder">
+            folder
+          </mat-icon>
+        </ng-template>
+
+        <!-- 📄 File -->
+        <mat-icon *ngIf="!element.isFolder">
+          insert_drive_file
+        </mat-icon>
+
+        <span
+          style="
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+          "
+        >
+          {{ element.name }}
+        </span>
+      </div>
+    </div>
+
+  </mat-card>
+</div>

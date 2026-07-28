@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+  <!-- Mic capsule -->
+  <rect x="9" y="2" width="6" height="12" rx="3"/>
+  <!-- U-shaped support -->
+  <path d="M5 12h2a5 5 0 0 0 10 0h2a7 7 0 0 1-14 0z"/>
+  <!-- Stem -->
+  <rect x="11" y="18" width="2" height="3" rx="1"/>
+  <!-- Base -->
+  <rect x="7" y="22" width="10" height="2" rx="1"/>
+</svg>

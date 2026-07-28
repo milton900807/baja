@@ -1,0 +1,44 @@
+<div class="library-shell">
+  <div class="library-header">
+    <h2>{{ title }}</h2>
+
+    <button
+      *ngIf="closeButton"
+      class="close-button"
+      type="button"
+      (click)="close()">
+      ×
+    </button>
+  </div>
+
+  <div *ngIf="error" class="error">
+    {{ error }}
+  </div>
+
+  <div class="library-grid" *ngIf="!error">
+    <button
+      class="library-card"
+      type="button"
+      *ngFor="let item of items"
+      (click)="selectItem(item)">
+
+      <span class="material-icons library-icon">
+        {{ itemIcon(item) }}
+      </span>
+
+      <div class="library-copy">
+        <div class="library-title">
+          {{ item.title }}
+        </div>
+
+        <div class="library-subtitle" *ngIf="item.subtitle">
+          {{ item.subtitle }}
+        </div>
+
+        <div class="library-description" *ngIf="item.description">
+          {{ item.description }}
+        </div>
+      </div>
+    </button>
+  </div>
+</div>

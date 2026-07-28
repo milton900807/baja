@@ -1,0 +1,18 @@
+<mat-toolbar class="toolbar">
+  <!-- Left section: Icon buttons -->
+  <div class="left-buttons">
+    <ng-container *ngFor="let button of buttons">
+      <button
+        mat-button
+        [ngStyle]="{ 'font-size.px': buttonSize }"
+        (click)="onButtonClick(button)"
+      >
+        <mat-icon>{{ button.icon }}</mat-icon>
+        <span *ngIf="buttonSize >= 24">{{ button.label }}</span>
+      </button>
+    </ng-container>
+  </div>
+
+  <!-- Spacer -->
+  <span class="spacer"></span>
+</mat-toolbar>

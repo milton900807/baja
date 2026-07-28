@@ -1,0 +1,90 @@
+@import '@angular/material/theming';
+@include mat-core();
+
+$app-primary: mat-palette($mat-grey, A200, A100, A400);
+$app-accent: mat-palette($mat-indigo, A200, A100, A400);
+
+$app-theme: mat-light-theme($app-primary, $app-accent);
+
+@mixin mix-app-theme($app-theme) {
+  // $basic: map-get($app-theme, basic);
+  // $basic: map-get($mat-basic);
+  $primary: map-get($app-theme, primary);
+  $accent: map-get($app-theme, accent);
+
+  .mat-button-toggle {
+    // background-color: mat-color($basic);
+    // color: mat-color($basic, default-contrast);
+    background-color: mat-color($primary);
+    color: mat-color($primary, default-contrast);
+  }
+
+  .mat-button-toggle-checked {
+    background-color: mat-color($accent);
+    color: mat-color($accent, default-contrast);
+  }
+
+  .mat-selection-list {
+    .mat-list-option {
+      color: mat-color($primary, default-contrast);
+    }
+
+    .mat-pseudo-checkbox {
+      color: mat-color($primary, default-contrast);
+    }
+  }
+
+  .mat-table {
+    background-color: white;
+
+    td.mat-cell,
+    td.mat-footer-cell,
+    th.mat-header-cell {
+      padding: 0px;
+      color: mat-color($primary, default-contrast);
+    }
+
+    tr.mat-header-row,
+    tr.mat-row {
+      height: 30px;
+    }
+  }
+}
+
+@include mix-app-theme($app-theme);
+
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+
+app-root {
+  display: block;
+  min-height: 100vh;
+  width: 100%;
+}
+
+.app-shell {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-content {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+.draggable-dialog .mat-mdc-dialog-surface {
+  border-radius: 8px;
+  overflow: hidden;
+}

@@ -1,0 +1,11 @@
+<section class="content" id="content">
+    <ul style="list-style: none">
+        <li *ngFor='let rule of item_list; let i=index'>
+            <div class="btn btn-secondary-outline btn-xs" id={{i}} type="input" (click)="launch(rule)" #inputfield>
+                {{rule[label_field]}}
+                <font color="blue">, {{rule[date_field]}} </font>
+            </div>
+
+        </li>
+    </ul>
+</section>

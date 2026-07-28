@@ -1,0 +1,41 @@
+<div>
+<div style="overflow-x: hidden;">
+    <div class="col-md-4 offset-md-4 col-sm-6 offset-sm-3">
+      <div class="card auth">
+        <div class="card-body auth-card">
+          <div class="auth-avatar">
+          </div>
+          <form (submit)="signUp(userData)">
+              <div class="form-group">
+                <label for="name">Name : </label>
+                <input type="text" name="name" class="form-control" placeholder="Name" [(ngModel)]="userData.name">
+              </div>
+              <div class="form-group">
+                <label for="phone">Phone : </label>
+                <input type="text" name="phone" class="form-control" placeholder="Phone" [(ngModel)]="userData.phone">
+              </div>
+              <div class="form-group">
+                <label for="email">Email : </label>
+                <input type="text" name="email" class="form-control" placeholder="Email" [(ngModel)]="userData.email">
+              </div>
+
+              <div class="form-group">
+                <label for="name"> Short description of your intended use: </label>
+                <textarea  name="name" class="form-control" placeholder="Description" [(ngModel)]="userData.desc"></textarea>
+
+              </div>
+
+
+              <div class="text-center">
+                <input type="submit" class="btn btn-my" value="Sign Up">
+              </div>
+              <div class="text-center login">
+                Already have an account ? <a routerLink="/login">Login</a> hera.
+              </div>
+              
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

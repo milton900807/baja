@@ -1,0 +1,32 @@
+<div class="article-editor">
+  <h2>Article Editor</h2>
+
+  <!-- Title section -->
+  <div class="form-group">
+    <label for="article-title">Title</label>
+    <input
+      id="article-title"
+      type="text"
+      [(ngModel)]="title"
+      class="form-control"
+      placeholder="Enter article title"
+    />
+  </div>
+
+  <!-- Body section -->
+  <div class="form-group">
+    <label for="article-body">Body</label>
+    <textarea
+      id="article-body"
+      [(ngModel)]="body"
+      class="form-control body-textarea"
+      placeholder="Write your article here..."
+    ></textarea>
+  </div>
+
+  <!-- Actions -->
+  <div class="actions">
+    <button type="button" (click)="onSave()">Save</button>
+    <button type="button" class="secondary" (click)="onClear()">Clear</button>
+  </div>
+</div>

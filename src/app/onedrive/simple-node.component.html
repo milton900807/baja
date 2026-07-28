@@ -1,0 +1,40 @@
+<div *ngIf='edit' class="input-group" style="width: 600px">
+    <div class="input-group-prepend">
+        <span class="input-group-text">Name</span>
+    </div>
+    <input type="text" [(ngModel)]="name" class="form-control" aria-label="">
+    <button type="button" (click)="closeEdit ()" class="btn btn-warning">Apply </button>
+</div>
+<div class="btn-toolbar mb-3" role="toolbar" aria-label="Toolbar with button groups">
+    <div class="btn-group" role="group" aria-label="Basic example">
+        <button type="button" (click)='notifyListeners ()' class="btn btn-outline-secondary">{{name}}</button>
+        <button *ngIf="canEditName" type="button" (click)="editName()" class="btn btn-secondary">
+            <img src="assets/img/icons/png/text-2x.png">
+        </button>
+
+        <!-- <button *ngIf="selected" type="button" (click)="deselect()" class="btn btn-secondary"><img
+                src="assets/img/icons/png/circle-check-3x.png"></button>
+        <button *ngIf="!selected" type="button" (click)="select()" class="btn btn-secondary"><img
+                src="assets/img/icons/png/ellipses-3x.png"></button> -->
+        <button *ngIf="canAddFolders" type="button" (click)="newNode()" class="btn btn-outline-secondary"> +
+            <img src="assets/img/icons/png/folder.png">
+
+        </button>
+
+        <button type="button" (click)="delete()" class="btn btn-outline-secondary"><img
+                src="assets/img/icons/png/delete-2x.png"></button>
+
+
+        <!-- <button *ngIf="canEditLink" type="button" (click)="newLinkNode()" class="btn btn-secondary">+ link </button> -->
+        <!-- <button *ngIf="showExpandContract" type="button" (click)="expandContract()" class="btn btn-warning"> 
+                <img src='assets/img/icons/png/loop-circular.png'>            
+        </button> -->
+        <button *ngIf="showExpandContract" type="button" (click)="expandContract()" class="btn btn-warning">
+            <img src='assets/img/icons/png/loop-circular.png'>
+        </button>
+    </div>
+</div>
+<div *ngIf='expand' style="padding-left: 39px; width: 200px;">
+    <ng-template navi #root>
+    </ng-template>
+</div>

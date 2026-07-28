@@ -1,0 +1,76 @@
+﻿<!--
+//////////////////////////////////////////////////////////////////////////////////
+//
+// Pistoia HELM
+// Copyright (C) 2016 Pistoia
+// http://www.scilligence.com/
+//
+//////////////////////////////////////////////////////////////////////////////////
+-->
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>Pistoia HELM</title>
+
+    <script type='text/javascript' src="//ajax.googleapis.com/ajax/libs/dojo/1.10.4/dojo/dojo.js"></script>
+    <script type='text/javascript' src="./JSDraw/Scilligence.JSDraw2.Lite.js"></script>
+    <script type="text/javascript" src='./JSDraw/Scilligence.JSDraw2.Resources.js'></script>
+
+    <script type='text/javascript' src='./JSDraw/Pistoia.HELM-uncompressed.js'></script>
+
+</head>
+  <body style="font-family:Arial; margin: 0">
+
+    <div id="toolbar"></div>
+
+    <!-- HELM App -->
+    <div id="div1" style="margin: 2px; margin-top: 15px; overflow: visible;"></div>
+    <script type="text/javascript">
+        scil.ready(function () {
+//            new scil.helm.AppToolbar("toolbar", "../JSDraw/helm/img/",
+//                [{ icon: "canvas-1.png", label: "Canvas" }, { icon: "monomers-2.png", label: "Monomer Library", url: "MonomerLibApp.htm" }, { icon: "settings-2.png", label: "Ruleset", url: "RuleSetApp.htm"}]
+//            );
+
+            org.helm.webeditor.MolViewer.molscale = 0.8;
+            var app = new scil.helm.App("div1", { showabout: false, mexfontsize: "90%", 
+            mexrnapinontab: true, topmargin: 10, mexmonomerstab: true, sequenceviewonly: false, mexfavoritefirst: true, mexfilter: true });
+        });
+    </script>
+
+
+
+
+    <!-- Rule App -->
+ <!--
+        <script type='text/javascript' src='../JSDraw/Service.aspx?cmd=helm.monomer.downloadjson'></script>
+        <div id="div1"></div>
+        <script type="text/javascript">
+            scil.ready(function () {
+                new scil.helm.RuleSetApp("div1", { ajaxurl: "Service.aspx?cmd=" });
+            });
+        </script>
+ -->  
+
+
+
+
+
+
+
+
+
+
+<!-- Monomer Lib App -->
+ <!--
+    <div id="div1"></div>
+    <script type="text/javascript">
+        scil.ready(function () {
+            new scil.helm.MonomerLibApp("div1", { ajaxurl: "Service.aspx?cmd=" });
+        });
+    </script>
+  --> 
+
+
+</body>
+</html>

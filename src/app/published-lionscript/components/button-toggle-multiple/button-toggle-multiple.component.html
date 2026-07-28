@@ -1,0 +1,8 @@
+<div id=toggle-container>
+  <mat-button-toggle-group multiple *ngIf=buttons [(value)]=selected>
+    <mat-button-toggle *ngFor='let button of buttons' [value]=button.label  mat-stroked-button	  >{{button.label}}</mat-button-toggle>
+  </mat-button-toggle-group>
+    
+  <!-- <button mat-raised-button (click)="click(button.ionFunction)"> {{submitButtonLabel}} </button> -->
+</div>
+

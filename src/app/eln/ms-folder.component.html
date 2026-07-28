@@ -1,0 +1,248 @@
+
+<div class="default" style="background: white; height: 100%">
+  <nav class="navbar navbar-expand-sm navbar-light bg-light">
+    <div *ngIf="folder_details != null" class="container-fluid">
+      <div class="collapse navbar-collapse" id="navbarNav">
+        {{ folder_details.name }}
+
+
+
+        <ul class="navbar-nav" >
+          <li *ngIf="!loading && selectedSignedFile == null" class="nav-item">            
+            <button class="btn btn-light btn-sm" (click)="download()" (click)="changeFileName()">
+              <img src="/assets/img/icons/png/file-2x.png" />
+
+            </button>
+          </li>
+          
+          <li *ngIf="selectedSignedFile != null" class="nav-item">
+            <button
+            class="btn btn-light btn-sm"
+              (click)="downloadSigned()"
+            >
+              <img src="/assets/img/icons/png/pencil-2x.png" />
+            </button>
+          </li>
+          <!-- <li class="nav-item">
+            <button
+            class="btn btn-light btn-sm"
+              (click)="goToSharepointFolder()"
+            >
+              <img src="/assets/img/icons/png/folder-2x.png" />
+            </button>
+          </li> -->
+          <li class="nav-item">
+            <button class="btn btn-light btn-sm" (click)="refresh()">
+              <img src="/assets/img/icons/png/reload-2x.png" />
+            </button>
+          </li>
+
+          <!-- <li class="nav-item">
+            <button class="btn btn-light btn-sm" (click)="lockAll()">
+              <img src="/assets/img/icons/png/lock-locked-2x.png" />
+            </button>
+          </li> -->
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <table class="table">
+    <tr>
+      <td *ngIf="selectedSignedFile != null">
+        <div *ngIf="selectedSignedFile.file.mimeType === 'application/pdf'">
+          <pdf-viewer [fileItem]="selectedSignedFile"> </pdf-viewer>
+        </div>
+      </td>
+      <td *ngIf="selectedSignedFile == null && selectedFile != null">
+        <div *ngIf="selectedFile.file.mimeType === 'application/pdf'">
+          <pdf-viewer [fileItem]="selectedFile"> </pdf-viewer>
+        </div>
+        <div
+          *ngIf="selectedFile.file.mimeType !== 'application/pdf'"
+          [innerHTML]="displayHTML"
+        ></div>
+      </td>
+      <td *ngIf="selectedSignedFile == null && selectedFile == null">
+        loading...
+      </td>
+      <td>
+
+        <signed-doc
+          *ngIf="selectedFile != null && showDocumentSigning"
+          [doc]="selectedFile"
+          [signedDoc]="selectedSignedFile"
+          [config]="documentSigningConfig"
+          [stamp]="folder_details.name"
+          (fileDownload)="refresh()"
+          [id]="id"
+        ></signed-doc>
+        <table style="width: 100%">
+          <tr>
+            <td width="80%">
+              <div
+                class="folder-list-container"
+                style="background: white; height: 100%"
+              >
+                <div class="panel panel-default" style="width: 95%">
+                  <div class="panel-heading">{{ title }}</div>
+                  <div class="panel-body" style="font-size: small">
+                    <div
+                      id="folder-action-menu-item-button-group"
+                      class="btn-group"
+                      role="group"
+                      aria-label="Basic example"
+                      style="padding-bottom: 20px"
+                    >
+                      <button
+                        *ngFor="let b of folderActionMenuItems"
+                        type="button"
+                        class="btn btn-outline-secondary btn-sm"
+                        (click)="runFunction(b)"
+                      >
+                        {{ b["label"] }}
+                        <img src="/assets/img/icons/png/plus.png" />
+                      </button>
+                    </div>
+
+                    <h4>File Details</h4>
+                    <table *ngIf="selectedFile != null" style="width: 100%">
+                      <tr>
+                        <th>Name</th>
+                        <th>Type</th>
+                        <th>Created By</th>
+                        <th>Upload Date</th>
+                        <th>Last Mod</th>
+                      </tr>
+                      <tr>
+                        <td>
+                          <div
+                            ngbDropdown
+                            class="d-inline-block"
+                            style="font-size: small"
+                            (mouseenter)="file_menu()"
+                            (mouseout)="mouse_out_file()"
+                          >
+                            <button
+                              class="btn btn-secondary"
+                              id="dropdownBasic1"
+                              ngbDropdownToggle
+                              style="font-size: small"
+                            >
+                              {{
+                                selectedFile.name
+                                  | file_gallery_filter: getFolderName()
+                              }}
+                            </button>
+                            <div
+                              ngbDropdownMenu
+                              aria-labelledby="dropdownBasic1"
+                            >
+                              <button ngbDropdownItem (click)="open(d)">
+                                Open Web
+                              </button>
+                              <button ngbDropdownItem (click)="openLocal(d)">
+                                Open in App
+                              </button>
+                              <button ngbDropdownItem (click)="tag(d)">
+                                Tag
+                              </button>
+                              <hr />
+                              <button ngbDropdownItem (click)="archive(d)">
+                                <font color="red"> Archive </font>
+                              </button>
+                            </div>
+                          </div>
+                        </td>
+                        <td></td>
+                        <td>{{ selectedFile.createdBy.user.displayName }}</td>
+                        <td>{{ selectedFile.createdDateTime | date }}</td>
+                        <td>{{ selectedFile.lastModifiedDateTime | date }}</td>
+                      </tr>
+                    </table>
+                    <!-- "id": "1.0", "lastModifiedDateTime": "2021-03-09T15:26:33Z", "size": 69949,"lastModifiedBy" -->
+                    <div *ngIf="showVersions">
+                      <h4>Versions</h4>
+                      <table
+                        *ngFor="let v of selectedFileVersions"
+                        style="width: 100%"
+                      >
+                        <tr>
+                          <th>Version</th>
+                          <th>Size</th>
+                          <th>Last Modified by</th>
+                          <th>Last Modified date</th>
+                        </tr>
+                        <tr>
+                          <td>
+                            <div
+                              ngbDropdown
+                              class="d-inline-block"
+                              style="font-size: small"
+                              (mouseenter)="file_menu()"
+                              (mouseout)="mouse_out_file()"
+                            >
+                              <button
+                                class="btn btn-outline-secondary"
+                                id="dropdownBasic1"
+                                ngbDropdownToggle
+                                style="font-size: small"
+                              >
+                                {{ v.id }}
+                              </button>
+                              <div
+                                ngbDropdownMenu
+                                aria-labelledby="dropdownBasic1"
+                              >
+                                <button ngbDropdownItem (click)="open(d)">
+                                  Open Web
+                                </button>
+                                <button ngbDropdownItem (click)="openLocal(d)">
+                                  Open in App
+                                </button>
+                                <button ngbDropdownItem (click)="tag(d)">
+                                  Tag
+                                </button>
+                                <hr />
+                                <button ngbDropdownItem (click)="archive(d)">
+                                  <font color="red"> Archive </font>
+                                </button>
+                              </div>
+                            </div>
+                          </td>
+                          <td>{{ v.size }}</td>
+                          <td>{{ v.lastModifiedBy.user.displayName }}</td>
+                          <td>
+                            {{ v.lastModifiedDateTime | date }}
+                          </td>
+                        </tr>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+  <!-- <div *ngIf="mode === 'attach-files'">
+        <div style="height: 300px">
+            Drop files into {{id}}.
+            <div class="upload-table">
+                <table class="table">
+                    <thead>
+                    </thead>
+                    <tbody class="upload-name-style">
+                        <tr *ngFor="let item of files; let i=index">
+                            <td>
+                                <strong>{{ item.relativePath }}</strong>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div> -->
+  <!-- </div> -->
+</div>

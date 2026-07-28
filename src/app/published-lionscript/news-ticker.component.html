@@ -1,0 +1,49 @@
+<mat-toolbar class="toolbar">
+  <!-- Left label / icon -->
+  <span class="label">
+    <mat-icon aria-hidden="true">campaign</mat-icon>
+    <span *ngIf="title" class="title-text">{{ title }}</span>
+  </span>
+
+  <div class="ticker-container" *ngIf="items && items.length > 0">
+    <div
+      class="ticker"
+      [style.animation-duration]="scrollDurationSeconds + 's'"
+    >
+      <!-- Repeat items twice for seamless looping -->
+      <ng-container *ngFor="let repeat of [0, 1]">
+        <ng-container *ngFor="let item of items; let last = last">
+          <a
+            class="ticker-item"
+            *ngIf="item.url && item.url !== ''; else noLink"
+            [href]="item.url"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {{ item.title }}
+          </a>
+
+          <ng-template #noLink>
+            <span class="ticker-item">
+              {{ item.title }}
+            </span>
+          </ng-template>
+
+          <span class="separator" *ngIf="!last">•</span>
+        </ng-container>
+      </ng-container>
+    </div>
+  </div>
+
+  <span class="spacer"></span>
+
+  <!-- Optional close button wired to this.closeButton from TS -->
+  <button
+    *ngIf="closeButton"
+    mat-icon-button
+    (click)="closeButton()"
+    aria-label="Close"
+  >
+    <mat-icon>close</mat-icon>
+  </button>
+</mat-toolbar>

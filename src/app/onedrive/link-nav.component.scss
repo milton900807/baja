@@ -1,0 +1,19 @@
+.inputContainer {
+    width: 300px;
+    border: 1px dashed #f0f
+}
+.inputContainer label {
+    float: left;
+    margin-right: 5px;
+    background: #ccc
+}
+.inputContainer div {
+    overflow: hidden;
+}
+.inputContainer input {
+    width: 100%;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    display: block
+}

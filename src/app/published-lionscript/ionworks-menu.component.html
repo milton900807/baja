@@ -1,0 +1,10 @@
+<div id="mySidenav" class="sidenav alert" [style]="getsidenavstyle()">
+    <div style="background: white; padding: 0; margin: 0">
+        <img src="{{menuLogo}}">
+    </div>
+    <ul class="list-group" style="background-color: rgb(255, 255, 255)">
+        <li *ngFor="let m of menulist" class="list-group-item" [style]="getstyle()">
+            <a (click)="select ( m )">{{m.name}}</a>
+        </li>
+    </ul>
+</div>

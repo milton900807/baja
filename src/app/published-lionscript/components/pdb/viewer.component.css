@@ -1,0 +1,31 @@
+.mat-table {
+  width: 100%;
+}
+
+/* ::ng-deep .mat-table .mat-checkbox {
+  color: red;
+}
+
+.mat-cell {
+  color: red;
+} */
+
+::ng-deep .mat-checkbox .mat-checkbox-frame {
+  border-color: grey;
+  background-color: white;
+}
+
+::ng-deep .mat-row {
+  margin: 10px;
+  /* background-color: red; */
+  border-top: 2px solid rgba(0,0,0,.12);
+  /* border: 2px solid black; */
+}
+
+button {
+  margin: 10px 0px;
+}
+
+/* ::ng-deep td.mat-cell, td.mat-footer-cell, th.mat-header-cell {
+  padding: 10px;
+} */

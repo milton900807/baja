@@ -1,0 +1,134 @@
+.newsletter-wrapper {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 1.5rem;
+  background: #fdfaf4;
+  border: 1px solid #ddd;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+  font-family: Georgia, 'Times New Roman', serif;
+}
+
+.masthead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.masthead-left {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.masthead-title {
+  margin: 0;
+  font-size: 2rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.masthead-subtitle {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #555;
+}
+
+.masthead-right {
+  display: flex;
+  align-items: center;
+}
+
+.content-grid {
+  display: grid;
+  grid-template-columns: 2fr 1.4fr;
+  gap: 1.5rem;
+  margin-top: 1rem;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.main-story {
+  border-right: 1px solid #ddd;
+  padding-right: 1.5rem;
+
+  @media (max-width: 768px) {
+    border-right: none;
+    border-bottom: 1px solid #ddd;
+    padding-right: 0;
+    padding-bottom: 1rem;
+    margin-bottom: 1rem;
+  }
+}
+
+.story-headline {
+  margin: 0 0 0.75rem;
+  font-size: 1.5rem;
+  line-height: 1.2;
+
+  a {
+    text-decoration: none;
+    color: inherit;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+
+    &:hover {
+      border-bottom-width: 2px;
+    }
+  }
+}
+
+.story-body {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: #333;
+}
+
+.secondary-stories {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+.secondary-story {
+  padding-bottom: 0.75rem;
+  border-bottom: 1px dotted #ccc;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.secondary-headline {
+  margin: 0 0 0.35rem;
+  font-size: 1rem;
+  font-weight: bold;
+
+  a {
+    text-decoration: none;
+    color: inherit;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+.secondary-body {
+  margin: 0;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: #444;
+}
+
+.newsletter-empty {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 1.5rem;
+  text-align: center;
+  color: #777;
+  font-style: italic;
+}

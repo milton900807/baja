@@ -1,0 +1,34 @@
+<form  (ngSubmit)="onSubmit()">
+  <div class="row" style="padding-bottom: 10px;">
+    <div class="col">
+      <input type="text" class="form-control"  formControlName="first" placeholder="First name" />
+    </div>
+    <div class="col">
+      <input type="text" class="form-control"  formControlName="last" placeholder="Last name" />
+    </div>
+  </div>
+
+
+
+  <div class="mb-3">
+    <input
+      type="email"
+      class="form-control"
+      id="email"
+      placeholder="Email "
+      formControlName="email"
+    />
+  </div>
+  <div class="mb-3">
+    <label for="exampleFormControlTextarea1" class="form-label"
+      >Say something to the speaker about your background and interests.</label
+    >
+    <textarea
+      class="form-control"
+      id="exampleFormControlTextarea1"
+      rows="3"
+      formControlName="comment"
+    ></textarea>
+  </div>
+  <button type="submit" class="btn btn-primary">{{SubmitButton}}</button>
+</form>

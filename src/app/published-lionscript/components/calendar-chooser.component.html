@@ -1,0 +1,11 @@
+<mat-form-field appearance="fill">
+  <mat-label>Select a date</mat-label>
+  <input matInput [matDatepicker]="picker" [(ngModel)]="selectedDate" (dateChange)="onDateChange($event)">
+  <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+  <mat-datepicker #picker></mat-datepicker>
+</mat-form-field>
+
+<mat-form-field appearance="fill">
+  <mat-label>Hour</mat-label>
+  <input matInput type="number" [(ngModel)]="selectedHour" min="0" max="23" placeholder="HH"  (dateChange)="onDateChange($event)">
+</mat-form-field>

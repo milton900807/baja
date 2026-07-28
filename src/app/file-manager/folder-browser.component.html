@@ -1,0 +1,9 @@
+<div [style.background-color]="backgroundcolor" style="overflow: hidden; border: NONE">
+  <mat-card  style="width: 100%; box-sizing: border-box">
+    <fileg-manager [folderDialogFunction]="folderDialogFunction" [folderPath]="folderPath" [canAddFolder]="canAddFolder"
+      [fileElements]="fileElements | async" [path]="currentPath" [canNavigateUp]="canNavigateUp" [COLS]="columns"
+      (folderAdded)="addFolder($event)" (fileClick)="fileClick($event)" (elementRemoved)="removeElement($event)"
+      (navigatedDown)="navigateToFolder($event)" (navigatedUp)="navigateUp()" (elementRenamed)="renameElement($event)"
+      (elementMoved)="moveElement($event)" (openFileEmitter)="openFile($event)"></fileg-manager>
+  </mat-card>
+</div>

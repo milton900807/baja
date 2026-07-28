@@ -1,0 +1,33 @@
+.mat-table {
+  width: 100%;
+  margin-top: 20px;
+}
+
+/* .mat-table > td.mat-column-id {
+  min-width: 100px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+} */
+button {
+  margin-top: 1px;
+  padding: 2px;
+  font-size: small;
+}
+
+.mat-table > td, th {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+table.mat-table td.mat-cell, table.mat-table th.mat-cell {
+  white-space: pre-wrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+table.mat-table .mat-column-name {
+  max-width: 300px;
+}
+

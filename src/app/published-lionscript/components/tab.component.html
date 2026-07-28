@@ -1,0 +1,38 @@
+<div style="margin-top: 1px;" [style.overflow]="overflow" [style.width]="width" [style.height]="height" >
+  <ul
+    class="nav nav-tabs"
+    *ngFor="let card_item_row of card_items_list"
+    style="vertical-align: top; width: 100%; padding-left: 14px; border: solid 2p lightgray"
+  >
+    <li class="nav-item" *ngFor="let card_item of card_item_row">
+      <a
+        *ngIf="!selected && card_item.title != selected?.title"
+        class="nav-link"
+        (click)="go(card_item)"
+        style="cursor: pointer; color: gray"
+      >
+        {{ card_item.title }}
+      </a>
+      <a
+        *ngIf="selected && card_item.title != selected?.title"
+        class="nav-link"
+        (click)="go(card_item)"
+        style="cursor: pointer; color: gray"
+      >
+        {{ card_item.title }}
+      </a>
+      <a
+        *ngIf="selected && card_item.title === selected?.title"
+        class="nav-link active"
+        (click)="go(card_item)"
+        style="cursor: pointer; color: rgb(0, 0, 0); border: rgb(187, 206, 228) solid 1px;"
+      >
+        {{ card_item.title }}
+      </a>
+    </li>
+  </ul>
+
+  <div *ngIf="selected" [style.width]="selected.width" >
+    <card-single [wid]="selected.component"></card-single>
+  </div>
+</div>

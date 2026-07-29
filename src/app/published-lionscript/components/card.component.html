@@ -1,31 +1,18 @@
-
-<div 
-    *ngFor="let card_item_row of card_items_list"
-    [style.border]="none" [style.margin]="margin" [style.padding-left]="padding_left" [style.padding-top]="padding_top" [style.width]='width'  [style.overflow]='auto'>
-    <div *ngFor="let card_item of card_item_row;"  [style.width]="card_item.width"  [style.padding]="padding" [style.border]="border">
-      <!-- <div class="card align-middle"    [style.height]="card_item.height" [style.padding]="card_padding" [style.margin]="margin" [style.border]="border"  [style.padding-left]="card_item.padding_left" > -->
-          <!-- <div  class="card-body" [style.padding]="padding" [style.border]="border" [style.margin]="margin"> -->
-            <h5 *ngIf="card_item.title" class="card-title">{{ card_item.title }}</h5>
-            <h6
-              *ngIf="card_item?.sub_title"
-              class="card-subtitle mb-2 text-muted"
-            >
-              {{ card_item?.sub_title }}
-            </h6>
-            <!-- <h6 class="card-footer mb-1 text-muted"></h6> -->
-            <!-- <p class="card-text">{{ card_item.body }}</p> -->
-
-            <card-single [wid]="card_item.component"></card-single>
-
-            <a
-              *ngIf="card_item?.button"
-              href="#"
-              (click)="exec(card_item)"
-              class="btn btn-primary"
-            >
-              card_item.button.name
-            </a>
-        <!-- </div> -->
-      <!-- </div> -->
+<div class="card-container" [style.padding]="card_padding">
+  <div *ngFor="let card_item_row of card_items_list" class="card-row" [style.margin]="margin"
+    [style.padding-left]="padding_left" [style.padding-top]="padding_top">
+    <div *ngFor="let card_item of card_item_row" class="card-item" [style.padding]="padding" [style.border]="border">
+      <h5 *ngIf="card_item.title" class="card-title">
+        {{ card_item.title }}
+      </h5>
+      <h6 *ngIf="card_item?.sub_title" class="card-subtitle mb-2 text-muted">
+        {{ card_item.sub_title }}
+      </h6>
+      <card-single class="card-single-host" [wid]="card_item.component">
+      </card-single>
+      <a *ngIf="card_item?.button" href="#" class="btn btn-primary" (click)="exec(card_item); $event.preventDefault()">
+        {{ card_item.button.name }}
+      </a>
     </div>
   </div>
+</div>

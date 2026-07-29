@@ -14,61 +14,61 @@ import { TextEditorComponent } from './texteditor-component';
 @Component({
     selector: 'app-canvas',
     template: `
-    
+        <div
+            [id]="id"
+            class="canvas-shell"
+            #container
+        >
+            <canvas
+                class="canvas-surface"
+                #canvas
+            ></canvas>
 
+            <div
+                *ngIf="editor && mwidth > 0 && mheight > 0"
+                class="editor-container"
+                [style.left.px]="mx"
+                [style.top.px]="my"
+                [style.width.px]="mwidth"
+                [style.height.px]="mheight"
+            >
+                <div
+                    class="drag-handle"
+                    (mousedown)="onMouseDown($event)"
+                >
+                    <span style="flex-grow: 1"></span>
 
+                    <ng-container *ngFor="let button of buttons">
+                        <button
+                            type="button"
+                            (click)="button.action()"
+                            [style.background-color]="button.color"
+                        >
+                            {{ button.label }}
+                        </button>
+                    </ng-container>
+                </div>
 
-<div [fluidHeight] [id]="id" style="min-height: 25px; height: 100%; display: flex; flex-direction: column; width: 100%; padding: 0px; border: NONE;" #container>
-  <canvas [fluidHeight] [width]="width" [height]="height" #canvas></canvas>
-  
-  
-  
-  
-  
-  <div *ngIf="editor"
-    class="editor-container"
-    style="position: absolute; box-shadow: 6px 12px 20px rgba(0, 0, 0, 0.3); border-radius: 8px;"
-    [style.left.px]="mx"
-    [style.top.px]="my"
-    [style.width.px]="mwidth"
-    [style.height.px]="mheight">
-    <div 
-      class="drag-handle"
-      (mousedown)="onMouseDown($event)"
-      style="width: 100%; height: 30px; background-color: #333; color: white; display: flex; align-items: center; cursor: move; padding: 0px 1px;
-         box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.5);">
+                <div
+                    *ngIf="editorKey"
+                    class="editor-content"
+                >
+                    <text-editor
+                        #textEditor
+                        [editorOptions]="editorOptions"
+                    ></text-editor>
+                </div>
 
-      <!-- style="width: 100%; height: 30px; background-color: #333; color: white; display: flex; align-items: center; cursor: move; padding: 0px 5px;"> -->
-      <span style="flex-grow: 1; text-align: center;"></span>
-      <ng-container *ngFor="let button of buttons">
-        <button (click)="button.action()" 
-                [style.background-color]="button.color" 
-                style="color: white; border: none; padding: 2px 8px; font-size: 12px; margin-left: 5px;">
-          {{ button.label }}
-        </button>
-      </ng-container>
-    </div>
-
-    <div *ngIf="editorKey" style="display: flex; flex-direction: column;  width: 100%; height: calc(100% - 30px);">
-      <text-editor #textEditor [editorOptions]="editorOptions" 
-          style="display: flex; flex-direction: column; width: 100%; height: 100%;">
-      </text-editor>
-    </div>
-
-    <!-- Resize handle -->
-    <div class="resize-handle" (mousedown)="onResizeStart($event)" 
-        style="position: absolute; bottom: 0; right: 0; width: 15px; height: 15px; background: gray; cursor: se-resize;">
-    </div>
-</div>
-
-</div>
-
-
-
+                <div
+                    class="resize-handle"
+                    (mousedown)="onResizeStart($event)"
+                ></div>
+            </div>
+        </div>
     `,
     styleUrls: ['./canvas.component.scss']
 })
-//   height: 100vh; width: 100vw; display: block;
+
 export class CanvasComponent implements PubComponent, AfterViewInit, OnDestroy {
 
     data: any;
@@ -111,6 +111,29 @@ export class CanvasComponent implements PubComponent, AfterViewInit, OnDestroy {
         automaticLayout: true
     };
     @ViewChild('textEditor') textEditor: TextEditorComponent; // Reference to text-editor component
+    @ViewChild('canvas', { static: false })
+    public canvas!: ElementRef<HTMLCanvasElement>;
+
+    @ViewChild('container', { static: false })
+    public container!: ElementRef<HTMLElement>;
+
+    @Input() public width = 900;
+    @Input() public height = 300;
+
+    private resizeObserver?: ResizeObserver;
+    private resizeFrame?: number;
+    private cx!: CanvasRenderingContext2D | null;
+
+    private readonly MIN_CANVAS_WIDTH = 1;
+    private readonly MIN_CANVAS_HEIGHT = 25;
+
+
+    private readonly boundResizeMove =
+        (event: MouseEvent) => this.onResizing(event);
+
+    private readonly boundResizeEnd =
+        () => this.onResizeEnd();
+
 
     // Array of button configurations
     buttons = [
@@ -145,10 +168,24 @@ export class CanvasComponent implements PubComponent, AfterViewInit, OnDestroy {
 
     }
 
-
     ngOnDestroy(): void {
-    }
+        this.resizeObserver?.disconnect();
 
+        this.resizeObserver?.disconnect();
+
+        window.removeEventListener(
+            'mousemove',
+            this.boundResizeMove
+        );
+
+        window.removeEventListener(
+            'mouseup',
+            this.boundResizeEnd
+        );
+
+
+
+    }
 
 
     newTable() {
@@ -254,7 +291,6 @@ export class CanvasComponent implements PubComponent, AfterViewInit, OnDestroy {
 
 
     getTextFieldCoordinates(): { x: number, y: number, w: number, h: number } | null {
-
         let x = this.mx;
         let y = this.my;
         let w = this.mwidth;
@@ -279,9 +315,22 @@ export class CanvasComponent implements PubComponent, AfterViewInit, OnDestroy {
         this.resizeStartHeight = this.mheight;
 
         // Add mousemove and mouseup listeners
-        window.addEventListener('mousemove', this.onResizing.bind(this));
-        window.addEventListener('mouseup', this.onResizeEnd.bind(this));
+        window.addEventListener(
+            'mousemove',
+            this.boundResizeMove
+        );
+
+        window.addEventListener(
+            'mouseup',
+            this.boundResizeEnd
+        );
+
+
+
+
     }
+
+
 
     onResizing(event: MouseEvent): void {
         if (!this.isResizing) return;
@@ -297,7 +346,12 @@ export class CanvasComponent implements PubComponent, AfterViewInit, OnDestroy {
         this.isResizing = false;
 
         // Remove event listeners to prevent memory leaks
-        window.removeEventListener('mousemove', this.onResizing.bind(this));
+        window.removeEventListener(
+            'mousemove',
+            this.onResizing.bind(this)
+        );
+
+
         window.removeEventListener('mouseup', this.onResizeEnd.bind(this));
     }
 
@@ -326,10 +380,9 @@ export class CanvasComponent implements PubComponent, AfterViewInit, OnDestroy {
             if (this.data['keydown'])
                 this.keydown = LionEngine.ionfunctions[this.data['keydown']]
             if (this.data['dblclick'])
-                this.dblclick = LionEngine.ionfunctions[this.data['dblclick']]``
+                this.dblclick = LionEngine.ionfunctions[this.data['dblclick']]
             if (this.data['wheelListener'])
                 this.wheelListener = LionEngine.ionfunctions[this.data['wheelListener']]
-
             if (this.data['title']) {
                 this.title = this.data['title']
             }
@@ -347,26 +400,17 @@ export class CanvasComponent implements PubComponent, AfterViewInit, OnDestroy {
             if (this.data['canvasListener']) {
                 this.canvasListener = LionEngine.ionfunctions[this.data['canvasListener']]
             }
-
-
         }
         if (this.resolveFunction) {
             this.resolveFunction(this);
         }
         return '';
     }
-    @ViewChild('canvas') public canvas: ElementRef;
-    @ViewChild('container') public container: ElementRef;
-    @Input() public width = 900;
-    @Input() public height = 1;
 
-    private cx: CanvasRenderingContext2D;
 
     public ngAfterViewInit() {
         // get the context
         this.mwidth = 0;
-
-
         this.mheight = 0;
 
         let c1 = {
@@ -407,6 +451,7 @@ export class CanvasComponent implements PubComponent, AfterViewInit, OnDestroy {
 
         this.editor = c1;
         this.editorOptions = c1.editorOptions;
+        this.cdr.detectChanges();
 
         const containerE = this.container.nativeElement;
         const canvasEl: HTMLCanvasElement = this.canvas.nativeElement;
@@ -419,17 +464,52 @@ export class CanvasComponent implements PubComponent, AfterViewInit, OnDestroy {
             this.canvasListener(this.cx)
         }
         this.captureEvents(canvasEl);
-        containerE.addEventListener('resize', () => {
-            if (containerE.height) {
-                this.width = containerE.width;
-                this.height = containerE.height;
-                // setTimeout(() => {
-                //     this.zone.run(() => {
-                //     })
-                // }, 1000)
+
+        const resizeCanvas = () => {
+            const rect = containerE.getBoundingClientRect();
+
+            const newWidth = Math.max(1, Math.floor(rect.width));
+            const newHeight = Math.max(1, Math.floor(rect.height));
+
+            if (
+                canvasEl.width === newWidth &&
+                canvasEl.height === newHeight
+            ) {
+                return;
             }
+
+            this.width = newWidth;
+            this.height = newHeight;
+
+            canvasEl.width = newWidth;
+            canvasEl.height = newHeight;
+
+            // Resizing a canvas resets its drawing context.
+            this.cx = canvasEl.getContext('2d');
+
+            if (this.cx) {
+                this.cx.lineWidth = 3;
+                this.cx.lineCap = 'round';
+                this.cx.strokeStyle = '#000';
+
+                if (this.canvasListener) {
+                    this.canvasListener(this.cx);
+                }
+            }
+        };
+
+        this.resizeObserver = new ResizeObserver(() => {
+            window.requestAnimationFrame(resizeCanvas);
         });
-        window.dispatchEvent(new Event('resize'));
+
+        this.resizeObserver.observe(containerE);
+
+
+
+        // window.requestAnimationFrame(resizeCanvas); window.dispatchEvent(new Event('resize'));
+
+        window.requestAnimationFrame(resizeCanvas);
+
         if (this.textEditor && this.editor)
             this.textEditor.setEditor(this.editor)
         else if (this.editor) {
@@ -444,10 +524,38 @@ export class CanvasComponent implements PubComponent, AfterViewInit, OnDestroy {
 
     }
 
-    setSize(w, h) {
-        this.width = w;
-        this.height = h;
+
+
+
+
+
+    setSize(w: number, h: number): void {
+        this.width = Math.max(1, Math.floor(w));
+        this.height = Math.max(1, Math.floor(h));
+
+        const canvasElement =
+            this.canvas?.nativeElement as HTMLCanvasElement;
+
+        if (!canvasElement) {
+            return;
+        }
+
+        canvasElement.width = this.width;
+        canvasElement.height = this.height;
+
+        this.cx = canvasElement.getContext('2d');
+
+        if (this.cx) {
+            this.cx.lineWidth = 3;
+            this.cx.lineCap = 'round';
+            this.cx.strokeStyle = '#000';
+        }
     }
+
+
+
+
+
 
     getContainer() {
         return this.container;
@@ -712,7 +820,7 @@ export class CanvasComponent implements PubComponent, AfterViewInit, OnDestroy {
                     this.mouseUpListener(ct.x, ct.y);
             }
         })
-        
+
 
         canvasEl.addEventListener('mousemove', (evt) => {
             if (this.mouseMoveListener && evt && evt.x && evt.y) {

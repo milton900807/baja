@@ -78,6 +78,41 @@ export class LionAppComponent
   renderer: Renderer2;
   private fileCache = new Map<string, Promise<any>>();
   private fileValueCache = new Map<string, any>();
+
+
+
+
+
+
+  /**
+   * Makes a component created in the main dashboard ViewContainerRef fill the
+   * complete dashboard. An ng-template is only an insertion anchor, so sizing
+   * must be applied to the generated component's host element.
+   */
+  private maximizeDashboardComponentHost(componentRef: any): void {
+    if (
+      componentRef == null ||
+      componentRef.location == null ||
+      componentRef.location.nativeElement == null
+    ) {
+      return;
+    }
+
+    const hostElement =
+      componentRef.location.nativeElement as HTMLElement;
+
+    this.renderer.setStyle(hostElement, "display", "flex");
+    this.renderer.setStyle(hostElement, "flex-direction", "column");
+    this.renderer.setStyle(hostElement, "flex", "1 1 0");
+    this.renderer.setStyle(hostElement, "align-self", "stretch");
+    this.renderer.setStyle(hostElement, "width", "100%");
+    this.renderer.setStyle(hostElement, "height", "100%");
+    this.renderer.setStyle(hostElement, "min-width", "0");
+    this.renderer.setStyle(hostElement, "min-height", "0");
+    this.renderer.setStyle(hostElement, "margin", "0");
+    this.renderer.setStyle(hostElement, "padding", "0");
+  }
+
   init(): string {
     return "";
   }
@@ -696,62 +731,244 @@ export class LionAppComponent
 
   setIonisFS() { }
 
-  // this is the new way and more general way for loading a widget
-  loadWidget(wid: {}, resolve) {
+
+
+
+  loadWidget(wid: any, resolve: any) {
     let type = wid["wid"];
-    if (type == null) type = wid["type"];
+
+    if (type == null) {
+      type = wid["type"];
+    }
 
     let line = wid["input"];
-    let title = wid["title"];
-    if (line == undefined || line == null) {
+    const title = wid["title"];
+
+    if (line == null) {
       line = wid["data"];
     }
 
-    if (wid['componentRef'] === 'testing') {
+    if (wid["componentRef"] === "testing") {
       debugger;
-      // alert('testing')
     }
-    let pubcomp = WidgetFactory.createWidget(type);
-    let viewContainerRef = this.compService.viewContainerRef;
-    let componentRef = viewContainerRef.createComponent(pubcomp);
-    if (line != undefined) (<PubComponent>componentRef.instance).data = line;
-    (<PubComponent>componentRef.instance).resolveFunction = resolve;
-    (<PubComponent>componentRef.instance).title = title;
-    (<PubComponent>componentRef.instance).init(this);
-    if (wid["id"] != undefined) {
+
+    const pubcomp = WidgetFactory.createWidget(type);
+    const viewContainerRef =
+      this.compService.viewContainerRef;
+
+    const componentRef =
+      viewContainerRef.createComponent(pubcomp);
+
+    const instance =
+      componentRef.instance as PubComponent;
+
+    const hostElement =
+      componentRef.location.nativeElement as HTMLElement;
+
+    /*
+     * Canvas widgets and widgets with fillParent: true
+     * should occupy the complete dashboard.
+     */
+    const shouldFillParent =
+      wid["fillParent"] === true ||
+      type === "canvas" ||
+      hostElement.tagName.toLowerCase() === "app-canvas";
+
+    /*
+     * Assign the widget data before init().
+     */
+    if (line != null) {
+      instance.data = line;
+    }
+
+    instance.resolveFunction = resolve;
+    instance.title = title;
+
+    /*
+     * Initialize exactly once.
+     */
+    instance.init(this);
+
+    /*
+     * Apply full-parent layout after init() so initialization
+     * cannot overwrite the final size.
+     */
+    if (shouldFillParent) {
+      this.fillWidgetHost(componentRef);
+
+      window.requestAnimationFrame(() => {
+        const parentElement = hostElement.parentElement;
+        const resizableInstance = instance as any;
+
+        if (
+          parentElement &&
+          typeof resizableInstance.setSize === "function"
+        ) {
+          const parentRect =
+            parentElement.getBoundingClientRect();
+
+          resizableInstance.setSize(
+            parentRect.width,
+            parentRect.height
+          );
+        }
+      });
+    }
+
+    /*
+     * Save the widget by its optional ID.
+     */
+    if (wid["id"] != null) {
       if (this.widgets == null) {
         this.widgets = {};
       }
+
       this.widgets[wid["id"]] = {
-        instance: <PubComponent>componentRef.instance,
-        wid: type,
+        instance,
+        wid: type
       };
     }
-    (<PubComponent>componentRef.instance).init(this);
-    if (wid["wid"] === "run" || wid["type"] == "run")
-      (<RunButton>componentRef.instance).parent_engine = this;
 
+    /*
+     * Connect RunButton widgets to the parent engine.
+     */
+    if (
+      wid["wid"] === "run" ||
+      wid["type"] === "run"
+    ) {
+      (instance as RunButton).parent_engine = this;
+    }
+
+    /*
+     * Save an optional external component reference.
+     */
     if (wid["componentRef"] != null) {
-      LionEngine.componentRefs[wid['componentRef']] = {
-        'viewContainerRef': viewContainerRef,
-        'components': [(<PubComponent>componentRef.instance)]
-      }
-      this.zone.run(() => {
-      })
+      LionEngine.componentRefs[wid["componentRef"]] = {
+        viewContainerRef,
+        components: [instance]
+      };
+
+      this.zone.run(() => { });
     }
 
-
-    if (wid['refCallback'] != null) {
-      LionEngine.ionfunctions[wid['refCallback']](<PubComponent>componentRef.instance);
+    /*
+     * Call the optional component callback.
+     */
+    if (wid["refCallback"] != null) {
+      LionEngine.ionfunctions[wid["refCallback"]](
+        instance
+      );
     }
 
-
-
-    return (<PubComponent>componentRef.instance);
+    return instance;
   }
 
+  private fillWidgetHost(componentRef: any): void {
+    const hostElement =
+      componentRef?.location?.nativeElement as HTMLElement;
 
+    if (!hostElement) {
+      return;
+    }
 
+    const parentElement = hostElement.parentElement;
+
+    if (!parentElement) {
+      return;
+    }
+
+    parentElement.style.setProperty(
+      "position",
+      "relative",
+      "important"
+    );
+    parentElement.style.setProperty(
+      "width",
+      "100%",
+      "important"
+    );
+    parentElement.style.setProperty(
+      "height",
+      "100%",
+      "important"
+    );
+    parentElement.style.setProperty(
+      "min-width",
+      "0",
+      "important"
+    );
+    parentElement.style.setProperty(
+      "min-height",
+      "0",
+      "important"
+    );
+    parentElement.style.setProperty(
+      "overflow",
+      "hidden",
+      "important"
+    );
+
+    hostElement.style.setProperty(
+      "position",
+      "absolute",
+      "important"
+    );
+    hostElement.style.setProperty(
+      "inset",
+      "0",
+      "important"
+    );
+    hostElement.style.setProperty(
+      "display",
+      "flex",
+      "important"
+    );
+    hostElement.style.setProperty(
+      "flex-direction",
+      "column",
+      "important"
+    );
+    hostElement.style.setProperty(
+      "box-sizing",
+      "border-box",
+      "important"
+    );
+    hostElement.style.setProperty(
+      "width",
+      "100%",
+      "important"
+    );
+    hostElement.style.setProperty(
+      "height",
+      "100%",
+      "important"
+    );
+    hostElement.style.setProperty(
+      "min-width",
+      "0",
+      "important"
+    );
+    hostElement.style.setProperty(
+      "min-height",
+      "0",
+      "important"
+    );
+    hostElement.style.setProperty(
+      "margin",
+      "0",
+      "important"
+    );
+    hostElement.style.setProperty(
+      "padding",
+      "0",
+      "important"
+    );
+    hostElement.style.setProperty(
+      "overflow",
+      "hidden",
+      "important"
+    );
+  }
   // this is the new way and more general way for loading a widget
   loadFooterWidget(wid: {}, resolve) {
     let type = wid["wid"];
@@ -798,6 +1015,7 @@ export class LionAppComponent
       );
       let viewContainerRef = this.compService.viewContainerRef;
       let componentRef = viewContainerRef.createComponent(componentFactory);
+      this.maximizeDashboardComponentHost(componentRef);
       (<PubComponent>componentRef.instance).data = line;
     } else if (type === "spacer") {
       let componentFactory = this.componentFactoryResolver.resolveComponentFactory(
@@ -805,6 +1023,7 @@ export class LionAppComponent
       );
       let viewContainerRef = this.compService.viewContainerRef;
       let componentRef = viewContainerRef.createComponent(componentFactory);
+      this.maximizeDashboardComponentHost(componentRef);
       (<PubComponent>componentRef.instance).data = line;
     } else if (type == "okpanel") {
       let componentFactory = this.componentFactoryResolver.resolveComponentFactory(
@@ -812,6 +1031,7 @@ export class LionAppComponent
       );
       let viewContainerRef = this.compService.viewContainerRef;
       let componentRef = viewContainerRef.createComponent(componentFactory);
+      this.maximizeDashboardComponentHost(componentRef);
       (<PubComponent>componentRef.instance).data = line;
       (<PubComponent>componentRef.instance).listener = {
         update(value): void {
@@ -1473,14 +1693,6 @@ export class ModalContentComponent implements OnInit {
       this.width = "500px";
       this.height = "300px";
     }
-    // if ((!this.wid['width'])) {
-    //   this.width = this.wid['width'];
-    // }
-    // if (this.wid['height']) {
-    //   this.height = this.wid['height']
-    // }
-
-
     let componentRef = vf.createComponent(pubcomp);
     if (line != undefined) (<PubComponent>componentRef.instance).data = line;
     // (<PubComponent>componentRef.instance).resolveFunction = resolve;

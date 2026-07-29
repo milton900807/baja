@@ -1,6 +1,125 @@
-html, body {
+:host {
+	flex: 1 1 auto;
+	display: flex;
+	flex-direction: column;
+	align-self: stretch;
+	box-sizing: border-box;
+	width: 100%;
+	height: 100%;
+	min-width: 0;
+	min-height: 25px;
 	margin: 0;
 	padding: 0;
-	height: 100%;
+	overflow: hidden;
+}
+
+.card-single-container {
+	flex: 1 1 auto;
+	display: flex;
+	flex-direction: column;
+	align-self: stretch;
+	box-sizing: border-box;
 	width: 100%;
-  }
+	height: 100%;
+	min-width: 0;
+	min-height: 25px;
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+}
+
+/*
+ * Angular inserts the dynamic component beside the ng-template marker.
+ */
+:host ::ng-deep .card-single-container>app-canvas {
+	flex: 1 1 auto !important;
+	display: flex !important;
+	flex-direction: column;
+	align-self: stretch;
+	box-sizing: border-box;
+	width: 100% !important;
+	height: 100% !important;
+	min-width: 0;
+	min-height: 25px;
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+}
+
+
+
+.card-container {
+	flex: 1 1 0;
+	display: flex;
+	flex-direction: column;
+	align-items: stretch;
+	width: 100%;
+	height: 100%;
+	min-width: 0;
+	min-height: 0;
+	overflow: hidden;
+	gap: 2px;
+}
+
+.card-row {
+	flex: 0 0 auto;
+	display: flex;
+	flex-direction: column;
+	align-items: stretch;
+	width: 100%;
+	min-width: 0;
+	min-height: 0;
+}
+
+/* Only the final row gets the unused vertical space */
+.card-row:last-child {
+	flex: 1 1 0;
+	overflow: hidden;
+}
+
+/* Only the final card fills the final row */
+.card-row:last-child>.card-item:last-child {
+	flex: 1 1 0;
+	display: flex;
+	flex-direction: column;
+	align-items: stretch;
+	width: 100%;
+	min-width: 0;
+	min-height: 0;
+	overflow: hidden;
+}
+
+.card-row:last-child>.card-item:last-child>.card-single-host {
+	flex: 1 1 0;
+	display: flex;
+	flex-direction: column;
+	align-self: stretch;
+	width: 100%;
+	min-width: 0;
+	min-height: 0;
+	overflow: hidden;
+}
+
+/* Internal card-single wrapper */
+:host ::ng-deep .card-row:last-child>.card-item:last-child>.card-single-host>.card-single-container {
+	flex: 1 1 0;
+	display: flex;
+	flex-direction: column;
+	width: 100%;
+	min-width: 0;
+	min-height: 0;
+	overflow: hidden;
+}
+
+/* Dynamically inserted app-canvas */
+:host ::ng-deep .card-row:last-child app-canvas {
+	position: relative;
+	flex: 1 1 0 !important;
+	display: flex !important;
+	flex-direction: column;
+	align-self: stretch;
+	width: 100% !important;
+	min-width: 0;
+	min-height: 0;
+	overflow: hidden;
+}

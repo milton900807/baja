@@ -34,7 +34,7 @@ export class CardComponent implements PubComponent, AfterViewInit {
     visible = false;
     padding_top = '0px';
 
-    constructor(private zone: NgZone, private elementRef: ElementRef) {}
+    constructor(private zone: NgZone, private elementRef: ElementRef) { }
 
     clear() {
         this.card_items_list = [];
@@ -63,23 +63,30 @@ export class CardComponent implements PubComponent, AfterViewInit {
         });
     }
 
-    setSize(w: string, h: string) {
+    setSize(w: string, h: string): void {
         this.width = w;
         this.height = h;
-        const element = this.elementRef.nativeElement as HTMLElement;
-        element.style.width = w;
-        element.style.height = h;
-    }
 
+        const host =
+            this.elementRef.nativeElement as HTMLElement;
+
+        host.style.setProperty("display", "flex");
+        host.style.setProperty("flex-direction", "column");
+        host.style.setProperty("width", w);
+        host.style.setProperty("height", h);
+        host.style.setProperty("min-width", "0");
+        host.style.setProperty("min-height", "0");
+        host.style.setProperty("overflow", "hidden");
+    }
     setSizeToWindow() {
         const width = `${window.innerWidth}px`;
         const height = `${window.innerHeight}px`;
         this.setSize(width, height);
-        setTimeout ( () => {
+        setTimeout(() => {
             const width = `${window.innerWidth}px`;
             const height = `${window.innerHeight}px`;
             this.setSize(width, height);
-    
+
         }, 200)
     }
 

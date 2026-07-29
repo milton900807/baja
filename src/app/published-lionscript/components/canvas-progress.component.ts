@@ -50,7 +50,7 @@ export class CanvasProgressComponent implements PubComponent, AfterViewInit {
             }
             if (this.data['progressBar'] != null) {
                 LionEngine.ionfunctions[this.data['progressBar']]((status_) => {
-                    this.progress = status_/100;
+                    this.progress = status_ / 100;
                     this.redraw();
                 })
             }
@@ -71,7 +71,7 @@ export class CanvasProgressComponent implements PubComponent, AfterViewInit {
     @ViewChild('buttoncanvas__') public canvas: ElementRef;
     // setting a width and height for the canvas
     @Input() public width = 500;
-    @Input() public height = 40;
+    @Input() public height = 70;
     icons = [];
     count = 0;
     private cx: CanvasRenderingContext2D;

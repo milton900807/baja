@@ -15,47 +15,63 @@
     integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="https://www.paypal.com/sdk/js?client-id=ASWOfKobkmGvtTAfqwqOm8Sd5stvmuit1Dq6kp8eGE_VTNTpT4251b0YAQeza5GLIuJ1KqL4HZGfKJIP&disable-funding=paylater"></script>
+  <script
+    src="https://www.paypal.com/sdk/js?client-id=ASWOfKobkmGvtTAfqwqOm8Sd5stvmuit1Dq6kp8eGE_VTNTpT4251b0YAQeza5GLIuJ1KqL4HZGfKJIP&disable-funding=paylater"></script>
   <link rel="stylesheet"
     href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
   <script src="https://cdn.jsdelivr.net/npm/tesseract.js@2"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 
-  
-  
   <style>
-    html, body {
+    html,
+    body {
       margin: 0;
-      padding: 0;
       width: 100%;
       height: 100%;
+      background-color: #FDF3DF;
     }
 
     body {
       min-height: 100vh;
-      background-color: #ffffff;
+      min-height: 100dvh;
     }
-app-root {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-}
 
-app-root > img {
-  width: 20%;
-  max-width: 200px; /* optional safety cap */
-  aspect-ratio: 1 / 1;
-  object-fit: contain;
-}
+    app-root {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      background-color: #0501f13d;
+    }
+
+    /* Center only the initial loading GIF */
+    app-root>img {
+      position: absolute;
+      inset: 0;
+      margin: auto;
+      width: min(20vw, 200px);
+      height: auto;
+      aspect-ratio: 1 / 1;
+      object-fit: contain;
+    }
+
+    /* Make the Angular app component fill app-root */
+    app-root> :not(img) {
+      flex: 1 1 auto;
+      width: 100%;
+      height: 100%;
+      min-height: 0;
+    }
   </style>
 </head>
 
 <body>
   <app-redirect hidden height="0px"></app-redirect>
   <app-root>
-    <img src="assets/loading2.gif" alt="Loading...">
+    <img src="assets/socal-loading.gif" alt="Loading...">
   </app-root>
 </body>
 

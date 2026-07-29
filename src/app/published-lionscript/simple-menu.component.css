@@ -2,14 +2,16 @@
 :root {
   --cmd-font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --cmd-font-size: 20px;
-  --cmd-line-height: 1;   /* keep 1 for precise caret alignment */
+  --cmd-line-height: 1;
+  /* keep 1 for precise caret alignment */
   --cmd-letter-spacing: 0;
 }
 
 /* ========= Base / existing styles ========= */
 mat-toolbar {
   background-color: white !important;
-  color: black !important; /* text/icons */
+  color: black !important;
+  /* text/icons */
 }
 
 mat-toolbar.mat-default {
@@ -20,11 +22,28 @@ mat-toolbar.mat-default {
   font-size: var(--cmd-font-size);
 }
 
-.white-toolbar { display: flex; justify-content: space-between; align-items: center; }
-.left-section { display: flex; align-items: center; }
-.toolbar-title { margin-right: 16px; }
-.menu-wrapper button { margin-right: 8px; }
-.icon { font-size: 24px; }
+.white-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.left-section {
+  display: flex;
+  align-items: center;
+}
+
+.toolbar-title {
+  margin-right: 16px;
+}
+
+.menu-wrapper button {
+  margin-right: 8px;
+}
+
+.icon {
+  font-size: 24px;
+}
 
 .menu-wrapper {
   border: 1px solid rgba(0, 87, 163, 1);
@@ -41,9 +60,9 @@ mat-toolbar.mat-default {
   background-color: hsl(0, 0%, 100%);
   border: 0 solid #ccc;
   margin-bottom: 2px;
-  box-shadow: 0 8px 10px -5px rgba(0,0,0,.2),
-              0 4px 5px -2px rgba(0,0,0,.14),
-              0 1px 10px 0 rgba(0,0,0,.12);
+  box-shadow: 0 8px 10px -5px rgba(0, 0, 0, .2),
+    0 4px 5px -2px rgba(0, 0, 0, .14),
+    0 1px 10px 0 rgba(0, 0, 0, .12);
   display: flex;
   align-items: center;
 }
@@ -153,7 +172,8 @@ mat-toolbar.mat-default {
 .bracket-prefix-word {
   font-family: inherit;
   font-weight: inherit;
-  color: #ff00aa; /* or any highlight color */
+  color: #ff00aa;
+  /* or any highlight color */
   /* optional background: rgba(255,0,170,0.12); */
 }
 
@@ -193,7 +213,290 @@ mat-toolbar.mat-default {
   font-variant-ligatures: none;
   font-kerning: none;
 
-  -webkit-text-fill-color: transparent; /* safari/chrome */
+  -webkit-text-fill-color: transparent;
+  /* safari/chrome */
+}
+
+.compact-text-field .mat-input-element::-moz-selection,
+.compact-text-field .mat-mdc-input-element::-moz-selection {
+  background: yellow !important;
+  color: transparent !important;
+}
+
+/* =========================================
+   HIGHLIGHT OVERLAY
+   ========================================= */
+
+.highlight-display {
+  position: absolute;
+
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  z-index: 1;
+
+  pointer-events: none;
+
+  overflow: hidden;
+  white-space: pre;
+
+  padding: 0 8px;
+
+  /* EXACT SAME FONT METRICS */
+  font-family: var(--cmd-font-family);
+  font-size: var(--cmd-font-size);
+  line-height: var(--cmd-line-height);
+  letter-spacing: var(--cmd-letter-spacing);
+
+  font-variant-ligatures: none;
+  font-kerning: none;
+
+  /* vertical alignment */
+  display: flex;
+  align-items: center;
+
+  color: black;
+
+  -webkit-text-size-adjust: 100%;
+}
+
+/* empty placeholder look */
+.highlight-display.is-empty {
+  opacity: 0.5;
+}
+
+/* highlighted tokens */
+.bracket-word,
+.bracket-prefix-word {
+  color: #ff00aa;
+}
+
+/* ========= Base / existing styles ========= */
+mat-toolbar {
+  background-color: white !important;
+  color: black !important;
+  /* text/icons */
+}
+
+mat-toolbar.mat-default {
+  position: relative;
+  height: 48px;
+  min-height: 48px;
+  max-height: 48px;
+  font-size: var(--cmd-font-size);
+  background-color: white;
+  color: black;
+}
+
+.white-toolbar {
+  position: relative;
+  z-index: 10;
+
+  flex: 0 0 48px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  box-sizing: border-box;
+  width: 100%;
+  height: 48px !important;
+  min-height: 48px !important;
+  max-height: 48px !important;
+
+  margin: 0;
+  padding: 0 12px;
+  overflow: visible;
+
+  background-color: white !important;
+  color: black !important;
+}
+
+.left-section {
+  flex: 0 1 auto;
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  height: 100%;
+}
+
+.toolbar-title {
+  flex: 0 0 auto;
+  margin-right: 16px;
+}
+
+.menu-wrapper {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+
+  box-sizing: border-box;
+  height: auto;
+  min-height: 32px;
+
+  margin-right: 20px;
+  padding: 4px 8px;
+
+  overflow: visible;
+  white-space: nowrap;
+
+  border: 1px solid rgba(0, 87, 163, 1);
+  border-radius: 6px;
+}
+
+.menu-wrapper button {
+  flex: 0 0 auto;
+  margin-right: 8px;
+}
+
+
+.icon {
+  font-size: 24px;
+}
+
+.menu-wrapper {
+  border-radius: 6px;
+  padding: 4px 8px;
+  margin-right: 20px;
+  display: flex;
+  align-items: center;
+}
+
+.span-container {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+}
+
+.compact-text-field {
+  flex: 1 1 auto;
+  width: 200px;
+  min-width: 100px;
+  max-width: 100%;
+  height: 100% !important;
+  margin: 0 0 0 auto;
+}
+
+
+.compact-text-field .mat-form-field-wrapper {
+  padding: 0 !important;
+  margin: 0 !important;
+  height: 100% !important;
+  max-height: 100% !important;
+  width: 100%;
+}
+
+.compact-text-field .mat-form-field-flex {
+  height: 100% !important;
+  max-height: 100% !important;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+/* Legacy Mat (harmless if unused) */
+.compact-text-field .mat-form-field-infix {
+  padding: 0 !important;
+  height: 100% !important;
+  max-height: 100% !important;
+  line-height: 100% !important;
+  flex-grow: 1;
+}
+
+/* MDC infix vertical padding for compact density */
+.compact-text-field .mat-mdc-form-field-infix {
+  padding-top: 6px;
+  padding-bottom: 6px;
+  position: relative;
+}
+
+/* Input element metrics (must match overlay) */
+.compact-text-field .mat-input-element,
+.compact-text-field .mat-mdc-input-element {
+  color: transparent !important;
+  caret-color: black !important;
+  background-color: transparent !important;
+}
+
+/* Keep selection usable */
+.compact-text-field .mat-input-element::selection,
+.compact-text-field .mat-mdc-input-element::selection {
+  background: yellow !important;
+  color: transparent !important;
+}
+
+/* Outline sizing */
+.compact-text-field .mat-form-field-outline,
+.compact-text-field .mat-form-field-outline-start,
+.compact-text-field .mat-form-field-outline-end {
+  height: 100% !important;
+  max-height: 100% !important;
+  overflow: hidden;
+  width: 100%;
+}
+
+/* Floating label tweak */
+.compact-text-field .mat-form-field-label {
+  font-size: 10px !important;
+  height: 100% !important;
+  max-height: 100% !important;
+  overflow: hidden;
+}
+
+/* ========= Highlight styling ========= */
+/* Inherit font to keep caret aligned; change only color/background */
+.bracket-word,
+.bracket-prefix-word {
+  font-family: inherit;
+  font-weight: inherit;
+  color: #ff00aa;
+  /* or any highlight color */
+  /* optional background: rgba(255,0,170,0.12); */
+}
+
+/* =========================================
+   INPUT + OVERLAY FIX
+   ========================================= */
+
+/* wrapper */
+.highlight-wrapper {
+  position: relative;
+}
+
+/* REAL INPUT
+   Hide actual glyphs but preserve caret/input behavior
+*/
+.compact-text-field .mat-input-element,
+.compact-text-field .mat-mdc-input-element {
+  position: relative;
+  z-index: 2;
+
+  /* invisible text */
+  color: transparent !important;
+
+  /* visible caret */
+  caret-color: black !important;
+
+  background: transparent !important;
+
+  /* exact font metrics */
+  font-family: var(--cmd-font-family) !important;
+  font-size: var(--cmd-font-size) !important;
+  line-height: var(--cmd-line-height) !important;
+  letter-spacing: var(--cmd-letter-spacing) !important;
+
+  padding: 0 8px !important;
+
+  font-variant-ligatures: none;
+  font-kerning: none;
+
+  -webkit-text-fill-color: transparent;
+  /* safari/chrome */
 }
 
 .compact-text-field .mat-input-element::-moz-selection,

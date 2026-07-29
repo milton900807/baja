@@ -1,11 +1,7 @@
 <div class="app-shell">
-  <mat-toolbar
-    *ngIf="showToolbar"
-    class="custom-toolbar"
-    [color]="fg"
+  <mat-toolbar *ngIf="showToolbar" class="custom-toolbar" [color]="fg"
     [ngStyle]="{ 'background-color': bg, 'position': 'relative', 'z-index': 5 }"
-    style="max-height:36px;font-size:small"
-  >
+    style="max-height:36px;font-size:small">
     <button mat-icon-button [matMenuTriggerFor]="menu">
       <mat-icon>menu</mat-icon>
     </button>
@@ -20,48 +16,27 @@
 
     <span style="flex: 1 1 auto" class="flexExpand"></span>
 
-    <mat-button
-      *ngIf="lg && user != '' && user != 'ljl'"
-      mat-stroked-button
-      type="button"
-      data-bs-toggle="collapse"
-      style="padding-top: 0px; padding-bottom: 1px"
-      (click)="logout()"
-    >
+    <mat-button *ngIf="lg && user != '' && user != 'ljl'" mat-stroked-button type="button" data-bs-toggle="collapse"
+      style="padding-top: 0px; padding-bottom: 1px" (click)="logout()">
       Log out ({{ user }})
     </mat-button>
 
-    <mat-button
-      *ngIf="(!lg) && canSignUp"
-      mat-stroked-button
-      type="button"
-      data-bs-toggle="collapse"
-      style="padding-top: 0px; padding-bottom: 1px"
-      (click)="signUp()"
-    >
+    <mat-button *ngIf="(!lg) && canSignUp" mat-stroked-button type="button" data-bs-toggle="collapse"
+      style="padding-top: 0px; padding-bottom: 1px" (click)="signUp()">
       New Account
       <label>&nbsp;<span> | </span>&nbsp;</label>
     </mat-button>
 
-    <mat-button
-      *ngIf="!lg"
-      mat-stroked-button
-      type="button"
-      data-bs-toggle="collapse"
-      style="padding-top: 0px; padding-bottom: 1px"
-      (click)="login()"
-    >
+    <mat-button *ngIf="!lg" mat-stroked-button type="button" data-bs-toggle="collapse"
+      style="padding-top: 0px; padding-bottom: 1px" (click)="login()">
       Login
     </mat-button>
   </mat-toolbar>
 
   <div class="app-content">
-    <div *ngIf="!showLJW">
+    <div *ngIf="!showLJW" class="route-host">
       <router-outlet></router-outlet>
     </div>
 
-    <div *ngIf="showLJW">
-      <ng-template pub-comp-list></ng-template>
-    </div>
   </div>
 </div>

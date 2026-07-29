@@ -1,4 +1,5 @@
 @import '@angular/material/theming';
+
 @include mat-core();
 
 $app-primary: mat-palette($mat-grey, A200, A100, A400);
@@ -7,14 +8,10 @@ $app-accent: mat-palette($mat-indigo, A200, A100, A400);
 $app-theme: mat-light-theme($app-primary, $app-accent);
 
 @mixin mix-app-theme($app-theme) {
-  // $basic: map-get($app-theme, basic);
-  // $basic: map-get($mat-basic);
   $primary: map-get($app-theme, primary);
   $accent: map-get($app-theme, accent);
 
   .mat-button-toggle {
-    // background-color: mat-color($basic);
-    // color: mat-color($basic, default-contrast);
     background-color: mat-color($primary);
     color: mat-color($primary, default-contrast);
   }
@@ -40,7 +37,7 @@ $app-theme: mat-light-theme($app-primary, $app-accent);
     td.mat-cell,
     td.mat-footer-cell,
     th.mat-header-cell {
-      padding: 0px;
+      padding: 0;
       color: mat-color($primary, default-contrast);
     }
 
@@ -53,36 +50,174 @@ $app-theme: mat-light-theme($app-primary, $app-accent);
 
 @include mix-app-theme($app-theme);
 
+/* Global viewport */
 
 html,
 body {
+  width: 100%;
   height: 100%;
-  margin: 0;
-}
-
-app-root {
-  display: block;
-  min-height: 100vh;
-  width: 100%;
-}
-
-.app-shell {
-  width: 100%;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-
-.app-content {
-  flex: 1 1 auto;
+  min-width: 0;
   min-height: 0;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
 }
-
 
 body {
-  margin: 0;
+  position: relative;
+  box-sizing: border-box;
   font-family: Roboto, "Helvetica Neue", sans-serif;
 }
+
+/* Angular application root */
+
+app-root {
+  position: fixed;
+  inset: 0;
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+  min-width: 0;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+/* Main application shell */
+
+app-root .app-shell {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+/* Toolbar */
+
+app-root .custom-toolbar {
+  position: relative;
+  z-index: 5;
+  flex: 0 0 36px;
+  box-sizing: border-box;
+  width: 100%;
+  height: 36px !important;
+  min-height: 36px !important;
+  max-height: 36px !important;
+  margin: 0;
+}
+
+/* Area beneath the toolbar */
+
+app-root .app-content {
+  position: relative;
+  flex: 1 1 0;
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+/* Router wrapper fills app-content */
+
+app-root .route-host {
+  position: absolute;
+  inset: 0;
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+/*
+ * router-outlet is only an insertion marker.
+ * Angular inserts the routed component immediately after it.
+ */
+
+app-root .route-host>router-outlet+* {
+  position: absolute !important;
+  inset: 0 !important;
+  display: flex !important;
+  flex-direction: column;
+  box-sizing: border-box;
+  width: 100% !important;
+  height: 100% !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden;
+}
+
+/* Ensure the routed dashboard host fills the route area */
+
+app-root .route-host>router-outlet+lion-app,
+app-root .route-host>router-outlet+app-canvas {
+  position: absolute !important;
+  inset: 0 !important;
+  display: flex !important;
+  flex-direction: column;
+  width: 100% !important;
+  height: 100% !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+}
+
+/* Dashboard layout */
+
+lion-app {
+  box-sizing: border-box;
+}
+
+lion-app #___dashboard {
+  position: relative;
+  flex: 1 1 0;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+/* Canvas fills the dashboard */
+
+lion-app #___dashboard>app-canvas {
+  position: absolute !important;
+  inset: 0 !important;
+  display: flex !important;
+  flex-direction: column;
+  box-sizing: border-box;
+  width: 100% !important;
+  height: 100% !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden;
+}
+
+/* Angular Material dialog customization */
 
 .draggable-dialog .mat-mdc-dialog-surface {
   border-radius: 8px;

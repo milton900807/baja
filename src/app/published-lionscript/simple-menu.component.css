@@ -45,6 +45,125 @@ mat-toolbar.mat-default {
   font-size: 24px;
 }
 
+/* Professional navigation toolbar: a subtle grouped container */
+.menu-buttons {
+  display: flex;
+  align-items: center;
+  gap: 1px;
+  margin-right: 16px;
+  padding: 2px 4px;
+  border: 1px solid #d8dee9;
+  border-radius: 8px;
+  background: linear-gradient(#ffffff, #f5f7fa);
+  box-shadow: inset 0 1px 0 #ffffff, 0 1px 1px rgba(16, 24, 40, 0.04);
+}
+
+.menu-buttons button {
+  margin-right: 0;
+}
+
+/* Compact, flat icon buttons */
+.menu-buttons .mat-mdc-icon-button.mat-mdc-button-base,
+.menu-buttons button[mat-icon-button] {
+  width: 28px;
+  height: 28px;
+  padding: 4px;
+  line-height: 28px;
+  border-radius: 6px;
+  color: #475467;
+  --mdc-icon-button-state-layer-size: 28px;
+  --mdc-icon-button-icon-size: 17px;
+  /* Center the button (and its glyph) on the toolbar's text baseline */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+  margin-top: 0;
+  margin-bottom: 0;
+  transition: background-color 0.15s ease, box-shadow 0.15s ease, transform 0.05s ease;
+}
+
+/* Neutralize the default Material grey state layer so our own hover shows cleanly */
+.menu-buttons .mat-mdc-icon-button .mat-mdc-button-persistent-ripple::before {
+  background-color: transparent;
+}
+
+.menu-buttons button:hover {
+  background-color: #eef2f8;
+  box-shadow: inset 0 0 0 1px #dbe3ef;
+}
+
+.menu-buttons button:active {
+  background-color: #e2e8f2;
+  transform: translateY(0.5px);
+}
+
+.menu-buttons button:focus-visible {
+  outline: 2px solid #2f6feb;
+  outline-offset: 1px;
+}
+
+.menu-buttons .mat-mdc-icon-button .mat-mdc-button-touch-target {
+  width: 28px;
+  height: 28px;
+}
+
+.menu-buttons .mat-mdc-icon-button .mat-icon {
+  width: 17px;
+  height: 17px;
+  font-size: 17px;
+  line-height: 17px;
+  margin: 0;
+  display: block;
+}
+
+/* Icon content sits exactly in the middle of the button */
+.menu-buttons .mat-mdc-icon-button .mat-mdc-button-touch-target,
+.menu-buttons .mat-mdc-icon-button .mat-mdc-button-persistent-ripple,
+.menu-buttons .mat-mdc-icon-button .mat-ripple {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* Leading icon inside a text button, and icon alignment generally */
+.menu-btn-icon {
+  vertical-align: middle;
+  margin-right: 6px;
+  font-size: 20px;
+  height: 20px;
+  width: 20px;
+  line-height: 20px;
+}
+
+.menu-btn-label {
+  vertical-align: middle;
+}
+
+/* Image/SVG icons (data URIs or /assets/*.svg) used on menubar buttons */
+.menu-btn-img {
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
+  vertical-align: middle;
+  display: inline-block;
+  /* Render the black source icons as a softer slate grey, and let them
+     sharpen to near-black on hover for a polished, professional feel. */
+  opacity: 0.62;
+  filter: saturate(0);
+  transition: opacity 0.15s ease, filter 0.15s ease;
+}
+
+.menu-buttons button:hover .menu-btn-img,
+.menu-buttons button:active .menu-btn-img {
+  opacity: 0.92;
+}
+
+/* An icon button with no label shouldn't reserve label spacing */
+button[mat-icon-button] .menu-btn-icon {
+  margin-right: 0;
+}
+
 .menu-wrapper {
   border: 1px solid rgba(0, 87, 163, 1);
   border-radius: 6px;
@@ -553,4 +672,223 @@ mat-toolbar.mat-default {
 .bracket-word,
 .bracket-prefix-word {
   color: #ff00aa;
+}
+
+/* ===== Extra-compact menu bar ===== */
+
+mat-toolbar.mat-default,
+.white-toolbar {
+  flex: 0 0 28px !important;
+  box-sizing: border-box;
+  width: 100%;
+  height: 28px !important;
+  min-height: 28px !important;
+  max-height: 28px !important;
+  padding: 0 4px !important;
+  font-size: 11px !important;
+  line-height: 28px !important;
+}
+
+.left-section {
+  height: 28px;
+  min-height: 28px;
+  gap: 2px;
+}
+
+.toolbar-title {
+  margin-right: 5px;
+  font-size: 11px;
+  line-height: 20px;
+  white-space: nowrap;
+}
+
+.menu-wrapper {
+  box-sizing: border-box;
+  height: 22px !important;
+  min-height: 22px !important;
+  margin: 0 5px 0 0 !important;
+  padding: 0 2px !important;
+  gap: 0;
+  border-radius: 3px;
+}
+
+/* Menu buttons */
+.menu-wrapper button,
+.menu-wrapper .mat-button,
+.menu-wrapper .mat-mdc-button {
+  --mdc-text-button-container-height: 20px;
+
+  box-sizing: border-box;
+  width: auto;
+  min-width: 0 !important;
+  height: 20px !important;
+  min-height: 20px !important;
+  margin: 0 !important;
+  padding: 0 4px !important;
+
+  font-size: 10px !important;
+  line-height: 20px !important;
+}
+
+/* Angular Material internal button elements */
+:host ::ng-deep .menu-wrapper .mat-button-wrapper,
+:host ::ng-deep .menu-wrapper .mdc-button__label {
+  padding: 0 !important;
+  font-size: 10px !important;
+  line-height: 20px !important;
+}
+
+/* Remove oversized invisible touch target */
+:host ::ng-deep .menu-wrapper .mat-mdc-button-touch-target {
+  width: 100% !important;
+  height: 20px !important;
+}
+
+/* Menu icons */
+.menu-wrapper mat-icon,
+.menu-wrapper .mat-icon,
+.icon {
+  width: 14px !important;
+  height: 14px !important;
+  font-size: 14px !important;
+  line-height: 14px !important;
+}
+
+/* Right-side command field */
+.span-container {
+  height: 26px !important;
+  max-height: 26px !important;
+}
+
+.compact-text-field {
+  height: 26px !important;
+  max-height: 26px !important;
+  font-size: 12px !important;
+}
+
+:host ::ng-deep .compact-text-field .mat-mdc-text-field-wrapper {
+  height: 26px !important;
+}
+
+:host ::ng-deep .compact-text-field .mat-mdc-form-field-flex {
+  height: 26px !important;
+  align-items: center;
+}
+
+:host ::ng-deep .compact-text-field .mat-mdc-form-field-infix {
+  min-height: 24px !important;
+  padding-top: 2px !important;
+  padding-bottom: 2px !important;
+}
+
+/* Vertical separators between menu items */
+.menu-wrapper>ng-container+ng-container,
+.menu-wrapper>button+button {
+  border-left: 1px solid rgba(0, 87, 163, 0.45);
+}
+
+/*
+ * ng-container does not create a real DOM element, so Angular usually
+ * renders the buttons as direct siblings. This selector handles that.
+ */
+.menu-wrapper>button:not(:first-of-type) {
+  border-left: 1px solid rgba(0, 87, 163, 0.45) !important;
+  border-radius: 0 !important;
+}
+
+/* Small spacing around each separator */
+.menu-wrapper>button {
+  margin: 0 !important;
+  padding: 0 6px !important;
+}
+
+/* MDC Angular Material button separator */
+.menu-wrapper>.mat-mdc-button:not(:first-of-type) {
+  border-left: 1px solid rgba(0, 87, 163, 0.45) !important;
+}
+
+/* ============================================================
+   Professional, unified menubar (final overrides)
+   Neutral grouped containers for both the dropdown menus and the
+   navigation icon toolbar, with soft dividers and subtle hovers.
+   ============================================================ */
+
+.menu-wrapper,
+.menu-buttons {
+  box-sizing: border-box;
+  height: 22px !important;
+  min-height: 22px !important;
+  display: flex;
+  align-items: center;
+  padding: 0 3px !important;
+  gap: 0 !important;
+  border: 1px solid #d4dae3 !important;
+  border-radius: 6px !important;
+  background: linear-gradient(#ffffff, #f3f5f9) !important;
+  box-shadow: inset 0 1px 0 #ffffff !important;
+}
+
+.menu-wrapper { margin: 0 8px 0 0 !important; }
+.menu-buttons { margin: 0 8px 0 0 !important; }
+
+/* Dropdown text buttons: neutral, medium weight, subtle hover */
+.menu-wrapper button,
+.menu-wrapper .mat-mdc-button {
+  color: #384252 !important;
+  font-weight: 500 !important;
+  border-radius: 4px !important;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.menu-wrapper button:hover,
+.menu-wrapper .mat-mdc-button:hover {
+  background-color: #eef2f8 !important;
+  color: #1f2937 !important;
+}
+
+/* Soft neutral dividers between dropdown items (replaces the blue) */
+.menu-wrapper>button:not(:first-of-type),
+.menu-wrapper>.mat-mdc-button:not(:first-of-type),
+.menu-wrapper>ng-container+ng-container {
+  border-left: 1px solid #e3e7ee !important;
+  border-radius: 0 !important;
+}
+
+/* Navigation icon toolbar: sized to match the 22px dropdown row */
+.menu-buttons .mat-mdc-icon-button.mat-mdc-button-base,
+.menu-buttons button[mat-icon-button] {
+  width: 20px !important;
+  height: 20px !important;
+  line-height: 20px !important;
+  padding: 3px !important;
+  border-radius: 4px !important;
+  --mdc-icon-button-state-layer-size: 20px !important;
+  --mdc-icon-button-icon-size: 14px !important;
+}
+
+.menu-buttons .mat-mdc-icon-button .mat-mdc-button-touch-target {
+  width: 20px !important;
+  height: 20px !important;
+}
+
+.menu-buttons .mat-mdc-icon-button .mat-icon {
+  width: 14px !important;
+  height: 14px !important;
+  font-size: 14px !important;
+  line-height: 14px !important;
+}
+
+.menu-btn-img {
+  width: 14px !important;
+  height: 14px !important;
+}
+
+/* Group separators inside the navigation toolbar (pan | zoom | bookmark | tools) */
+.menu-buttons .menu-btn-sep {
+  flex: 0 0 auto;
+  width: 1px;
+  height: 14px;
+  margin: 0 4px;
+  background: #d4dae3;
+  display: inline-block;
 }

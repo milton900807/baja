@@ -15,15 +15,57 @@
         <!-- Dropdown menu -->
         <ng-container *ngIf="item?.items?.length > 0">
           <app-menu-item #menu [items]="item.items"></app-menu-item>
-          <button mat-button *ngIf="menu?.childMenu" [matMenuTriggerFor]="menu.childMenu">
-            {{ item.label }}
+          <button mat-button *ngIf="menu?.childMenu" [matMenuTriggerFor]="menu.childMenu"
+            [attr.title]="item.tooltip || item.label || ''">
+            <ng-container *ngIf="item.icon">
+              <img *ngIf="isImageIcon(item.icon)" [src]="item.icon" class="menu-btn-img" alt="" />
+              <mat-icon *ngIf="!isImageIcon(item.icon)" class="menu-btn-icon">{{ item.icon }}</mat-icon>
+            </ng-container>
+            <span *ngIf="item.label">{{ item.label }}</span>
           </button>
         </ng-container>
 
         <!-- Leaf node -->
         <ng-container *ngIf="!item.items || item.items.length === 0">
-          <button mat-button color="menu_button_color">{{ item.label }}</button>
+          <!-- Icon-only button -->
+          <button *ngIf="item.icon && !item.label" mat-icon-button (click)="click(item)"
+            (mouseenter)="hover(item)" [ngStyle]="{ 'color': item.color || menu_button_color }"
+            [attr.title]="item.tooltip || item.hint || ''">
+            <img *ngIf="isImageIcon(item.icon)" [src]="item.icon" class="menu-btn-img" alt="" />
+            <mat-icon *ngIf="!isImageIcon(item.icon)">{{ item.icon }}</mat-icon>
+          </button>
+          <!-- Text button (optional leading icon) -->
+          <button *ngIf="item.label" mat-button (click)="click(item)"
+            (mouseenter)="hover(item)" [ngStyle]="{ 'color': item.color || menu_button_color }"
+            [attr.title]="item.tooltip || item.hint || ''">
+            <ng-container *ngIf="item.icon">
+              <img *ngIf="isImageIcon(item.icon)" [src]="item.icon" class="menu-btn-img" alt="" />
+              <mat-icon *ngIf="!isImageIcon(item.icon)" class="menu-btn-icon">{{ item.icon }}</mat-icon>
+            </ng-container>
+            <span class="menu-btn-label">{{ item.label }}</span>
+          </button>
         </ng-container>
+      </ng-container>
+    </div>
+
+    <!-- Icon / text buttons -->
+    <div class="menu-buttons" *ngIf="buttons?.length > 0">
+      <ng-container *ngFor="let btn of buttons">
+        <!-- Group separator -->
+        <span *ngIf="btn.separator || btn.type === 'separator'" class="menu-btn-sep" aria-hidden="true"></span>
+        <!-- Icon button (image or material ligature); label becomes the tooltip -->
+        <button *ngIf="btn.icon" mat-icon-button (click)="click(btn)" (mouseenter)="hover(btn)"
+          [ngStyle]="{ 'color': btn.color || menu_button_color }"
+          [attr.title]="btn.tooltip || btn.label || btn.hint || ''">
+          <img *ngIf="isImageIcon(btn.icon)" [src]="btn.icon" class="menu-btn-img" alt="" />
+          <mat-icon *ngIf="!isImageIcon(btn.icon)">{{ btn.icon }}</mat-icon>
+        </button>
+        <!-- Text-only button -->
+        <button *ngIf="!btn.icon && btn.label" mat-button (click)="click(btn)" (mouseenter)="hover(btn)"
+          [ngStyle]="{ 'color': btn.color || menu_button_color }"
+          [attr.title]="btn.tooltip || btn.hint || ''">
+          <span class="menu-btn-label">{{ btn.label }}</span>
+        </button>
       </ng-container>
     </div>
   </div>

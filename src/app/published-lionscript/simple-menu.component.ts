@@ -419,6 +419,9 @@ export class SimpleMenuComponent
         // init from inbound data
         if (this.data != null) {
             this.menus = this.data["menus"];
+            // Optional icon/label buttons rendered in the menubar. Each entry may be
+            // { icon?, label?, tooltip?, color?, ionFunction | ionfunction }.
+            if (this.data["buttons"]) this.buttons = this.data["buttons"];
             if (this.data["title"]) this.title = this.data["title"];
             if (this.data["style"]) {
                 this.container = this.data["style"];
@@ -462,6 +465,26 @@ export class SimpleMenuComponent
             const func = item["ionFunction"];
             if (func != null) LionEngine.ionfunctions[func]();
         }
+    }
+
+    /** Fires an item's optional mouseOver ion-function (e.g. status messages). */
+    hover(item: any): void {
+        const func = item?.["mouseOver"] ?? item?.["mouseover"];
+        if (func != null && LionEngine.ionfunctions[func]) LionEngine.ionfunctions[func]();
+    }
+
+    /**
+     * An `icon` may be either a Material Icons ligature name (e.g. "save") or an
+     * image source (data URI, url, or path such as "/assets/…/left.svg"). Image
+     * sources render as <img>, ligatures as <mat-icon>.
+     */
+    isImageIcon(icon: any): boolean {
+        return (
+            typeof icon === "string" &&
+            (/^(data:|https?:|\.?\/)/.test(icon) ||
+                icon.startsWith("assets/") ||
+                /\.(svg|png|jpe?g|gif|webp)(\?.*)?$/i.test(icon))
+        );
     }
 
     // ---------- Keyboard handling ----------

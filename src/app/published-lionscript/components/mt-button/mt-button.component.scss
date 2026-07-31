@@ -1,13 +1,14 @@
 /* ---- Scope + sensible defaults ---- */
 :host {
   display: block;
+  min-height: 200px;
 }
 
 /* Adds an outer "buffer height" and breathing room around the whole section */
 .buffer-height {
   margin: 4px 0;           /* outer spacing */
   padding: 4px;            /* inner spacing */
-  min-height: 100px;        /* visible buffer height */
+  min-height: 200px;        /* visible buffer height */
 }
 
 /* Section Styling (beautified) */

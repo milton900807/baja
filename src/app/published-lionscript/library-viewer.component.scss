@@ -44,7 +44,7 @@
   padding: 1rem;
   border: 1px solid #ddd;
   border-radius: 12px;
-  background: #fff;
+  background: var(--panel-bg, #fff);
   cursor: pointer;
   transition: transform 120ms ease, box-shadow 120ms ease;
 

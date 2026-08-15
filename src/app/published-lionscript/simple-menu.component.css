@@ -1,7 +1,7 @@
 /* ===== Canonical font metrics (tweak here if needed) ===== */
 :root {
   --cmd-font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --cmd-font-size: 20px;
+  --cmd-font-size: 11px;
   --cmd-line-height: 1;
   /* keep 1 for precise caret alignment */
   --cmd-letter-spacing: 0;
@@ -9,14 +9,14 @@
 
 /* ========= Base / existing styles ========= */
 mat-toolbar {
-  background-color: white !important;
-  color: black !important;
+  background-color: var(--toolbar-bg, #ffffff) !important;
+  color: var(--toolbar-fg, #011c3c) !important;
   /* text/icons */
 }
 
 mat-toolbar.mat-default {
-  background: white;
-  color: #ffffff;
+  background: var(--toolbar-bg, #ffffff);
+  color: var(--app-fg, #011c3c);
   position: relative;
   height: 30px;
   font-size: var(--cmd-font-size);
@@ -52,10 +52,10 @@ mat-toolbar.mat-default {
   gap: 1px;
   margin-right: 16px;
   padding: 2px 4px;
-  border: 1px solid #d8dee9;
+  border: 1px solid var(--btn-group-border, #d7dee7);
   border-radius: 8px;
-  background: linear-gradient(#ffffff, #f5f7fa);
-  box-shadow: inset 0 1px 0 #ffffff, 0 1px 1px rgba(16, 24, 40, 0.04);
+  background: var(--btn-group-bg, #f2f4f7);
+  box-shadow: 0 1px 1px rgba(16, 24, 40, 0.04);
 }
 
 .menu-buttons button {
@@ -70,7 +70,7 @@ mat-toolbar.mat-default {
   padding: 4px;
   line-height: 28px;
   border-radius: 6px;
-  color: #475467;
+  color: var(--app-fg, #011c3c);
   --mdc-icon-button-state-layer-size: 28px;
   --mdc-icon-button-icon-size: 17px;
   /* Center the button (and its glyph) on the toolbar's text baseline */
@@ -176,7 +176,7 @@ button[mat-icon-button] .menu-btn-icon {
 .sub-container {
   width: 100%;
   padding: 0 20px;
-  background-color: hsl(0, 0%, 100%);
+  background-color: var(--panel-bg, #ffffff);
   border: 0 solid #ccc;
   margin-bottom: 2px;
   box-shadow: 0 8px 10px -5px rgba(0, 0, 0, .2),
@@ -207,7 +207,7 @@ button[mat-icon-button] .menu-btn-icon {
   vertical-align: middle;
   margin: 0;
   padding: 0;
-  width: 200px;
+  width: 150px;
   margin-left: auto;
 
   /* Input & overlay inherit these metrics */
@@ -376,7 +376,7 @@ button[mat-icon-button] .menu-btn-icon {
   display: flex;
   align-items: center;
 
-  color: black;
+  color: var(--app-fg, black);
 
   -webkit-text-size-adjust: 100%;
 }
@@ -394,8 +394,8 @@ button[mat-icon-button] .menu-btn-icon {
 
 /* ========= Base / existing styles ========= */
 mat-toolbar {
-  background-color: white !important;
-  color: black !important;
+  background-color: var(--panel-bg, white) !important;
+  color: var(--app-fg, black) !important;
   /* text/icons */
 }
 
@@ -405,8 +405,8 @@ mat-toolbar.mat-default {
   min-height: 48px;
   max-height: 48px;
   font-size: var(--cmd-font-size);
-  background-color: white;
-  color: black;
+  background-color: var(--panel-bg, white);
+  color: var(--app-fg, black);
 }
 
 .white-toolbar {
@@ -428,8 +428,8 @@ mat-toolbar.mat-default {
   padding: 0 12px;
   overflow: visible;
 
-  background-color: white !important;
-  color: black !important;
+  background-color: var(--panel-bg, white) !important;
+  color: var(--app-fg, black) !important;
 }
 
 .left-section {
@@ -658,7 +658,7 @@ mat-toolbar.mat-default {
   display: flex;
   align-items: center;
 
-  color: black;
+  color: var(--app-fg, black);
 
   -webkit-text-size-adjust: 100%;
 }
@@ -761,9 +761,9 @@ mat-toolbar.mat-default,
 }
 
 .compact-text-field {
-  height: 26px !important;
-  max-height: 26px !important;
-  font-size: 12px !important;
+  height: 22px !important;
+  max-height: 22px !important;
+  font-size: 11px !important;
 }
 
 :host ::ng-deep .compact-text-field .mat-mdc-text-field-wrapper {
@@ -822,10 +822,10 @@ mat-toolbar.mat-default,
   align-items: center;
   padding: 0 3px !important;
   gap: 0 !important;
-  border: 1px solid #d4dae3 !important;
+  border: 1px solid var(--btn-group-border, #d7dee7) !important;
   border-radius: 6px !important;
-  background: linear-gradient(#ffffff, #f3f5f9) !important;
-  box-shadow: inset 0 1px 0 #ffffff !important;
+  background: var(--btn-group-bg, #f2f4f7) !important;
+  box-shadow: none !important;
 }
 
 .menu-wrapper { margin: 0 8px 0 0 !important; }
@@ -834,7 +834,7 @@ mat-toolbar.mat-default,
 /* Dropdown text buttons: neutral, medium weight, subtle hover */
 .menu-wrapper button,
 .menu-wrapper .mat-mdc-button {
-  color: #384252 !important;
+  color: var(--toolbar-fg, #011c3c) !important;
   font-weight: 500 !important;
   border-radius: 4px !important;
   transition: background-color 0.15s ease, color 0.15s ease;
@@ -843,7 +843,7 @@ mat-toolbar.mat-default,
 .menu-wrapper button:hover,
 .menu-wrapper .mat-mdc-button:hover {
   background-color: #eef2f8 !important;
-  color: #1f2937 !important;
+  color: var(--toolbar-fg, #011c3c) !important;
 }
 
 /* Soft neutral dividers between dropdown items (replaces the blue) */
@@ -891,4 +891,66 @@ mat-toolbar.mat-default,
   margin: 0 4px;
   background: #d4dae3;
   display: inline-block;
+}
+/* ============================================================
+   Compact command input so the toolbar text field fits the
+   36px toolbar (targets the Angular 17 MDC form-field classes).
+   ============================================================ */
+.span-container {
+  height: 24px !important;
+  max-height: 24px !important;
+  display: flex;
+  align-items: center;
+}
+
+/* The MDC wrapper is where most of the default height comes from */
+.compact-text-field .mat-mdc-text-field-wrapper {
+  height: 22px !important;
+  padding: 0 6px !important;
+  background: transparent;
+}
+
+.compact-text-field .mat-mdc-form-field-flex {
+  height: 22px !important;
+  align-items: center;
+}
+
+.compact-text-field .mat-mdc-form-field-infix {
+  min-height: 0 !important;
+  padding-top: 1px !important;
+  padding-bottom: 1px !important;
+  line-height: 18px;
+}
+
+/* Remove the hint/error area below the field — biggest height saver */
+.compact-text-field .mat-mdc-form-field-subscript-wrapper {
+  display: none !important;
+}
+
+/* Keep the outline crisp and thin */
+.compact-text-field .mdc-notched-outline__leading,
+.compact-text-field .mdc-notched-outline__notch,
+.compact-text-field .mdc-notched-outline__trailing {
+  border-width: 1px !important;
+}
+
+/* Input + the highlight overlay share the same compact height */
+.compact-text-field input.mat-mdc-input-element {
+  height: 18px !important;
+  line-height: 18px !important;
+}
+
+.compact-text-field .highlight-display {
+  height: 18px;
+  line-height: 18px;
+  display: flex;
+  align-items: center;
+}
+
+/* Compact the inline Save (thumb) suffix button */
+.compact-text-field .mat-mdc-form-field-icon-suffix .mat-mdc-icon-button {
+  width: 20px;
+  height: 20px;
+  padding: 1px;
+  line-height: 18px;
 }

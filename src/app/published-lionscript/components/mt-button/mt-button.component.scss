@@ -4,92 +4,72 @@
   min-height: 200px;
 }
 
-/* Adds an outer "buffer height" and breathing room around the whole section */
+/* Outer breathing room around the whole section */
 .buffer-height {
-  margin: 4px 0;           /* outer spacing */
-  padding: 4px;            /* inner spacing */
-  min-height: 200px;        /* visible buffer height */
+  margin: 4px 0;
+  padding: 8px 4px;
+  min-height: 200px;
 }
 
-/* Section Styling (beautified) */
+/* Section: clean, transparent */
 .button-section {
-  background: linear-gradient(to right, #ffffff, #6d6d6d);
-  // border: 1px solid #ddd;
-  border-radius: 12px;
-  // box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+  background: transparent;
+  border-radius: 10px;
 }
 
-/* Optional: space between consecutive sections (if multiple rendered) */
 .button-section + .button-section {
-  margin-top: 25px;
+  margin-top: 16px;
 }
 
-/* ---- Container Styling ---- */
+/* ---- Container ---- */
 .button-container {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   align-items: center;
-  gap: 5px; /* consistent spacing between buttons */
+  gap: 10px;
 }
 
-/* Preserve your toggle-container ID semantics when styled mode is on */
 #toggle-container {
-  flex-direction: column; /* stacked by default in styled mode */
-  gap: 20px;
+  flex-direction: column;
+  gap: 12px;
 }
 
 /* ===========================================
-   BEAUTIFIED BUTTONS
-   - Gradient with subtle 3D, hover lift, sheen
-   - Clear focus ring, crisp disabled state
+   Matte buttons — flat surface, no gloss/gradient.
+   Colours come from the active theme (--metal-* tokens,
+   flattened in styles.scss). Shared across all app buttons.
    =========================================== */
 
 .btn {
-  /* Design tokens via CSS variables */
-  --btn-bg-top:   #0a66c2;     /* top gradient color */
-  --btn-bg-bot:   #004b99;     /* bottom gradient color */
-  --btn-border:   #0b4f8a;
-  --btn-text:     #ffffff;
-  --btn-shadow:   rgba(0, 0, 0, 0.18);
-  --btn-shadow-2: rgba(0, 0, 0, 0.10);
-  --btn-gloss:    rgba(255, 255, 255, 0.18);
-  --btn-sheen:    rgba(255, 255, 255, 0.35);
-  --btn-focus:    rgba(0, 123, 255, 0.45);
+  --btn-focus: var(--accent, #2f6feb);
 
   position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
 
-  min-width: 120px;
-  padding: 10px 10px;
-  margin-top: 15px;
+  min-width: 92px;
+  padding: 8px 16px;
+  margin-top: 8px;
 
-  font-size: 0.98rem;
+  font-size: 0.875rem;
   font-weight: 600;
   letter-spacing: 0.2px;
-  line-height: 1;
-  color: var(--btn-text);
+  line-height: 1.1;
+  color: var(--metal-text);
 
-  background-image:
-    linear-gradient(to bottom, var(--btn-bg-top), var(--btn-bg-bot));
-  border: 1px solid var(--btn-border);
-  border-radius: 10px;
-
-  box-shadow:
-    0 8px 16px var(--btn-shadow),
-    0 3px 6px var(--btn-shadow-2),
-    inset 0 1px 0 var(--btn-gloss);
+  /* Flat matte surface */
+  background: var(--metal-top);
+  border: 1px solid var(--metal-border);
+  border-radius: 6px;
+  box-shadow: var(--btn-shadow, 0 1px 2px rgba(16, 24, 40, 0.10));
 
   cursor: pointer;
   transition:
-    transform 120ms ease,
-    box-shadow 160ms ease,
-    filter 160ms ease;
-
-  /* Sheen sweep */
-  overflow: hidden;
+    box-shadow 0.12s ease,
+    transform 0.05s ease,
+    background-color 0.12s ease;
 }
 
 .btn .btn__label {
@@ -97,49 +77,23 @@
   z-index: 2;
 }
 
-/* Hover lift + sheen */
+/* Hover: subtle matte tint overlay (works on light & dark) */
 .btn:hover {
-  transform: translateY(-1px);
   box-shadow:
-    0 10px 18px var(--btn-shadow),
-    0 4px 8px var(--btn-shadow-2),
-    inset 0 1px 0 var(--btn-gloss);
+    inset 0 0 0 999px var(--btn-hover-overlay, rgba(0, 0, 0, 0.045)),
+    var(--btn-shadow, 0 1px 2px rgba(16, 24, 40, 0.10));
 }
 
-.btn::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    115deg,
-    transparent 0%,
-    transparent 45%,
-    var(--btn-sheen) 50%,
-    transparent 55%,
-    transparent 100%
-  );
-  transform: translateX(-120%);
-  transition: transform 500ms ease;
-  z-index: 1;
-  pointer-events: none;
-}
-
-.btn:hover::before {
-  transform: translateX(120%);
-}
-
-/* Active press */
+/* Active: deeper matte tint + slight press, no gradient */
 .btn:active {
-  transform: translateY(0); /* settle slightly on click */
-  filter: brightness(0.98);
+  transform: translateY(0.5px);
   box-shadow:
-    0 6px 12px var(--btn-shadow),
-    inset 0 1px 0 var(--btn-gloss);
+    inset 0 0 0 999px var(--btn-active-overlay, rgba(0, 0, 0, 0.09));
 }
 
 /* Focus ring */
 .btn:focus-visible {
-  outline: 3px solid var(--btn-focus);
+  outline: 2px solid var(--btn-focus);
   outline-offset: 2px;
 }
 
@@ -147,38 +101,29 @@
 .btn:disabled,
 .btn[aria-disabled="true"] {
   cursor: not-allowed;
-  opacity: 0.6;
+  opacity: 0.55;
   transform: none;
   box-shadow: none;
-  filter: grayscale(10%);
 }
 
-/* ---- Color variants ---- */
-/* Primary (blue) – used when useStyledButtons is false */
+/* ---- Color variants (flat matte) ---- */
+/* Primary: inherits the active theme's matte tokens (no override). */
 .btn--primary {
-  --btn-bg-top: #0a66c2;
-  --btn-bg-bot: #004b99;
-  --btn-border: #0b4f8a;
-  --btn-focus: rgba(10, 102, 194, 0.45);
+  /* uses --metal-* from the theme */
 }
 
-/* Success (green) – used when useStyledButtons is true */
+/* Success: same aqua/beach look as every other button (no override). */
 .btn--success {
-  --btn-bg-top: #4ecb71;
-  --btn-bg-bot: #2e9e52;
-  --btn-border: #2b8d4a;
-  --btn-focus: rgba(76, 175, 80, 0.45);
+  /* uses --metal-* from the theme */
 }
 
 /* ---- Reduce motion respect ---- */
 @media (prefers-reduced-motion: reduce) {
-  .btn,
-  .btn::before {
+  .btn {
     transition: none;
   }
 }
 
-/* ---- Keep your general section rule if used elsewhere ---- */
 section + section {
-  margin-top: 25px;
+  margin-top: 16px;
 }

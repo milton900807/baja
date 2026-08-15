@@ -8,46 +8,43 @@
     gap: 20px;
   }
   
-  #toggle-container button {
-    margin-top: 10px;
-    padding: 6px;
-    font-size: small;
-    border-radius: 5px;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
-  
-  #toggle-container button:hover {
-    background-color: #45a049;
-  }
-  
+  /* Matte buttons — shared look driven by the theme --metal-* tokens */
+  #toggle-container button,
   button {
-    margin-top: 5px;
-    padding: 4px;
+    margin-top: 8px;
+    padding: 8px 16px;
     font-size: small;
-    border-radius: 3px;
-    border: 1px solid #ddd;
-    background-color: rgb(0, 87, 163);
-    color: white;
+    font-weight: 600;
+    border-radius: 6px;
+    color: var(--metal-text, #2a2f3a);
+    background: var(--metal-top, #e9edf2);
+    border: 1px solid var(--metal-border, #ccd3dc);
+    box-shadow: var(--btn-shadow, 0 1px 2px rgba(16, 24, 40, 0.10));
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: box-shadow 0.12s ease, transform 0.05s ease, background-color 0.12s ease;
   }
-  
+
+  #toggle-container button:hover,
   button:hover {
-    background-color: rgb(0, 87, 163);
+    box-shadow:
+      inset 0 0 0 999px var(--btn-hover-overlay, rgba(0, 0, 0, 0.045)),
+      var(--btn-shadow, 0 1px 2px rgba(16, 24, 40, 0.10));
   }
-  
+
+  #toggle-container button:active,
+  button:active {
+    transform: translateY(0.5px);
+    box-shadow: inset 0 0 0 999px var(--btn-active-overlay, rgba(0, 0, 0, 0.09));
+  }
+
   section {
     display: block;
     margin: 15px;
     padding: 20px;
-    background: linear-gradient(to right, #000000, #ffffff);
+    background: var(--panel-bg, #ffffff);
     border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    border: 1px solid #ddd;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    border: 1px solid var(--border, #ddd);
   }
   
   section + section {

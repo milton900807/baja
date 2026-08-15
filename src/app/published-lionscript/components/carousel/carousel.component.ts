@@ -92,4 +92,19 @@ export class CarouselComponent implements OnInit, PubComponent {
     }, 300);
   }
 
+  goTo(index: number) {
+    if (index === this.currentIndex) {
+      return;
+    }
+    this.fade = false;
+    setTimeout(() => {
+      this.currentIndex = (index + this.images.length) % this.images.length;
+      this.fade = true;
+    }, 300);
+  }
+
+  get hasMultiple(): boolean {
+    return this.images.length > 1;
+  }
+
 }

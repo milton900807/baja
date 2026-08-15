@@ -1,0 +1,41 @@
+@use "@material/card";
+
+@include card.core-styles;
+
+:host {
+  display: block;
+  height: 100%;
+  min-height: 0;
+  overflow: auto;
+}
+
+/* Height chain so the inner file grid can scroll instead of overflowing */
+:host > .fb-host {
+  height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+:host .fb-card {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+}
+
+/* MDC card content wrapper must also pass the height through */
+:host .fb-card .mat-mdc-card-content,
+:host fileg-manager {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+:host .mat-icon {
+  margin: 0;
+  font-size: 17px;
+  width: 100px;
+}

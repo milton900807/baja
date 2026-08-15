@@ -28,13 +28,12 @@
         width = "100%";
         height = "100%";
         colors = ['#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FF00FF', '#00FFFF', '#800080', '#FFA500', '#008000', '#800000'];
-        selectedColor;
+        selectedColor: any = null;
         selectionListener = null;
 
 
 
         selectColor(color: any) {
-            debugger;
             this.selectedColor = color;
             if (this.selectionListener) {
                 this.selectionListener(color)
@@ -60,10 +59,8 @@
         }
 
         handleChange($event: ColorEvent) {
-            debugger;
-
             if (typeof $event === 'string'){
-                
+
             }
 
             this.selectedColor = $event;

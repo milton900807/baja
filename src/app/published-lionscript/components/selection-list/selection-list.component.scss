@@ -1,32 +1,79 @@
-/* Increase card content padding a bit */
+/* ===========================================
+   Matte selection list — flat frame, options and
+   submit button matching the shared matte buttons.
+   =========================================== */
+
+/* Flat card frame */
+:host ::ng-deep .selection-card.mat-mdc-card,
+.selection-card {
+  background: var(--panel-bg, #ffffff) !important;
+  border: 1px solid var(--border, #c8ced6);
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(16, 24, 40, 0.10);
+}
+
+/* The list area is capped and scrolls when it runs off the page,
+   keeping the title and the submit button visible. */
 .selection-card :where(.mat-mdc-card-content) {
-  padding: 24px; /* was 16px by default */
+  padding: 8px 12px;
+  max-height: 60vh;
+  overflow-y: auto;
 }
 
-/* Space between each option (external) */
+/* Flat matte list options — a subtle surface so the per-item tint from
+   getOptionBackground still shows through. */
 .selection-option {
-  margin: 10px 0;        /* vertical gap between items */
-  border-radius: 14px;    /* keep the nice pill look */
+  margin: 3px 0;
+  border-radius: 7px;
+  border: 1px solid var(--border, #d4dae3);
+  color: var(--metal-text, #2a2f3a);
+  background: var(--metal-top, #e9edf2);
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.08);
+  transition: box-shadow 0.12s ease, background-color 0.12s ease;
 }
 
-/* Smaller subtext and a bit more separation from the title */
+.selection-option:hover {
+  box-shadow:
+    inset 0 0 0 999px var(--btn-hover-overlay, rgba(0, 0, 0, 0.045)),
+    0 1px 2px rgba(16, 24, 40, 0.10);
+}
+
+/* Selected = flat accent-tinted surface with a soft accent edge */
+:host ::ng-deep .selection-option.mdc-list-item--selected {
+  border-color: var(--accent, #2f6feb);
+  background: color-mix(in srgb, var(--accent, #2f6feb) 16%, var(--metal-top, #e9edf2)) !important;
+  box-shadow: none;
+}
+
+/* Titles / descriptions */
 .item-title {
   font-weight: 600;
-  font-size: 0.95rem;
-  line-height: 1.25rem;
-  margin-bottom: 4px;
-}
-.item-desc {
   font-size: 0.82rem;
-  line-height: 1.1rem;
+  line-height: 1.05rem;
+  margin-bottom: 1px;
+}
+
+.item-desc {
+  font-size: 0.72rem;
+  line-height: 0.95rem;
   opacity: 0.85;
 }
 
-/* Increase inner clickable padding for MDC list items */
+/* Inner clickable padding for MDC list items — compact */
 :host ::ng-deep .selection-option .mdc-list-item {
-  padding: 14px 18px;     /* inner padding */
-  min-height: auto;       /* let content size naturally */
+  padding: 5px 10px !important;
+  min-height: auto !important;
   align-items: flex-start;
+  background: transparent;
+}
+
+/* Trim the fixed height MDC gives single/two-line list items */
+:host ::ng-deep .selection-option .mdc-list-item__content,
+:host ::ng-deep .selection-option .mat-mdc-list-item-unscoped-content {
+  padding: 0 !important;
+}
+:host ::ng-deep .selection-option.mat-mdc-list-item {
+  height: auto !important;
 }
 
 /* Ensure wrapping never clips */
@@ -34,4 +81,40 @@
 :host ::ng-deep .mdc-list-item__secondary-text {
   white-space: normal;
   word-break: break-word;
+}
+
+/* Matte submit button (matches mt-button and the shared button style) */
+:host ::ng-deep .mat-mdc-card-actions button,
+:host ::ng-deep button[mat-raised-button] {
+  color: var(--metal-text, #2a2f3a) !important;
+  border: 1px solid var(--metal-border, #ccd3dc) !important;
+  border-radius: 6px !important;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  background: var(--metal-top, #e9edf2) !important;
+  box-shadow: var(--btn-shadow, 0 1px 2px rgba(16, 24, 40, 0.10)) !important;
+  transition: box-shadow 0.12s ease, transform 0.05s ease, background-color 0.12s ease;
+}
+
+:host ::ng-deep .mat-mdc-card-actions button:hover,
+:host ::ng-deep button[mat-raised-button]:hover {
+  box-shadow:
+    inset 0 0 0 999px var(--btn-hover-overlay, rgba(0, 0, 0, 0.045)),
+    var(--btn-shadow, 0 1px 2px rgba(16, 24, 40, 0.10)) !important;
+}
+
+:host ::ng-deep .mat-mdc-card-actions button:active,
+:host ::ng-deep button[mat-raised-button]:active {
+  transform: translateY(0.5px);
+  box-shadow:
+    inset 0 0 0 999px var(--btn-active-overlay, rgba(0, 0, 0, 0.09)) !important;
+}
+
+/* Empty state */
+.empty {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 12px;
+  color: var(--muted-fg, #667085);
 }

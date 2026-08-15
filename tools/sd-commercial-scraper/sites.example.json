@@ -1,0 +1,27 @@
+[
+  {
+    "name": "example-broker",
+    "url": "https://www.example-broker.com/san-diego/commercial-listings",
+    "render": false,
+    "selectors": {
+      "item": ".listing-card",
+      "title": ".listing-card__title",
+      "url": "a.listing-card__link",
+      "price": ".listing-card__price",
+      "address": ".listing-card__address",
+      "listing_type": "lease"
+    }
+  },
+  {
+    "name": "example-spa-broker",
+    "url": "https://www.example-spa-broker.com/properties?region=san-diego",
+    "render": true,
+    "selectors": {
+      "item": "[data-testid='property-tile']",
+      "title": "h3",
+      "url": "a",
+      "price": "[class*='price']",
+      "address": "[class*='address']"
+    }
+  }
+]

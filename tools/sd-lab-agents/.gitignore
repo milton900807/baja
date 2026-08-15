@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+agents.json
+agents.csv
+out/

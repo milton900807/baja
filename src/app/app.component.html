@@ -1,7 +1,10 @@
 <div class="app-shell">
   <mat-toolbar *ngIf="showToolbar" class="custom-toolbar" [color]="fg"
-    [ngStyle]="{ 'background-color': bg, 'position': 'relative', 'z-index': 5 }"
+    [ngStyle]="{ 'background-color': 'white', 'position': 'relative', 'z-index': 5 }"
     style="max-height:36px;font-size:small">
+    <img src="assets/logos/baja-logo.svg" alt="Baja Bio" class="baja-brand-logo"
+      style="width:26px;height:26px;margin-right:8px;vertical-align:middle;flex:0 0 auto;" />
+
     <button mat-icon-button [matMenuTriggerFor]="menu">
       <mat-icon>menu</mat-icon>
     </button>
@@ -13,6 +16,7 @@
     </mat-menu>
     {{ message }}
     <span style="flex: 1 1 auto" class="flexExpand"></span>
+
     <mat-button *ngIf="lg && user != '' && user != 'ljl'" mat-stroked-button type="button" data-bs-toggle="collapse"
       style="padding-top: 0px; padding-bottom: 1px" (click)="logout()">
       Log out ({{ user }})

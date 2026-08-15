@@ -14,7 +14,7 @@ import { FileService } from './service/file.service';
 @Component({
   selector: 'simple-file-browser',
   templateUrl: './fb.component.html',
-  styleUrls: ['./folder-browser.component.css']
+  styleUrls: ['./fb.component.css']
 })
 export class FBComponent implements OnInit, PubComponent {
 
@@ -226,7 +226,7 @@ export class FBComponent implements OnInit, PubComponent {
       sub.unsubscribe();
     }
   }
-  async  navigatePath(path) {
+  async navigatePath(path) {
     const folders = path.split('/').filter(folder => folder !== '');
     for (const folder of folders) {
       await this.navigateToFolderNamed(folder);
@@ -312,8 +312,8 @@ export class FBComponent implements OnInit, PubComponent {
   }
 
   moveElement(event: { element: FileElement; moveTo: FileElement }) {
-    
-    
+
+
     this.fileService.update(event.element.id, { parent: event.moveTo.id });
     this.updateFileElementQuery();
   }

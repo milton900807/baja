@@ -144,7 +144,7 @@
 }
 
 .msp-plugin .msp-layout-standard {
-  border: 1px solid hsl(42.8571428571, 17.0731707317%, 76.9607843137%)
+  border: 1px solid hsl(0, 0%, 76.9607843137%)
 }
 
 .msp-plugin .msp-layout-region {
@@ -221,8 +221,8 @@
   height: 97px;
   top: -97px;
   width: 50%;
-  border-left: 1px solid hsl(42.8571428571, 17.0731707317%, 76.9607843137%);
-  border-bottom: 1px solid hsl(42.8571428571, 17.0731707317%, 76.9607843137%)
+  border-left: 1px solid hsl(0, 0%, 76.9607843137%);
+  border-bottom: 1px solid hsl(0, 0%, 76.9607843137%)
 }
 
 .msp-plugin .msp-layout-standard-outside .msp-layout-bottom {
@@ -232,7 +232,7 @@
   height: 97px;
   top: -97px;
   width: 50%;
-  border-bottom: 1px solid hsl(42.8571428571, 17.0731707317%, 76.9607843137%)
+  border-bottom: 1px solid hsl(0, 0%, 76.9607843137%)
 }
 
 .msp-plugin .msp-layout-standard-outside .msp-layout-right {
@@ -241,8 +241,8 @@
   right: 0;
   bottom: -295px;
   height: 295px;
-  border-left: 1px solid hsl(42.8571428571, 17.0731707317%, 76.9607843137%);
-  border-top: 1px solid hsl(42.8571428571, 17.0731707317%, 76.9607843137%)
+  border-left: 1px solid hsl(0, 0%, 76.9607843137%);
+  border-top: 1px solid hsl(0, 0%, 76.9607843137%)
 }
 
 .msp-plugin .msp-layout-standard-outside .msp-layout-left {
@@ -252,7 +252,7 @@
   bottom: 0;
   bottom: -295px;
   height: 295px;
-  border-top: 1px solid hsl(42.8571428571, 17.0731707317%, 76.9607843137%)
+  border-top: 1px solid hsl(0, 0%, 76.9607843137%)
 }
 
 .msp-plugin .msp-layout-standard-outside .msp-layout-hide-right .msp-layout-right {
@@ -317,7 +317,7 @@
   right: 300px;
   height: 100px;
   top: 0;
-  border-bottom: 1px solid hsl(42.8571428571, 17.0731707317%, 76.9607843137%)
+  border-bottom: 1px solid hsl(0, 0%, 76.9607843137%)
 }
 
 .msp-plugin .msp-layout-standard-landscape .msp-layout-bottom {
@@ -326,7 +326,7 @@
   right: 300px;
   height: 70px;
   bottom: 0;
-  border-top: 1px solid hsl(42.8571428571, 17.0731707317%, 76.9607843137%)
+  border-top: 1px solid hsl(0, 0%, 76.9607843137%)
 }
 
 .msp-plugin .msp-layout-standard-landscape .msp-layout-right {
@@ -335,7 +335,7 @@
   right: 0;
   bottom: 0;
   top: 0;
-  border-left: 1px solid hsl(42.8571428571, 17.0731707317%, 76.9607843137%)
+  border-left: 1px solid hsl(0, 0%, 76.9607843137%)
 }
 
 .msp-plugin .msp-layout-standard-landscape .msp-layout-left {
@@ -344,7 +344,7 @@
   left: 0;
   bottom: 0;
   top: 0;
-  border-right: 1px solid hsl(42.8571428571, 17.0731707317%, 76.9607843137%)
+  border-right: 1px solid hsl(0, 0%, 76.9607843137%)
 }
 
 .msp-plugin .msp-layout-standard-landscape .msp-layout-hide-right .msp-layout-right {
@@ -411,8 +411,8 @@
   height: 97px;
   top: 0;
   width: 50%;
-  border-left: 1px solid hsl(42.8571428571, 17.0731707317%, 76.9607843137%);
-  border-bottom: 1px solid hsl(42.8571428571, 17.0731707317%, 76.9607843137%)
+  border-left: 1px solid hsl(0, 0%, 76.9607843137%);
+  border-bottom: 1px solid hsl(0, 0%, 76.9607843137%)
 }
 
 .msp-plugin .msp-layout-standard-portrait .msp-layout-bottom {
@@ -421,7 +421,7 @@
   right: 0;
   height: 97px;
   width: 50%;
-  border-bottom: 1px solid hsl(42.8571428571, 17.0731707317%, 76.9607843137%)
+  border-bottom: 1px solid hsl(0, 0%, 76.9607843137%)
 }
 
 .msp-plugin .msp-layout-standard-portrait .msp-layout-right {
@@ -430,8 +430,8 @@
   right: 0;
   bottom: 0;
   height: 361px;
-  border-left: 1px solid hsl(42.8571428571, 17.0731707317%, 76.9607843137%);
-  border-top: 1px solid hsl(42.8571428571, 17.0731707317%, 76.9607843137%)
+  border-left: 1px solid hsl(0, 0%, 76.9607843137%);
+  border-top: 1px solid hsl(0, 0%, 76.9607843137%)
 }
 
 .msp-plugin .msp-layout-standard-portrait .msp-layout-left {
@@ -440,7 +440,7 @@
   left: 0;
   bottom: 0;
   height: 361px;
-  border-top: 1px solid hsl(42.8571428571, 17.0731707317%, 76.9607843137%)
+  border-top: 1px solid hsl(0, 0%, 76.9607843137%)
 }
 
 .msp-plugin .msp-layout-standard-portrait .msp-layout-hide-right .msp-layout-right {
@@ -514,7 +514,7 @@
     right: 300px;
     height: 100px;
     top: 0;
-    border-bottom: 1px solid hsl(42.8571428571, 17.0731707317%, 76.9607843137%)
+    border-bottom: 1px solid hsl(0, 0%, 76.9607843137%)
   }
 
   .msp-plugin .msp-layout-standard-reactive .msp-layout-bottom {
@@ -523,7 +523,7 @@
     right: 300px;
     height: 70px;
     bottom: 0;
-    border-top: 1px solid hsl(42.8571428571, 17.0731707317%, 76.9607843137%)
+    border-top: 1px solid hsl(0, 0%, 76.9607843137%)
   }
 
   .msp-plugin .msp-layout-standard-reactive .msp-layout-right {
@@ -532,7 +532,7 @@
     right: 0;
     bottom: 0;
     top: 0;
-    border-left: 1px solid hsl(42.8571428571, 17.0731707317%, 76.9607843137%)
+    border-left: 1px solid hsl(0, 0%, 76.9607843137%)
   }
 
   .msp-plugin .msp-layout-standard-reactive .msp-layout-left {
@@ -541,7 +541,7 @@
     left: 0;
     bottom: 0;
     top: 0;
-    border-right: 1px solid hsl(42.8571428571, 17.0731707317%, 76.9607843137%)
+    border-right: 1px solid hsl(0, 0%, 76.9607843137%)
   }
 
   .msp-plugin .msp-layout-standard-reactive .msp-layout-hide-right .msp-layout-right {
@@ -606,8 +606,8 @@
     height: 97px;
     top: 0;
     width: 50%;
-    border-left: 1px solid hsl(42.8571428571, 17.0731707317%, 76.9607843137%);
-    border-bottom: 1px solid hsl(42.8571428571, 17.0731707317%, 76.9607843137%)
+    border-left: 1px solid hsl(0, 0%, 76.9607843137%);
+    border-bottom: 1px solid hsl(0, 0%, 76.9607843137%)
   }
 
   .msp-plugin .msp-layout-standard-reactive .msp-layout-bottom {
@@ -616,7 +616,7 @@
     right: 0;
     height: 97px;
     width: 50%;
-    border-bottom: 1px solid hsl(42.8571428571, 17.0731707317%, 76.9607843137%)
+    border-bottom: 1px solid hsl(0, 0%, 76.9607843137%)
   }
 
   .msp-plugin .msp-layout-standard-reactive .msp-layout-right {
@@ -625,8 +625,8 @@
     right: 0;
     bottom: 0;
     height: 361px;
-    border-left: 1px solid hsl(42.8571428571, 17.0731707317%, 76.9607843137%);
-    border-top: 1px solid hsl(42.8571428571, 17.0731707317%, 76.9607843137%)
+    border-left: 1px solid hsl(0, 0%, 76.9607843137%);
+    border-top: 1px solid hsl(0, 0%, 76.9607843137%)
   }
 
   .msp-plugin .msp-layout-standard-reactive .msp-layout-left {
@@ -635,7 +635,7 @@
     left: 0;
     bottom: 0;
     height: 361px;
-    border-top: 1px solid hsl(42.8571428571, 17.0731707317%, 76.9607843137%)
+    border-top: 1px solid hsl(0, 0%, 76.9607843137%)
   }
 
   .msp-plugin .msp-layout-standard-reactive .msp-layout-hide-right .msp-layout-right {
@@ -710,7 +710,7 @@
     right: 300px;
     height: 100px;
     top: 0;
-    border-bottom: 1px solid hsl(42.8571428571, 17.0731707317%, 76.9607843137%)
+    border-bottom: 1px solid hsl(0, 0%, 76.9607843137%)
   }
 
   .msp-plugin .msp-layout-expanded .msp-layout-bottom {
@@ -719,7 +719,7 @@
     right: 300px;
     height: 70px;
     bottom: 0;
-    border-top: 1px solid hsl(42.8571428571, 17.0731707317%, 76.9607843137%)
+    border-top: 1px solid hsl(0, 0%, 76.9607843137%)
   }
 
   .msp-plugin .msp-layout-expanded .msp-layout-right {
@@ -728,7 +728,7 @@
     right: 0;
     bottom: 0;
     top: 0;
-    border-left: 1px solid hsl(42.8571428571, 17.0731707317%, 76.9607843137%)
+    border-left: 1px solid hsl(0, 0%, 76.9607843137%)
   }
 
   .msp-plugin .msp-layout-expanded .msp-layout-left {
@@ -737,7 +737,7 @@
     left: 0;
     bottom: 0;
     top: 0;
-    border-right: 1px solid hsl(42.8571428571, 17.0731707317%, 76.9607843137%)
+    border-right: 1px solid hsl(0, 0%, 76.9607843137%)
   }
 
   .msp-plugin .msp-layout-expanded .msp-layout-hide-right .msp-layout-right {
@@ -802,8 +802,8 @@
     height: 97px;
     top: 0;
     width: 50%;
-    border-left: 1px solid hsl(42.8571428571, 17.0731707317%, 76.9607843137%);
-    border-bottom: 1px solid hsl(42.8571428571, 17.0731707317%, 76.9607843137%)
+    border-left: 1px solid hsl(0, 0%, 76.9607843137%);
+    border-bottom: 1px solid hsl(0, 0%, 76.9607843137%)
   }
 
   .msp-plugin .msp-layout-expanded .msp-layout-bottom {
@@ -812,7 +812,7 @@
     right: 0;
     height: 97px;
     width: 50%;
-    border-bottom: 1px solid hsl(42.8571428571, 17.0731707317%, 76.9607843137%)
+    border-bottom: 1px solid hsl(0, 0%, 76.9607843137%)
   }
 
   .msp-plugin .msp-layout-expanded .msp-layout-right {
@@ -821,8 +821,8 @@
     right: 0;
     bottom: 0;
     height: 361px;
-    border-left: 1px solid hsl(42.8571428571, 17.0731707317%, 76.9607843137%);
-    border-top: 1px solid hsl(42.8571428571, 17.0731707317%, 76.9607843137%)
+    border-left: 1px solid hsl(0, 0%, 76.9607843137%);
+    border-top: 1px solid hsl(0, 0%, 76.9607843137%)
   }
 
   .msp-plugin .msp-layout-expanded .msp-layout-left {
@@ -831,7 +831,7 @@
     left: 0;
     bottom: 0;
     height: 361px;
-    border-top: 1px solid hsl(42.8571428571, 17.0731707317%, 76.9607843137%)
+    border-top: 1px solid hsl(0, 0%, 76.9607843137%)
   }
 
   .msp-plugin .msp-layout-expanded .msp-layout-hide-right .msp-layout-right {
@@ -894,12 +894,12 @@
 
 .msp-plugin ::-webkit-scrollbar-track {
   border-radius: 0;
-  background-color: hsl(42.8571428571, 17.0731707317%, 89.4607843137%)
+  background-color: #ffffff
 }
 
 .msp-plugin ::-webkit-scrollbar-thumb {
   border-radius: 10px;
-  background-color: hsl(42.8571428571, 17.0731707317%, 69.4607843137%);
+  background-color: #ffffff;
   border: solid 1px rgba(0, 0, 0, 0);
   background-clip: content-box
 }
@@ -911,7 +911,7 @@
 .msp-plugin .msp-btn {
   display: block;
   width: 100%;
-  background: hsl(42.8571428571, 17.0731707317%, 94.4607843137%);
+  background: #ffffff;
   border: none;
   padding: 0 10px;
   line-height: 30px;
@@ -955,7 +955,7 @@
 .msp-plugin .msp-control-row input[type=text]:hover,
 .msp-plugin .msp-btn:hover {
   color: #ae5d04;
-  background-color: hsl(42.8571428571, 17.0731707317%, 89.4607843137%);
+  background-color: #ffffff;
   border: none;
   outline-offset: -1px !important;
   outline: 1px solid rgb(200.993902439, 194.6402439024, 178.756097561) !important
@@ -972,7 +972,7 @@
 .msp-plugin .msp-control-row input[type=text]:focus,
 .msp-plugin .msp-btn:focus {
   color: #332b1f;
-  background-color: hsl(42.8571428571, 17.0731707317%, 94.4607843137%);
+  background-color: #ffffff;
   border: none;
   outline-offset: 0;
   outline: none
@@ -993,7 +993,7 @@ fieldset[disabled] .msp-plugin .msp-control-row select,
 fieldset[disabled] .msp-plugin .msp-control-row button,
 fieldset[disabled] .msp-plugin .msp-control-row input[type=text],
 fieldset[disabled] .msp-plugin .msp-btn {
-  background: #eeece7;
+  background: #ffffff;
   opacity: .35
 }
 
@@ -1019,7 +1019,7 @@ fieldset[disabled] .msp-plugin .msp-btn {
 
 .msp-plugin .msp-btn[disabled],
 .msp-plugin .msp-control-row button[disabled] {
-  background: #eeece7;
+  background: #ffffff;
   opacity: .35
 }
 
@@ -1071,7 +1071,7 @@ fieldset[disabled] .msp-plugin .msp-btn {
 
 .msp-plugin .msp-btn-icon:hover {
   color: #ae5d04;
-  background-color: hsl(42.8571428571, 17.0731707317%, 89.4607843137%);
+  background-color: #ffffff;
   border: none;
   outline-offset: -1px !important;
   outline: 1px solid rgb(200.993902439, 194.6402439024, 178.756097561) !important
@@ -1094,7 +1094,7 @@ fieldset[disabled] .msp-plugin .msp-btn {
 
 .msp-plugin .msp-btn-icon-small:hover {
   color: #ae5d04;
-  background-color: hsl(42.8571428571, 17.0731707317%, 89.4607843137%);
+  background-color: #ffffff;
   border: none;
   outline-offset: -1px !important;
   outline: 1px solid rgb(200.993902439, 194.6402439024, 178.756097561) !important
@@ -1179,12 +1179,12 @@ fieldset[disabled] .msp-plugin .msp-btn-link:focus {
 .msp-plugin .msp-btn-action:active,
 .msp-plugin .msp-btn-action:focus {
   color: #332b1f;
-  background: hsl(42.8571428571, 17.0731707317%, 94.4607843137%)
+  background: #ffffff
 }
 
 .msp-plugin .msp-btn-action:hover {
   color: #ae5d04;
-  background: hsl(42.8571428571, 17.0731707317%, 96.9607843137%)
+  background: #ffffff
 }
 
 .msp-plugin .msp-btn-action[disabled],
@@ -1198,12 +1198,12 @@ fieldset[disabled] .msp-plugin .msp-btn-link:focus {
 .msp-plugin .msp-btn-commit-on:active,
 .msp-plugin .msp-btn-commit-on:focus {
   color: #974102;
-  background: hsl(42.8571428571, 17.0731707317%, 93.9607843137%)
+  background: #ffffff
 }
 
 .msp-plugin .msp-btn-commit-on:hover {
   color: #ae5d04;
-  background: hsl(42.8571428571, 17.0731707317%, 96.4607843137%)
+  background: #ffffff
 }
 
 .msp-plugin .msp-btn-commit-on[disabled],
@@ -1217,12 +1217,12 @@ fieldset[disabled] .msp-plugin .msp-btn-link:focus {
 .msp-plugin .msp-btn-commit-off:active,
 .msp-plugin .msp-btn-commit-off:focus {
   color: #332b1f;
-  background: hsl(42.8571428571, 17.0731707317%, 95.9607843137%)
+  background: #ffffff
 }
 
 .msp-plugin .msp-btn-commit-off:hover {
   color: #ae5d04;
-  background: rgb(251.7451219512, 251.362195122, 250.4048780488)
+  background: #ffffff
 }
 
 .msp-plugin .msp-btn-commit-off[disabled],
@@ -1291,7 +1291,7 @@ fieldset[disabled] .msp-plugin .msp-btn-link:focus {
 .msp-plugin .msp-control-row select,
 .msp-plugin select.msp-btn {
   background: none;
-  background-color: hsl(42.8571428571, 17.0731707317%, 94.4607843137%);
+  background-color: #ffffff;
   background-size: 8px 12px;
   background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAUCAMAAACzvE1FAAAADFBMVEUzMzMzMzMzMzMzMzMKAG/3AAAAA3RSTlMAf4C/aSLHAAAAPElEQVR42q3NMQ4AIAgEQTn//2cLdRKppSGzBYwzVXvznNWs8C58CiussPJj8h6NwgorrKRdTvuV9v16Afn0AYFOB7aYAAAAAElFTkSuQmCC);
   background-repeat: no-repeat;
@@ -1307,7 +1307,7 @@ fieldset[disabled] .msp-plugin .msp-btn-link:focus {
 }
 
 .msp-plugin .msp-default-bg {
-  background: #eeece7
+  background: #ffffff
 }
 
 .msp-plugin .msp-transparent-bg {
@@ -1329,7 +1329,7 @@ fieldset[disabled] .msp-plugin .msp-btn-link:focus {
 .msp-plugin .msp-control-row {
   position: relative;
   height: 32px;
-  background: #eeece7;
+  background: #ffffff;
   margin-top: 1px
 }
 
@@ -1354,12 +1354,12 @@ fieldset[disabled] .msp-plugin .msp-btn-link:focus {
 }
 
 .msp-plugin .msp-control-row>button.msp-control-button-label {
-  background: #eeece7;
+  background: #ffffff;
   cursor: pointer
 }
 
 .msp-plugin .msp-control-row .msp-control-current {
-  background: #eeece7
+  background: #ffffff
 }
 
 .msp-plugin .msp-control-row>div.msp-control-row-ctrl {
@@ -1382,12 +1382,12 @@ fieldset[disabled] .msp-plugin .msp-btn-link:focus {
 }
 
 .msp-plugin .msp-control-row>div {
-  background: hsl(42.8571428571, 17.0731707317%, 94.4607843137%)
+  background: #ffffff
 }
 
 .msp-plugin .msp-control-row>.msp-flex-row,
 .msp-plugin .msp-control-row>.msp-state-image-row {
-  background: #eeece7
+  background: #ffffff
 }
 
 .msp-plugin .msp-control-label-short>span {
@@ -1417,7 +1417,7 @@ fieldset[disabled] .msp-plugin .msp-btn-link:focus {
 }
 
 .msp-plugin .msp-toggle-button>div>button:hover {
-  border-color: hsl(42.8571428571, 17.0731707317%, 89.4607843137%) !important;
+  border-color: hsl(0, 0%, 89.4607843137%) !important;
   border: none;
   outline-offset: -1px !important;
   outline: 1px solid rgb(200.993902439, 194.6402439024, 178.756097561) !important
@@ -1491,7 +1491,7 @@ fieldset[disabled] .msp-plugin .msp-btn-link:focus {
 }
 
 .msp-plugin .msp-toggle-color-picker button {
-  border: 10px solid hsl(42.8571428571, 17.0731707317%, 94.4607843137%) !important;
+  border: 10px solid hsl(0, 0%, 94.4607843137%) !important;
   margin: 0;
   text-align: center;
   padding-right: 10px;
@@ -1499,7 +1499,7 @@ fieldset[disabled] .msp-plugin .msp-btn-link:focus {
 }
 
 .msp-plugin .msp-toggle-color-picker button:hover {
-  border-color: hsl(42.8571428571, 17.0731707317%, 89.4607843137%) !important;
+  border-color: hsl(0, 0%, 89.4607843137%) !important;
   border: none;
   outline-offset: -1px !important;
   outline: 1px solid rgb(200.993902439, 194.6402439024, 178.756097561) !important
@@ -1508,8 +1508,8 @@ fieldset[disabled] .msp-plugin .msp-btn-link:focus {
 .msp-plugin .msp-toggle-color-picker .msp-color-picker {
   position: absolute;
   z-index: 100000;
-  background: #eeece7;
-  border-top: 1px solid #eeece7;
+  background: #ffffff;
+  border-top: 1px solid #ffffff;
   padding-bottom: 5px;
   width: 100%
 }
@@ -1540,7 +1540,7 @@ fieldset[disabled] .msp-plugin .msp-btn-link:focus {
 }
 
 .msp-plugin .msp-control-group-header {
-  background: #eeece7
+  background: #ffffff
 }
 
 .msp-plugin .msp-control-group-header>button,
@@ -1550,7 +1550,7 @@ fieldset[disabled] .msp-plugin .msp-btn-link:focus {
   height: 24px !important;
   line-height: 24px !important;
   font-size: 85% !important;
-  background: #eeece7 !important;
+  background: #ffffff !important;
   color: hsl(36, 24.3902439024%, 31.0784313725%)
 }
 
@@ -1563,16 +1563,16 @@ fieldset[disabled] .msp-plugin .msp-btn-link:focus {
   padding-left: 5px;
   line-height: 21.3333333333px;
   font-size: 70%;
-  background: #eeece7;
+  background: #ffffff;
   color: hsl(36, 24.3902439024%, 31.0784313725%)
 }
 
 .msp-plugin .msp-control-current {
-  background: #eeece7
+  background: #ffffff
 }
 
 .msp-plugin .msp-control-group-footer {
-  background: hsl(42.8571428571, 17.0731707317%, 86.9607843137%);
+  background: #ffffff;
   height: 5px;
   font-size: 1px;
   margin-top: 1px
@@ -1621,7 +1621,7 @@ fieldset[disabled] .msp-plugin .msp-btn-link:focus {
 .msp-plugin .msp-row-text {
   height: 32px;
   position: relative;
-  background: #eeece7;
+  background: #ffffff;
   margin-top: 1px
 }
 
@@ -1637,12 +1637,12 @@ fieldset[disabled] .msp-plugin .msp-btn-link:focus {
 
 .msp-plugin .msp-help:hover span {
   display: inline-block;
-  background: linear-gradient(#eeece7, rgba(238, 236, 231, 0.8))
+  background: linear-gradient(#ffffff, rgba(238, 236, 231, 0.8))
 }
 
 .msp-plugin .msp-help-text {
   position: relative;
-  background: #eeece7;
+  background: #ffffff;
   margin-top: 1px
 }
 
@@ -1694,7 +1694,7 @@ fieldset[disabled] .msp-plugin .msp-btn-link:focus {
 
 .msp-plugin .msp-image-preview {
   position: relative;
-  background: #eeece7;
+  background: #ffffff;
   margin-top: 1px;
   padding: 10px
 }
@@ -1723,7 +1723,7 @@ fieldset[disabled] .msp-plugin .msp-btn-link:focus {
   padding: 3px;
   margin: 1px 0;
   width: 100%;
-  background: hsl(42.8571428571, 17.0731707317%, 94.4607843137%);
+  background: #ffffff;
   text-align: center
 }
 
@@ -1741,7 +1741,7 @@ fieldset[disabled] .msp-plugin .msp-btn-link:focus {
   border: none;
   width: 100%;
   height: 100%;
-  background: hsl(42.8571428571, 17.0731707317%, 94.4607843137%);
+  background: #ffffff;
   padding: 5px 10px;
   resize: none;
   font-size: 12px;
@@ -1759,7 +1759,7 @@ fieldset[disabled] .msp-plugin .msp-btn-link:focus {
 .msp-plugin .msp-help-row {
   position: relative;
   height: 32px;
-  background: #eeece7;
+  background: #ffffff;
   margin-top: 1px;
   display: table;
   width: 100%
@@ -1781,7 +1781,7 @@ fieldset[disabled] .msp-plugin .msp-btn-link:focus {
 }
 
 .msp-plugin .msp-help-row>div {
-  background: hsl(42.8571428571, 17.0731707317%, 94.4607843137%);
+  background: #ffffff;
   position: relative;
   padding: 3px 10px;
   display: table-cell
@@ -1889,17 +1889,17 @@ fieldset[disabled] .msp-plugin .msp-btn-link:focus {
 .msp-plugin .msp-log li {
   clear: both;
   margin: 0;
-  background: #eeece7;
+  background: #ffffff;
   position: relative
 }
 
 .msp-plugin .msp-log li:not(:last-child) {
-  border-bottom: 1px solid hsl(42.8571428571, 17.0731707317%, 76.9607843137%)
+  border-bottom: 1px solid hsl(0, 0%, 76.9607843137%)
 }
 
 .msp-plugin .msp-log .msp-log-entry {
   margin-left: 110px;
-  background: hsl(42.8571428571, 17.0731707317%, 90.4607843137%);
+  background: #ffffff;
   padding: 3px 25px 3px 10px
 }
 
@@ -2028,7 +2028,7 @@ fieldset[disabled] .msp-plugin .msp-btn-link:focus {
   width: 8px;
   height: 8px;
   border: 2px solid #e9e9e9;
-  background-color: #fff;
+  background-color: var(--panel-bg, #fff);
   cursor: pointer;
   border-radius: 50%;
   vertical-align: middle
@@ -2047,7 +2047,7 @@ fieldset[disabled] .msp-plugin .msp-btn-link:focus {
 }
 
 .msp-plugin .msp-slider-base-disabled {
-  background: #eeece7;
+  background: #ffffff;
   opacity: .35
 }
 
@@ -2064,7 +2064,7 @@ fieldset[disabled] .msp-plugin .msp-btn-link:focus {
 .msp-plugin .msp-description {
   padding: 10px;
   font-size: 85%;
-  background: #eeece7;
+  background: #ffffff;
   text-align: center;
   -webkit-user-select: none;
   -moz-user-select: none;
@@ -2080,7 +2080,7 @@ fieldset[disabled] .msp-plugin .msp-btn-link:focus {
 }
 
 .msp-plugin .msp-color-picker input {
-  color: #000 !important
+  color: var(--app-fg, #000) !important
 }
 
 .msp-plugin .msp-no-webgl {
@@ -2091,7 +2091,7 @@ fieldset[disabled] .msp-plugin .msp-btn-link:focus {
   top: 0;
   display: table;
   text-align: center;
-  background: #eeece7
+  background: #ffffff
 }
 
 .msp-plugin .msp-no-webgl>div b {
@@ -2122,7 +2122,7 @@ fieldset[disabled] .msp-plugin .msp-btn-link:focus {
   filter: alpha(opacity=0);
   opacity: 0;
   outline: none;
-  background: #fff;
+  background: var(--panel-bg, #fff);
   cursor: inherit;
   display: block
 }
@@ -2132,7 +2132,7 @@ fieldset[disabled] .msp-plugin .msp-btn-link:focus {
 }
 
 .msp-plugin .msp-combined-color-button {
-  border: 4px solid hsl(42.8571428571, 17.0731707317%, 94.4607843137%) !important;
+  border: 4px solid hsl(0, 0%, 94.4607843137%) !important;
   margin: 0;
   text-align: center;
   padding-right: 10px;
@@ -2140,7 +2140,7 @@ fieldset[disabled] .msp-plugin .msp-btn-link:focus {
 }
 
 .msp-plugin .msp-combined-color-button:hover {
-  border-color: hsl(42.8571428571, 17.0731707317%, 89.4607843137%) !important;
+  border-color: hsl(0, 0%, 89.4607843137%) !important;
   border: none;
   outline-offset: -1px !important;
   outline: 1px solid rgb(200.993902439, 194.6402439024, 178.756097561) !important
@@ -2187,7 +2187,7 @@ fieldset[disabled] .msp-plugin .msp-btn-link:focus {
   margin-bottom: 5px;
   padding: 0 10px;
   font-weight: 500;
-  background: #eeece7;
+  background: #ffffff;
   color: #332b1f
 }
 
@@ -2197,7 +2197,7 @@ fieldset[disabled] .msp-plugin .msp-btn-link:focus {
   top: 0;
   bottom: 0;
   padding-top: 10px;
-  background: #eeece7
+  background: #ffffff
 }
 
 .msp-plugin .msp-left-panel-controls-buttons-bottom {
@@ -2275,7 +2275,7 @@ fieldset[disabled] .msp-plugin .msp-btn-link:focus {
   text-align: right;
   padding: 0 10px;
   font-weight: bold;
-  background: #eeece7;
+  background: #ffffff;
   overflow: hidden;
   cursor: default
 }
@@ -2295,13 +2295,13 @@ fieldset[disabled] .msp-plugin .msp-btn-link:focus {
   margin-bottom: 10px;
   text-align: center;
   font-weight: bold;
-  background: #eeece7
+  background: #ffffff
 }
 
 .msp-plugin .msp-flex-row,
 .msp-plugin .msp-state-image-row {
   margin-top: 1px;
-  background: #eeece7;
+  background: #ffffff;
   display: flex;
   flex-direction: row;
   width: inherit;
@@ -2359,7 +2359,7 @@ fieldset[disabled] .msp-plugin .msp-btn-link:focus {
 
 .msp-plugin .msp-flex-row>button.msp-control-button-label,
 .msp-plugin .msp-state-image-row>button.msp-control-button-label {
-  background: #eeece7
+  background: #ffffff
 }
 
 .msp-plugin .msp-state-list {
@@ -2373,7 +2373,7 @@ fieldset[disabled] .msp-plugin .msp-btn-link:focus {
 
 .msp-plugin .msp-state-list>li>button:first-child {
   text-align: left;
-  border-left: 10px solid hsl(42.8571428571, 17.0731707317%, 79.9607843137%) !important
+  border-left: 10px solid hsl(0, 0%, 79.9607843137%) !important
 }
 
 .msp-plugin .msp-state-list>li>div {
@@ -2440,7 +2440,7 @@ fieldset[disabled] .msp-plugin .msp-btn-link:focus {
   line-height: 32px;
   float: left;
   margin-right: 10px;
-  background-color: hsl(42.8571428571, 17.0731707317%, 94.4607843137%)
+  background-color: #ffffff
 }
 
 .msp-plugin .msp-viewport-top-left-controls .msp-traj-controls>span {
@@ -2458,7 +2458,7 @@ fieldset[disabled] .msp-plugin .msp-btn-link:focus {
 }
 
 .msp-plugin .msp-viewport-top-left-controls .msp-state-snapshot-viewport-controls>button {
-  background-color: hsl(42.8571428571, 17.0731707317%, 94.4607843137%)
+  background-color: #ffffff
 }
 
 .msp-plugin .msp-viewport-top-left-controls .msp-state-snapshot-viewport-controls>select {
@@ -2523,7 +2523,7 @@ fieldset[disabled] .msp-plugin .msp-btn-link:focus {
 .msp-plugin .msp-control-row .msp-selection-viewport-controls select {
   padding: 0 5px;
   text-align: center;
-  background: hsl(42.8571428571, 17.0731707317%, 94.4607843137%);
+  background: #ffffff;
   flex: 0 0 80px;
   text-overflow: ellipsis
 }
@@ -2641,7 +2641,7 @@ fieldset[disabled] .msp-plugin .msp-btn-link:focus {
 }
 
 .msp-plugin .msp-type-class-Root {
-  border-left-color: #eeece7
+  border-left-color: #ffffff
 }
 
 .msp-plugin .msp-type-class-Group {
@@ -2864,7 +2864,7 @@ fieldset[disabled] .msp-plugin .msp-btn-link:focus {
   margin-top: 1px;
   position: relative;
   width: 100%;
-  background: #eeece7
+  background: #ffffff
 }
 
 .msp-plugin .msp-overlay-tasks .msp-task-state>div>div {
@@ -2879,7 +2879,7 @@ fieldset[disabled] .msp-plugin .msp-btn-link:focus {
   user-select: none;
   cursor: default;
   white-space: nowrap;
-  background: #eeece7;
+  background: #ffffff;
   position: absolute
 }
 
@@ -2900,7 +2900,7 @@ fieldset[disabled] .msp-plugin .msp-btn-link:focus {
   margin-top: 1px;
   position: relative;
   width: 100%;
-  background: #eeece7
+  background: #ffffff
 }
 
 .msp-plugin .msp-background-tasks .msp-task-state>div>div {
@@ -2915,7 +2915,7 @@ fieldset[disabled] .msp-plugin .msp-btn-link:focus {
   user-select: none;
   cursor: default;
   white-space: nowrap;
-  background: #eeece7;
+  background: #ffffff;
   position: absolute
 }
 
@@ -2930,7 +2930,7 @@ fieldset[disabled] .msp-plugin .msp-btn-link:focus {
   top: 0;
   right: 0;
   bottom: 0;
-  background: #eeece7
+  background: #ffffff
 }
 
 .msp-plugin .msp-viewport .msp-btn-link {
@@ -2956,7 +2956,7 @@ fieldset[disabled] .msp-plugin .msp-btn-link:focus {
 }
 
 .msp-plugin .msp-viewport-host3d>canvas {
-  background-color: #eeece7;
+  background-color: #ffffff;
   background-image: linear-gradient(45deg, lightgrey 25%, transparent 25%, transparent 75%, lightgrey 75%, lightgrey), linear-gradient(45deg, lightgrey 25%, transparent 25%, transparent 75%, lightgrey 75%, lightgrey);
   background-size: 60px 60px;
   background-position: 0 0, 30px 30px
@@ -2995,7 +2995,7 @@ fieldset[disabled] .msp-plugin .msp-btn-link:focus {
 }
 
 .msp-plugin .msp-semi-transparent-background {
-  background: #eeece7;
+  background: #ffffff;
   opacity: .5;
   position: absolute;
   top: 0;
@@ -3014,7 +3014,7 @@ fieldset[disabled] .msp-plugin .msp-btn-link:focus {
   right: 36px;
   top: 0;
   width: 100px;
-  background-color: #eeece7
+  background-color: #ffffff
 }
 
 .msp-plugin .msp-hover-box-wrapper .msp-hover-box-spacer {
@@ -3059,7 +3059,7 @@ fieldset[disabled] .msp-plugin .msp-btn-link:focus {
 .msp-plugin .msp-highlight-info {
   color: #ae5d04;
   padding: 3px 10px;
-  background: #eeece7;
+  background: #ffffff;
   opacity: 90%;
   max-width: 400px;
   -webkit-user-select: none;
@@ -3122,7 +3122,7 @@ fieldset[disabled] .msp-plugin .msp-btn-link:focus {
   top: 0;
   left: 0;
   bottom: 0;
-  background: #eeece7
+  background: #ffffff
 }
 
 .msp-plugin .msp-sequence-select {
@@ -3165,7 +3165,7 @@ fieldset[disabled] .msp-plugin .msp-btn-link:focus {
   font-size: 85%;
   line-height: 180%;
   font-family: "Courier New", monospace;
-  background: hsl(42.8571428571, 17.0731707317%, 94.4607843137%);
+  background: #ffffff;
   width: 100%;
   overflow-y: auto;
   overflow-x: hidden;
@@ -3297,12 +3297,12 @@ fieldset[disabled] .msp-plugin .msp-btn-link:focus {
   text-align: left;
   padding-left: 32px;
   line-height: 24px;
-  background: hsl(42.8571428571, 17.0731707317%, 89.4607843137%)
+  background: #ffffff
 }
 
 .msp-plugin .msp-transform-wrapper>.msp-transform-header>button {
   text-align: left;
-  background: #eeece7;
+  background: #ffffff;
   font-weight: bold;
   padding-right: 5px
 }
@@ -3334,7 +3334,7 @@ fieldset[disabled] .msp-plugin .msp-btn-link:focus {
 }
 
 .msp-plugin .msp-transform-default-params {
-  background: #eeece7;
+  background: #ffffff;
   position: absolute;
   left: 0;
   top: 0;
@@ -3343,7 +3343,7 @@ fieldset[disabled] .msp-plugin .msp-btn-link:focus {
 }
 
 .msp-plugin .msp-transform-default-params:hover {
-  background: hsl(42.8571428571, 17.0731707317%, 111.9607843137%)
+  background: #ffffff
 }
 
 .msp-plugin .msp-transform-apply-wrap {
@@ -3356,7 +3356,7 @@ fieldset[disabled] .msp-plugin .msp-btn-link:focus {
 .msp-plugin .msp-transform-refresh {
   width: 87px;
   margin-left: 33px;
-  background: #eeece7;
+  background: #ffffff;
   text-align: right
 }
 
@@ -3388,7 +3388,7 @@ fieldset[disabled] .msp-plugin .msp-btn-link:focus {
   float: right;
   min-height: 32px;
   margin-top: 10px;
-  border: 1px solid hsl(42.8571428571, 17.0731707317%, 76.9607843137%);
+  border: 1px solid hsl(0, 0%, 76.9607843137%);
   display: table
 }
 
@@ -3396,7 +3396,7 @@ fieldset[disabled] .msp-plugin .msp-btn-link:focus {
   height: 100%;
   line-height: 32px;
   padding: 0 10px;
-  background: #eeece7;
+  background: #ffffff;
   font-weight: bold;
   display: table-cell;
   -webkit-user-select: none;
@@ -3478,5 +3478,5 @@ fieldset[disabled] .msp-plugin .msp-btn-link:focus {
 }
 
 .msp-plugin {
-  background: #eeece7
+  background: #ffffff
 }

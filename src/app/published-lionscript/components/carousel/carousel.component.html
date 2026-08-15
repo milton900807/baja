@@ -1,14 +1,30 @@
-<div class="carousel-wrapper" *ngIf="images.length">
-  <div class="carousel-image" [class.fade-in]="fade" [class.fade-out]="!fade">
-    <img 
-      [src]="images[currentIndex]" 
-      alt="Slide {{ currentIndex + 1 }}"
-      (click)="onImageClick(currentIndex)" />
+<div class="carousel" *ngIf="images.length" tabindex="0"
+  (keydown.arrowLeft)="prev()" (keydown.arrowRight)="next()">
+
+  <div class="carousel-stage">
+    <button *ngIf="hasMultiple" type="button" class="nav nav--prev" aria-label="Previous slide"
+      (click)="prev()">
+      <span class="nav__chevron">&#8249;</span>
+    </button>
+
+    <div class="carousel-image" [class.fade-in]="fade" [class.fade-out]="!fade">
+      <img [src]="images[currentIndex]" alt="Slide {{ currentIndex + 1 }}"
+        [class.clickable]="links.length > currentIndex"
+        (click)="onImageClick(currentIndex)" />
+    </div>
+
+    <button *ngIf="hasMultiple" type="button" class="nav nav--next" aria-label="Next slide"
+      (click)="next()">
+      <span class="nav__chevron">&#8250;</span>
+    </button>
   </div>
 
-  <div class="carousel-controls">
-    <button (click)="prev()">⟨</button>
-    <span>{{ currentIndex + 1 }} / {{ images.length }}</span>
-    <button (click)="next()">⟩</button>
+  <div class="carousel-footer" *ngIf="hasMultiple">
+    <div class="dots" role="tablist" aria-label="Slides">
+      <button *ngFor="let img of images; let i = index" type="button" class="dot"
+        [class.dot--active]="i === currentIndex" [attr.aria-label]="'Go to slide ' + (i + 1)"
+        [attr.aria-selected]="i === currentIndex" (click)="goTo(i)"></button>
+    </div>
+    <span class="counter">{{ currentIndex + 1 }} / {{ images.length }}</span>
   </div>
 </div>

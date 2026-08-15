@@ -1632,14 +1632,14 @@ export interface DialogData {
       align-items: center;
       justify-content: space-between;
       padding: 8px 12px;
-      background: #263238;
-      color: #fff;
+      background: var(--title-bar-bg, #011c3c);
+      color: var(--title-bar-fg, #fff);
       font-weight: 600;
     }
     .close-btn {
       border: none; background: transparent; color: #fff; font-size: 16px; cursor: pointer;
     }
-    .modal-body { padding: 12px; background: #fff; }
+    .modal-body { padding: 12px; background: var(--panel-bg, #ffffff); color: var(--panel-fg, #011c3c); }
     .modal-footer { padding: 8px 12px 12px; display: flex; justify-content: flex-end; }
   `]
 })

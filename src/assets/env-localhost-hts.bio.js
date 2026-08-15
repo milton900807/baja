@@ -12,12 +12,12 @@
   // use https when building add-ins for microsoft word applications
   window["env"]["menu"] = [
     {
-      'label': 'Home', "path": 'screen/init.js'
+      'label': 'Home', "path": 'manchester/init.js'
     }
   ];
   window["env"]["redirectURL"] = "https://localhost:4200";
   window["env"]["postRedirectURL"] = "https://localhost:4200";
-  window["env"]["init"] = "/app/screen/init.js";
+  window["env"]["init"] = "/app/manchester/init.js";
   window["env"]["install"] = "ljl/dev/install-tools.js";
   window['env']['auth'] = 'b2c'
 

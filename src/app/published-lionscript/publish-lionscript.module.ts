@@ -107,6 +107,7 @@ import { PdfPurchaseViewerComponent } from './pdf-viewer-purchase.component';
 import { NewsEditorComponent } from './news-editor.component';
 import { NewsletterComponent } from './news-letter.component';
 import { LibraryViewerComponent } from './library-viewer.component';
+import { TitleWidgetComponent } from './components/title/title-widget.component';
 
 
 
@@ -172,7 +173,7 @@ import { LibraryViewerComponent } from './library-viewer.component';
     MenuItemComponent, CanvasProgressComponent, WebCameraComponent,
     ColorPaletteComponent, PDBViewerComponent, TextEditorComponent, SafeUrlPipe, AppCheckoutComponent,
     CalendarChooserComponent, CalendarImportComponent, MicrosoftCallbackComponent, CardColumnComponent, SimpleMenuButtonComponent, 
-    HighlightBracketsPipe, NewsComponent, NewsTickerComponent, PdfViewerComponent, PdfPurchaseViewerComponent, NewsEditorComponent, NewsletterComponent, LibraryViewerComponent],
+    HighlightBracketsPipe, NewsComponent, NewsTickerComponent, PdfViewerComponent, PdfPurchaseViewerComponent, NewsEditorComponent, NewsletterComponent, LibraryViewerComponent, TitleWidgetComponent],
 
 
   exports: [LionAppComponent, LionListComponent, OKPanel, SpacerComponent, SimpleProfileComponent,
@@ -197,7 +198,7 @@ import { LibraryViewerComponent } from './library-viewer.component';
     FluidHeightDirective, WebCameraComponent, ColorPaletteComponent, PDBViewerComponent,
     TextEditorComponent, AppCheckoutComponent, CalendarImportComponent, MicrosoftCallbackComponent, CardColumnComponent, 
     SimpleMenuButtonComponent, NewsComponent, NewsTickerComponent, PdfViewerComponent, 
-    NewsEditorComponent, NewsletterComponent, PdfPurchaseViewerComponent, LibraryViewerComponent],
+    NewsEditorComponent, NewsletterComponent, PdfPurchaseViewerComponent, LibraryViewerComponent, TitleWidgetComponent],
 
   // entryComponents: [SimpleProfileComponent, OKPanel, SpacerComponent, TextAreaEditComponent,
   //   LogBlockComponent, MedChemWidgetComponent, TextFieldComponent, ChemistryComponent,

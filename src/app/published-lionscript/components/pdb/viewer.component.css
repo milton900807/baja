@@ -12,7 +12,7 @@
 
 ::ng-deep .mat-checkbox .mat-checkbox-frame {
   border-color: grey;
-  background-color: white;
+  background-color: var(--panel-bg, white);
 }
 
 ::ng-deep .mat-row {

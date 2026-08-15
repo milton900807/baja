@@ -1,0 +1,15 @@
+[
+  {
+    "firm": "Example Brokerage",
+    "url": "https://www.example-brokerage.com/san-diego/professionals",
+    "require_any": ["life science", "lab", "biotech"],
+    "selectors": {
+      "item": ".professional-card",
+      "name": ".professional-card__name",
+      "title": ".professional-card__title",
+      "url": "a.professional-card__link",
+      "email": "a[href^='mailto:']",
+      "phone": ".professional-card__phone"
+    }
+  }
+]

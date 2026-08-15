@@ -66,6 +66,7 @@ import { RadioBigButtonsComponent } from "./published-lionscript/components/radi
 import { MarketFBComponent } from "./file-manager/fb-market.component";
 import { PdfPurchaseViewerComponent } from "./published-lionscript/pdf-viewer-purchase.component";
 import { LibraryViewerComponent } from "./published-lionscript/library-viewer.component";
+import { TitleWidgetComponent } from "./published-lionscript/components/title/title-widget.component";
 
 
 export class PageWidgetFactory {
@@ -107,6 +108,7 @@ export class WidgetFactory {
         'gmap-viewer': GMapViewerComponent,
         'cmd-line': CMDLineComponent,
         'html': HTMLFieldComponent,
+        'title': TitleWidgetComponent,
         'run': RunButton,
         'data-drop': DataDropComponent,
         'file-drop': DataDropComponent,

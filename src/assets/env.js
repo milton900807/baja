@@ -12,6 +12,22 @@
   window["env"] = window["env"] || {};
   window["env"]["theme"] = "Baja Bio";
   window["env"]["apiUrl"] = "http://localhost:8080";
+
+  window["env"]["defaultTheme"] = "ocean";
+  window["env"]["themes"] = [
+    "socal", "dark", "light", "contrast", "slate", "ocean",
+    "forest", "sunset", "turquoise", "mono", "midnight", "paper"
+  ];
+  // Optionally define brand themes entirely here (no CSS needed) via token maps:
+  // window["env"]["customThemes"] = [
+  //   { id: "brand", label: "Brand",
+  //     tokens: { "--app-bg": "#101820", "--app-fg": "#f0f0f0", "--panel-bg": "#152230",
+  //               "--panel-fg": "#f0f0f0", "--toolbar-bg": "#0b131c", "--toolbar-fg": "#f0f0f0",
+  //               "--title-bar-bg": "#0b131c", "--title-bar-fg": "#f0f0f0",
+  //               "--accent": "#00b3a4", "--border": "#2a3a4c",
+  //               "--metal-top": "#33465f", "--metal-hi": "#2b3c53", "--metal-lo": "#223448",
+  //               "--metal-bot": "#1a2a3c", "--metal-border": "#33465f", "--metal-text": "#e8eef6", "--metal-gloss": "0.14" } }
+  // ];
   window["env"]["appHost"] = "http://localhost:4200"
   window['env']['fileHost'] = "localhost:4200";
   window["env"]["menu"] = [

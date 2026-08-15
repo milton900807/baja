@@ -22,8 +22,8 @@ export class FileIcons implements PipeTransform {
                 return '/assets/img/icons/png/file-' + this.s + 'x.png'
         } else if ( filename.endsWith ( '.json')){
             return '/assets/img/icons/png/layers-2x.png'
-        } else if ( filename.endsWith ( '.screen') ){
-            return '/assets/img/icons/png/code-2x.png'
+        } else if ( filename.endsWith ( '.baja') ){
+            return '/assets/logos/baja-icon.svg'
         }
         else {
             return '/assets/img/icons/png/file-2x.png'

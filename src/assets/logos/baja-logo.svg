@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100" role="img" aria-label="Baja Bio">
+  <defs>
+    <linearGradient id="bajaTeal" x1="15%" y1="10%" x2="85%" y2="90%">
+      <stop offset="0%" stop-color="#7fe3d8"/>
+      <stop offset="50%" stop-color="#3fb9c0"/>
+      <stop offset="100%" stop-color="#1f7f9c"/>
+    </linearGradient>
+    <radialGradient id="bajaGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="55%" stop-color="#ffffff" stop-opacity="0.55"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- One branch, pointing up from the centre; replicated by rotation. -->
+    <g id="bajaBranch" fill="url(#bajaTeal)" stroke="url(#bajaTeal)"
+       stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path fill="none" d="M50,50 C49,43 50.5,37 50,31"/>
+      <path fill="none" d="M50,32 C48.5,28 46.5,26.5 45,24"/>
+      <path fill="none" d="M50,32 C51.5,28 53.5,26.5 55,24"/>
+      <path fill="none" d="M50,41 C47.5,40.5 46,39 44.5,37.5"/>
+      <circle cx="45"   cy="23.5" r="1.9" stroke="none"/>
+      <circle cx="55"   cy="23.5" r="1.9" stroke="none"/>
+      <circle cx="44.3" cy="37.2" r="1.5" stroke="none"/>
+    </g>
+  </defs>
+
+  <!-- Soft radiant centre -->
+  <circle cx="50" cy="50" r="14" fill="url(#bajaGlow)"/>
+
+  <!-- Radiating branches (top + sides; the base opens toward the mountain) -->
+  <use href="#bajaBranch"/>
+  <use href="#bajaBranch" transform="rotate(36 50 50)"/>
+  <use href="#bajaBranch" transform="rotate(-36 50 50)"/>
+  <use href="#bajaBranch" transform="rotate(72 50 50)"/>
+  <use href="#bajaBranch" transform="rotate(-72 50 50)"/>
+  <use href="#bajaBranch" transform="rotate(108 50 50)"/>
+  <use href="#bajaBranch" transform="rotate(-108 50 50)"/>
+  <use href="#bajaBranch" transform="rotate(144 50 50)"/>
+  <use href="#bajaBranch" transform="rotate(-144 50 50)"/>
+
+  <!-- Mountain range + waves at the base -->
+  <path d="M34,66 L43,55.5 L49.5,61.5 L57,51 L67,66 Z"
+        fill="#eafaf7" stroke="url(#bajaTeal)" stroke-width="1.6" stroke-linejoin="round"/>
+  <path fill="none" stroke="url(#bajaTeal)" stroke-width="1.9" stroke-linecap="round"
+        d="M32,70.5 C39,67.5 45,73.5 51.5,70.5"/>
+  <path fill="none" stroke="url(#bajaTeal)" stroke-width="1.9" stroke-linecap="round"
+        d="M46,74.5 C53,71.5 60,77.5 68,73.5"/>
+</svg>

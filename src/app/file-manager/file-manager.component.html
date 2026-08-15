@@ -1,7 +1,7 @@
 <!-- Toolbar -->
-<mat-toolbar background="white" style="height: 25px;">
-  <mat-icon *ngIf="canNavigateUp" class="pointer" (click)="navigateUp()">arrow_back</mat-icon>
-  <span *ngIf="canNavigateUp" class="pointer" (click)="navigateUp()">
+<mat-toolbar class="path-toolbar" background="white" style="height: 25px;">
+  <mat-icon *ngIf="canNavigateUp" class="pointer path-back" (click)="navigateUp()">arrow_back</mat-icon>
+  <span *ngIf="canNavigateUp" class="pointer path-text" [title]="path || ''" (click)="navigateUp()">
     {{ path || '' }}
   </span>
 </mat-toolbar>
@@ -13,7 +13,7 @@
   </mat-form-field>
 </mat-toolbar>
 
-<div style="width:100%;">
+<div class="file-grid-scroll">
 
   <mat-grid-list [cols]="COLS" rowHeight="100px">
     <mat-grid-tile *ngFor="let element of sortedFileElements | filenameFilter:filterArgs:fileType">

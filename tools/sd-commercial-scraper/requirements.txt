@@ -1,0 +1,7 @@
+# Core (required)
+requests>=2.31
+beautifulsoup4>=4.12
+
+# Optional: only needed for LoopNet / Crexi / render:true broker targets.
+# Install with:  pip install playwright && playwright install chromium
+# playwright>=1.44

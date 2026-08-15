@@ -3,7 +3,7 @@
   overflow: hidden;
   padding-inline: 12px;
   min-height: 48px;
-  background-color: white !important;
+  background-color: var(--panel-bg, white) !important;
   box-shadow: 0 2px 4px rgba(0,0,0,0.12);
 }
 

@@ -223,3 +223,368 @@ lion-app #___dashboard>app-canvas {
   border-radius: 8px;
   overflow: hidden;
 }
+
+/* ============================================================
+   THEME TOKENS
+   Switch themes by setting  data-theme="<name>"  on <html>.
+   Add a new theme by copying a block and changing the values.
+   ============================================================ */
+/* Matte button "kits". Kept under the --metal-* names so every existing
+   consumer (mt-button, selection-list, carousel, title, …) automatically
+   renders flat: all four gradient stops are identical, so any
+   linear-gradient(top → bot) collapses to a solid colour, and --metal-gloss
+   is 0 so gloss highlights disappear. Change once here → all buttons match. */
+@mixin metal-light {
+  /* Navy buttons with white text — high contrast on the white backgrounds. */
+  --metal-top: #011c3c;
+  --metal-hi: #011c3c;
+  --metal-lo: #011c3c;
+  --metal-bot: #011c3c;
+  --metal-border: #011c3c;
+  --metal-text: #ffffff;
+  --metal-gloss: 0;
+  /* On navy, lighten on hover/press (white overlay). */
+  --btn-hover-overlay: rgba(255, 255, 255, 0.12);
+  --btn-active-overlay: rgba(255, 255, 255, 0.22);
+  --btn-shadow: 0 2px 6px rgba(16, 24, 40, 0.30);
+  /* Light neutral surface for grouped-button containers (not the buttons). */
+  --btn-group-bg: #f2f4f7;
+  --btn-group-border: #d7dee7;
+}
+
+@mixin metal-dark {
+  --metal-top: #011c3c;
+  --metal-hi: #011c3c;
+  --metal-lo: #011c3c;
+  --metal-bot: #011c3c;
+  --metal-border: #011c3c;
+  --metal-text: #ffffff;
+  --metal-gloss: 0;
+  --btn-hover-overlay: rgba(255, 255, 255, 0.12);
+  --btn-active-overlay: rgba(255, 255, 255, 0.22);
+  --btn-shadow: 0 2px 6px rgba(0, 0, 0, 0.38);
+  --btn-group-bg: #f2f4f7;
+  --btn-group-border: #d7dee7;
+}
+
+/* 1. SoCal — cream / navy (default) */
+:root,
+:root[data-theme="socal"] {
+  --app-bg: #ffffff;
+  --app-fg: #011c3c;
+  --panel-bg: #ffffff;
+  --panel-fg: #011c3c;
+  --muted-fg: #667085;
+  --border: #c8ced6;
+  --toolbar-bg: #ffffff;
+  --toolbar-fg: #011c3c;
+  --title-bar-bg: #011c3c;
+  --title-bar-fg: #ffffff;
+  --accent: #2f6feb;
+  --accent-fg: #ffffff;
+  @include metal-light;
+}
+
+/* 2. Dark — navy */
+:root[data-theme="dark"] {
+  --app-bg: #011c3c;
+  --app-fg: #e8eef6;
+  --panel-bg: #0a2748;
+  --panel-fg: #e8eef6;
+  --muted-fg: #9fb2cc;
+  --border: #244062;
+  --toolbar-bg: #06122a;
+  --toolbar-fg: #e8eef6;
+  --title-bar-bg: #06122a;
+  --title-bar-fg: #e8eef6;
+  --accent: #4d8bf0;
+  --accent-fg: #ffffff;
+  @include metal-dark;
+}
+
+/* 3. Light — white / slate */
+:root[data-theme="light"] {
+  --app-bg: #ffffff;
+  --app-fg: #1f2937;
+  --panel-bg: #ffffff;
+  --panel-fg: #1f2937;
+  --muted-fg: #6b7280;
+  --border: #d4dae3;
+  --toolbar-bg: #f6f8fb;
+  --toolbar-fg: #1f2937;
+  --title-bar-bg: #1f2937;
+  --title-bar-fg: #ffffff;
+  --accent: #2f6feb;
+  --accent-fg: #ffffff;
+  @include metal-light;
+}
+
+/* 4. High contrast — white / black */
+:root[data-theme="contrast"] {
+  --app-bg: #ffffff;
+  --app-fg: #000000;
+  --panel-bg: #ffffff;
+  --panel-fg: #000000;
+  --muted-fg: #333333;
+  --border: #000000;
+  --toolbar-bg: #ffffff;
+  --toolbar-fg: #000000;
+  --title-bar-bg: #000000;
+  --title-bar-fg: #ffffff;
+  --accent: #0000ee;
+  --accent-fg: #ffffff;
+  @include metal-light;
+  --metal-border: #000000;
+  --metal-text: #000000;
+}
+
+/* 5. Slate — soft grey */
+:root[data-theme="slate"] {
+  --app-bg: #eef1f5;
+  --app-fg: #24303f;
+  --panel-bg: #f7f9fc;
+  --panel-fg: #24303f;
+  --muted-fg: #64748b;
+  --border: #cbd5e1;
+  --toolbar-bg: #e2e8f0;
+  --toolbar-fg: #24303f;
+  --title-bar-bg: #334155;
+  --title-bar-fg: #ffffff;
+  --accent: #2563eb;
+  --accent-fg: #ffffff;
+  @include metal-light;
+}
+
+/* 6. Ocean — teal */
+:root[data-theme="ocean"] {
+  --app-bg: #eaf6fb;
+  --app-fg: #0b3d54;
+  --panel-bg: #f2fafd;
+  --panel-fg: #0b3d54;
+  --muted-fg: #4b7b90;
+  --border: #b7dce8;
+  --toolbar-bg: #d7eef6;
+  --toolbar-fg: #0b3d54;
+  --title-bar-bg: #0e5a7a;
+  --title-bar-fg: #ffffff;
+  --accent: #0891b2;
+  --accent-fg: #ffffff;
+  @include metal-light;
+}
+
+/* 7. Forest — green */
+:root[data-theme="forest"] {
+  --app-bg: #eef6ee;
+  --app-fg: #14432a;
+  --panel-bg: #f5faf5;
+  --panel-fg: #14432a;
+  --muted-fg: #4f7a5c;
+  --border: #c3ded0;
+  --toolbar-bg: #dcecdf;
+  --toolbar-fg: #14432a;
+  --title-bar-bg: #1f5b38;
+  --title-bar-fg: #ffffff;
+  --accent: #2e9e52;
+  --accent-fg: #ffffff;
+  @include metal-light;
+}
+
+/* 8. Sunset — warm peach */
+:root[data-theme="sunset"] {
+  --app-bg: #fdefe4;
+  --app-fg: #5a2318;
+  --panel-bg: #fff6ee;
+  --panel-fg: #5a2318;
+  --muted-fg: #9c6b52;
+  --border: #f0cdb4;
+  --toolbar-bg: #fbe2cf;
+  --toolbar-fg: #5a2318;
+  --title-bar-bg: #a4381f;
+  --title-bar-fg: #ffffff;
+  --accent: #ea6a2e;
+  --accent-fg: #ffffff;
+  @include metal-light;
+}
+
+/* 9. Turquoise — aqua / teal */
+:root[data-theme="turquoise"] {
+  --app-bg: #e8f8f6;
+  --app-fg: #0c3b3a;
+  --panel-bg: #f2fbfa;
+  --panel-fg: #0c3b3a;
+  --muted-fg: #5b8a86;
+  --border: #bfe4df;
+  --toolbar-bg: #d3f0ec;
+  --toolbar-fg: #0c3b3a;
+  --title-bar-bg: #0f5f5c;
+  --title-bar-fg: #ffffff;
+  --accent: #14b8a6;
+  --accent-fg: #ffffff;
+  @include metal-light;
+}
+
+/* 10. Mono — grayscale */
+:root[data-theme="mono"] {
+  --app-bg: #f2f2f2;
+  --app-fg: #1a1a1a;
+  --panel-bg: #fafafa;
+  --panel-fg: #1a1a1a;
+  --muted-fg: #6b6b6b;
+  --border: #cccccc;
+  --toolbar-bg: #e6e6e6;
+  --toolbar-fg: #1a1a1a;
+  --title-bar-bg: #2b2b2b;
+  --title-bar-fg: #ffffff;
+  --accent: #555555;
+  --accent-fg: #ffffff;
+  @include metal-light;
+}
+
+/* 11. Midnight — deep dark */
+:root[data-theme="midnight"] {
+  --app-bg: #0d1b2a;
+  --app-fg: #e0e6ef;
+  --panel-bg: #16263a;
+  --panel-fg: #e0e6ef;
+  --muted-fg: #8fa3bf;
+  --border: #263a54;
+  --toolbar-bg: #0a1522;
+  --toolbar-fg: #e0e6ef;
+  --title-bar-bg: #0a1522;
+  --title-bar-fg: #e0e6ef;
+  --accent: #7c5cff;
+  --accent-fg: #ffffff;
+  @include metal-dark;
+}
+
+/* 12. Paper — off-white / ink */
+:root[data-theme="paper"] {
+  --app-bg: #faf7f0;
+  --app-fg: #22201b;
+  --panel-bg: #fffdf8;
+  --panel-fg: #22201b;
+  --muted-fg: #6b665c;
+  --border: #e3ddd0;
+  --toolbar-bg: #f1ece0;
+  --toolbar-fg: #22201b;
+  --title-bar-bg: #33302a;
+  --title-bar-fg: #ffffff;
+  --accent: #b5533b;
+  --accent-fg: #ffffff;
+  @include metal-light;
+}
+
+/* ============================================================
+   White backgrounds everywhere (per request).
+   Only the surface background tokens are pinned to white — text,
+   accent, borders, and the aqua buttons stay theme-driven.
+   Placed after every theme block so it wins by source order at
+   equal specificity, for the base :root and each [data-theme].
+   ============================================================ */
+:root,
+:root[data-theme] {
+  --app-bg: #ffffff;
+  --panel-bg: #ffffff;
+  --toolbar-bg: #ffffff;
+}
+
+/* ---- Global application of the tokens ---- */
+html,
+body,
+app-root,
+app-root .app-shell,
+app-root .app-content,
+app-root .route-host {
+  background-color: var(--app-bg) !important;
+  color: var(--app-fg);
+}
+
+app-root .custom-toolbar {
+  background-color: var(--toolbar-bg) !important;
+  color: var(--toolbar-fg);
+}
+
+.mat-mdc-card,
+.mat-mdc-dialog-surface {
+  background-color: var(--panel-bg);
+  color: var(--panel-fg);
+}
+
+app-root .custom-toolbar .mat-mdc-button,
+app-root .custom-toolbar .mdc-button,
+app-root .custom-toolbar .mat-mdc-icon-button {
+  color: var(--toolbar-fg);
+}
+
+/* ============================================================
+   Theme propagation to Material + widget surfaces.
+   The app uses a fixed legacy Material light theme, so these
+   !important overrides push the active theme tokens onto the
+   common surfaces that would otherwise stay light.
+   ============================================================ */
+
+/* Router content host (the whole app body under the toolbar) */
+lion-app,
+lion-app .app-content,
+app-root .route-host>* {
+  background-color: var(--app-bg);
+  color: var(--app-fg);
+}
+
+/* Panels / popovers / lists / tables / dialogs */
+.mat-mdc-card,
+.mat-mdc-dialog-surface,
+.mat-mdc-menu-panel,
+.mat-mdc-select-panel,
+.mat-mdc-autocomplete-panel,
+.mat-mdc-paginator,
+.mat-mdc-table,
+.mat-mdc-list,
+.mat-mdc-tab-body-content,
+.mat-expansion-panel,
+.mat-mdc-tooltip .mdc-tooltip__surface,
+.cdk-overlay-pane .mat-mdc-card {
+  background-color: var(--panel-bg) !important;
+  color: var(--panel-fg) !important;
+}
+
+/* Text inside menus / options / lists / tabs */
+.mat-mdc-menu-item,
+.mat-mdc-menu-item .mat-icon,
+.mat-mdc-option,
+.mdc-list-item__primary-text,
+.mdc-list-item__secondary-text,
+.mat-mdc-list-item,
+.mat-mdc-tab .mdc-tab__text-label,
+.mat-expansion-panel-header-title,
+.mat-mdc-cell,
+.mat-mdc-header-cell {
+  color: var(--panel-fg) !important;
+}
+
+/* Form fields, inputs, selects */
+.mat-mdc-form-field,
+.mat-mdc-input-element,
+textarea.mat-mdc-input-element,
+.mat-mdc-select-value-text,
+.mat-mdc-select-min-line {
+  color: var(--app-fg) !important;
+}
+
+.mat-mdc-input-element::placeholder {
+  color: var(--muted-fg) !important;
+}
+
+/* Dividers / borders pick up the theme border color */
+.mat-divider,
+.mat-mdc-card-actions,
+.mdc-list-divider {
+  border-color: var(--border) !important;
+}
+
+/* Generic hint / secondary text */
+.mat-mdc-form-field-hint,
+.mat-mdc-form-field-subscript-wrapper,
+.mat-mdc-card-subtitle {
+  color: var(--muted-fg) !important;
+}

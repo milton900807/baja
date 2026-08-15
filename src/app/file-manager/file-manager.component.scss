@@ -1,3 +1,32 @@
+/* Fill the available height so the grid can scroll instead of overflowing */
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* Toolbars stay fixed at the top; only the grid scrolls */
+.path-toolbar,
+mat-toolbar {
+  flex: 0 0 auto;
+}
+
+/* Scrollable file grid.
+   - flex:1 + min-height:0 fills a bounded parent (dashboard cell / fillParent).
+   - max-height is the fallback cap for when the widget host is auto-height
+     (a plain, non-fillParent widget): it still scrolls instead of running
+     off the bottom of the page. Whichever is smaller wins. */
+.file-grid-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: calc(100vh - 90px);
+  width: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
 .tile {
   width: 100%;
   height: 100%;
@@ -64,4 +93,47 @@
 
 .menu-anchor {
   pointer-events: none !important;
+}
+/* ---- Path toolbar: keep the path text within its 25px height ---- */
+.path-toolbar.mat-toolbar {
+  height: 25px !important;
+  min-height: 25px !important;
+  max-height: 25px !important;
+  padding: 0 8px !important;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  overflow: hidden;
+  font-size: 12px !important;
+  background: var(--toolbar-bg, #ffffff);
+  color: var(--toolbar-fg, #1f2937);
+}
+
+/* Single-row wrapper (MDC) shouldn't reintroduce the default tall height */
+.path-toolbar .mat-toolbar-row,
+.path-toolbar .mdc-top-app-bar__row {
+  height: 25px !important;
+  min-height: 25px !important;
+  padding: 0 !important;
+  align-items: center;
+}
+
+/* Compact back arrow so it fits the row */
+.path-toolbar .path-back {
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+  line-height: 16px;
+  flex: 0 0 auto;
+}
+
+/* Path text: one line, ellipsis when too long, never wraps or overflows */
+.path-toolbar .path-text {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 12px;
+  line-height: 25px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }

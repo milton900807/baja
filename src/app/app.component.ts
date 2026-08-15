@@ -3,6 +3,7 @@ import { Component } from '@angular/core';
 import { MsalService, MsalBroadcastService, MSAL_GUARD_CONFIG, MsalGuardConfiguration } from '@azure/msal-angular';
 import { Title } from '@angular/platform-browser';
 import { IoniScriptEngine, LionEngine } from './engine/io-engine';
+import { ThemeService } from './theme.service';
 import { IoniScriptManager, RunStatus } from './engine/io-manager';
 import { IoniScriptFile } from './engine/lion-file';
 import { AuthService } from './onedrive/auth.service';
@@ -236,7 +237,7 @@ export class AppComponent implements OnInit {
   accounts: AccountInfo[] = [];
   canSignUp = false;
   fg = 'white';
-  bg = 'rgb(0, 87, 163);'
+  bg = '#ffffff'
 
   private readonly _destroying$ = new Subject<void>();
 
@@ -249,14 +250,25 @@ export class AppComponent implements OnInit {
     @Inject(MSAL_GUARD_CONFIG) private msalGuardConfig: MsalGuardConfiguration,
     private authService: MsalService,
     private msalBroadcastService: MsalBroadcastService,
-    private gs: GraphService
+    private gs: GraphService,
+    private theme: ThemeService
 
   ) {
     AppComponent.titleService = titleService;
     this.host = window.location.hostname;
     IoniScriptEngine.app = this;
 
+    // Apply the saved/default theme and expose a global hook so lionscript
+    // menus can switch themes, e.g. window.setTheme('dark').
+    this.theme.init();
+    window['setTheme'] = (id: string) => this.zone.run(() => this.theme.setTheme(id));
+    window['getThemes'] = () => this.theme.themes;
+    window['cycleTheme'] = () => this.zone.run(() => this.theme.cycle());
   }
+
+  get themes() { return this.theme.themes; }
+  get currentTheme() { return this.theme.getTheme(); }
+  setTheme(id: string): void { this.theme.setTheme(id); }
 
 
 

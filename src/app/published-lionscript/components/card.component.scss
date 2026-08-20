@@ -40,7 +40,7 @@
 	width: 100%;
 	height: auto;
 	min-width: 0;
-	min-height: 25px;
+	min-height: 35px;
 }
 
 /*
@@ -48,7 +48,7 @@
  */
 .card-row:last-child {
 	flex: 1 1 0;
-	min-height: 25px;
+	min-height: 35px;
 	overflow: hidden;
 }
 
@@ -64,7 +64,7 @@
 	width: 100%;
 	height: auto;
 	min-width: 0;
-	min-height: 25px;
+	min-height: 35px;
 }
 
 /*
@@ -73,7 +73,7 @@
 .card-row:last-child>.card-item:last-child {
 	flex: 1 1 0;
 	height: auto;
-	min-height: 25px;
+	min-height: 35px;
 	overflow: hidden;
 }
 
@@ -89,7 +89,7 @@
 	width: 100%;
 	height: auto;
 	min-width: 0;
-	min-height: 25px;
+	min-height: 35px;
 }
 
 /*
@@ -98,7 +98,7 @@
 .card-row:last-child>.card-item:last-child>.card-single-host {
 	flex: 1 1 0;
 	height: auto;
-	min-height: 25px;
+	min-height: 35px;
 	overflow: hidden;
 }
 

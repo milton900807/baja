@@ -13,6 +13,7 @@
       type="button"
       class="btn"
       [ngClass]="useStyledButtons ? 'btn--success' : 'btn--primary'"
+      [ngStyle]="{ 'background': b.background || null, 'color': b.color || null, 'border-color': b.borderColor || b.background || null }"
       [disabled]="b.disabled"
       [attr.aria-disabled]="b.disabled"
       (click)="click(b)"

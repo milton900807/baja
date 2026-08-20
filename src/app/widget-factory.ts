@@ -18,6 +18,7 @@ import { RadioButtonsComponent } from './published-lionscript/components/radio-b
 import { MultiSelectComponent } from './published-lionscript/multi-select.component';
 import { LinkNavigationComponent } from './onedrive/link-nav.component';
 import { SimpleMenuComponent } from './published-lionscript/simple-menu.component';
+import { ButtonMenuComponent } from './published-lionscript/button-menu.component';
 import { DataDropComponent } from './data-import/data-drop.component';
 import { SimpleD3Component } from './published-lionscript/data-vis/simple-d3.component';
 import { ButtonToggleMultipleComponent } from './published-lionscript/components/button-toggle-multiple/button-toggle-multiple.component';
@@ -130,6 +131,7 @@ export class WidgetFactory {
         'table': TableComponent,
         'link-nav': LinkNavigationComponent,
         'menu': SimpleMenuComponent,
+        'button-menu': ButtonMenuComponent,
         'd3': SimpleD3Component,
         'search-results': SearchResultsComponent,
         'register-user': AddUserComponent,

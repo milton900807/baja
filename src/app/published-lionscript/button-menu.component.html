@@ -1,0 +1,12 @@
+<div class="button-menu">
+  <div *ngIf="title" class="button-menu__title">{{ title }}</div>
+
+  <div class="button-menu__grid">
+    <button *ngFor="let b of buttons" type="button" class="circle-btn"
+      [style.background]="b.color || null"
+      [attr.title]="b.tooltip || b.label || ''"
+      (click)="click(b)" (mouseenter)="hover(b)">
+      <span class="circle-btn__label">{{ b.label }}</span>
+    </button>
+  </div>
+</div>

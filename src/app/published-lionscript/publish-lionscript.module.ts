@@ -41,6 +41,7 @@ import { ButtonToggleMultipleComponent } from './components/button-toggle-multip
 import { MultiSelectComponent } from './multi-select.component';
 import { DataTypePipe } from './datatype-pipe';
 import { SimpleMenuComponent } from './simple-menu.component';
+import { ButtonMenuComponent } from './button-menu.component';
 import { SimpleD3Component } from './data-vis/simple-d3.component';
 import { SimplePlate } from './data-vis/simple-plate.component';
 import { PlateDirective } from './data-vis/plate.directive';
@@ -163,7 +164,7 @@ import { TitleWidgetComponent } from './components/title/title-widget.component'
     IonWorksMenuComponent, SearchComponent,
     ModalContentComponent, RadioButtonsComponent, RadioBigButtonsComponent, ButtonToggleMultipleComponent,
     MultiSelectComponent,
-    SimpleMenuComponent, SimpleD3Component,
+    SimpleMenuComponent, ButtonMenuComponent, SimpleD3Component,
     SimplePlate, PlateDirective, ButtonToggleMultipleComponent,
     SelectionListComponent, TableComponent, SearchResultsComponent,
     IonWorksNavbarComponent,

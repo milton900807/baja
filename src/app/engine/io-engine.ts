@@ -1353,6 +1353,12 @@ export class LionEngine {
     }
 
     async exec(path, ...funargs) {
+        // Track backend (.py) execs so the canvas can show a "working" signal
+        // while any server search is still running (window.__backendWorkCount).
+        const __isPyExec = !!(path && typeof path === 'string' && path.endsWith('.py'));
+        if (__isPyExec) {
+            try { (window as any).__backendWorkCount = (((window as any).__backendWorkCount) || 0) + 1; } catch (e) { }
+        }
         let startDate = new Date();
         let seconds = 0;
         let index = 0;
@@ -1502,6 +1508,19 @@ export class LionEngine {
                 }
             }
         });
+
+        if (__isPyExec) {
+            let __cleared = false;
+            const __clear = () => {
+                if (__cleared) return;
+                __cleared = true;
+                try { (window as any).__backendWorkCount = Math.max(0, (((window as any).__backendWorkCount) || 1) - 1); } catch (e) { }
+            };
+            // Clear when the call settles (either way); plus a safety timeout in
+            // case the backend poll never resolves (its own cap is ~400s).
+            pr.then(__clear, __clear);
+            setTimeout(__clear, 420000);
+        }
 
         return pr;
     }

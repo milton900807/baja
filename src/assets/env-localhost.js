@@ -17,6 +17,10 @@
   window["env"] = window["env"] || {};
   window["env"]["theme"] = "La Jolla Labs";
   window["env"]["apiUrl"] = "http://localhost:8080";
+  // Off-target service base. Point at baja-server (same as apiUrl) so the
+  // off-target UI uses the LOCAL 2-bit indexes it serves at /genomes and
+  // /off-targets-file, with the external levenshtein worker as fallback.
+  window["env"]["offtarget"] = "http://localhost:8080";
   window["env"]["appHost"] = "http://localhost:4200"
   window['env']['fileHost'] = "localhost:4200";
   window["env"]["menu"] = [

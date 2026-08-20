@@ -1,62 +1,79 @@
 /* ===========================================
-   Matte selection list — flat frame, options and
-   submit button matching the shared matte buttons.
+   Selection list styled to match the dropdown menu:
+   dark-gray surface, white text, compact rows.
    =========================================== */
 
-/* Flat card frame */
+/* Dark card frame (the menu-bar look) */
 :host ::ng-deep .selection-card.mat-mdc-card,
 .selection-card {
-  background: var(--panel-bg, #ffffff) !important;
-  border: 1px solid var(--border, #c8ced6);
-  border-radius: 12px;
-  box-shadow: 0 2px 6px rgba(16, 24, 40, 0.10);
+  background: #363b42 !important;
+  border: 1px solid #2b2f35;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(16, 24, 40, 0.18);
 }
 
 /* The list area is capped and scrolls when it runs off the page,
    keeping the title and the submit button visible. */
 .selection-card :where(.mat-mdc-card-content) {
-  padding: 8px 12px;
+  padding: 6px 8px;
   max-height: 60vh;
   overflow-y: auto;
 }
 
-/* Flat matte list options — a subtle surface so the per-item tint from
-   getOptionBackground still shows through. */
+/* Card title, when present, reads white on the dark frame */
+:host ::ng-deep .selection-card .mat-mdc-card-title {
+  color: #ffffff;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+/* Dark-gray rows with white text — like the menu items. `!important` beats the
+   per-item inline background-color from getOptionBackground() so the whole list
+   reads as one dark menu surface. */
 .selection-option {
-  margin: 3px 0;
-  border-radius: 7px;
-  border: 1px solid var(--border, #d4dae3);
-  color: var(--metal-text, #2a2f3a);
-  background: var(--metal-top, #e9edf2);
-  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.08);
-  transition: box-shadow 0.12s ease, background-color 0.12s ease;
+  margin: 2px 0;
+  border-radius: 6px;
+  border: 1px solid #2b2f35;
+  color: #ffffff;
+  background: #3f444b !important;
+  box-shadow: none;
+  font-weight: 600;
+  transition: background-color 0.12s ease;
 }
 
 .selection-option:hover {
-  box-shadow:
-    inset 0 0 0 999px var(--btn-hover-overlay, rgba(0, 0, 0, 0.045)),
-    0 1px 2px rgba(16, 24, 40, 0.10);
-}
-
-/* Selected = flat accent-tinted surface with a soft accent edge */
-:host ::ng-deep .selection-option.mdc-list-item--selected {
-  border-color: var(--accent, #2f6feb);
-  background: color-mix(in srgb, var(--accent, #2f6feb) 16%, var(--metal-top, #e9edf2)) !important;
+  background: #565d66 !important;
   box-shadow: none;
 }
 
-/* Titles / descriptions */
+/* Selected = lighter gray with a tropical cyan accent edge */
+:host ::ng-deep .selection-option.mdc-list-item--selected {
+  border-color: #35c6d6;
+  background: #565d66 !important;
+  box-shadow: inset 3px 0 0 #35c6d6;
+}
+
+/* Titles / descriptions — white on dark */
 .item-title {
   font-weight: 600;
-  font-size: 0.82rem;
-  line-height: 1.05rem;
+  font-size: 0.84rem;
+  line-height: 1.1rem;
   margin-bottom: 1px;
+  color: #ffffff;
 }
 
 .item-desc {
-  font-size: 0.72rem;
+  font-size: 0.73rem;
   line-height: 0.95rem;
-  opacity: 0.85;
+  color: #ffffff;
+  opacity: 0.75;
+}
+
+/* Force MDC's own text spans white too */
+:host ::ng-deep .selection-option .mdc-list-item__primary-text,
+:host ::ng-deep .selection-option .mdc-list-item__secondary-text,
+:host ::ng-deep .selection-option .mat-mdc-list-item-unscoped-content {
+  color: #ffffff !important;
 }
 
 /* Inner clickable padding for MDC list items — compact */
@@ -83,31 +100,28 @@
   word-break: break-word;
 }
 
-/* Matte submit button (matches mt-button and the shared button style) */
+/* Submit button matches the menu: dark-gray surface, white text */
 :host ::ng-deep .mat-mdc-card-actions button,
 :host ::ng-deep button[mat-raised-button] {
-  color: var(--metal-text, #2a2f3a) !important;
-  border: 1px solid var(--metal-border, #ccd3dc) !important;
+  color: #ffffff !important;
+  border: 1px solid #2b2f35 !important;
   border-radius: 6px !important;
   font-weight: 600;
   letter-spacing: 0.2px;
-  background: var(--metal-top, #e9edf2) !important;
-  box-shadow: var(--btn-shadow, 0 1px 2px rgba(16, 24, 40, 0.10)) !important;
-  transition: box-shadow 0.12s ease, transform 0.05s ease, background-color 0.12s ease;
+  background: #3f444b !important;
+  box-shadow: none !important;
+  transition: background-color 0.12s ease, transform 0.05s ease;
 }
 
 :host ::ng-deep .mat-mdc-card-actions button:hover,
 :host ::ng-deep button[mat-raised-button]:hover {
-  box-shadow:
-    inset 0 0 0 999px var(--btn-hover-overlay, rgba(0, 0, 0, 0.045)),
-    var(--btn-shadow, 0 1px 2px rgba(16, 24, 40, 0.10)) !important;
+  background: #565d66 !important;
 }
 
 :host ::ng-deep .mat-mdc-card-actions button:active,
 :host ::ng-deep button[mat-raised-button]:active {
   transform: translateY(0.5px);
-  box-shadow:
-    inset 0 0 0 999px var(--btn-active-overlay, rgba(0, 0, 0, 0.09)) !important;
+  background: #4a515a !important;
 }
 
 /* Empty state */
@@ -116,5 +130,5 @@
   align-items: center;
   gap: 6px;
   padding: 12px;
-  color: var(--muted-fg, #667085);
+  color: #9fb4c6;
 }

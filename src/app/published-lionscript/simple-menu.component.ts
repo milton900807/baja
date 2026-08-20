@@ -16,6 +16,7 @@ import {
     MatAutocompleteTrigger,
     MatAutocompleteSelectedEvent,
 } from "@angular/material/autocomplete";
+import { MatMenuTrigger } from "@angular/material/menu";
 import { FormControl } from "@angular/forms";
 import { Observable, of, Subscription } from "rxjs";
 import { map, startWith } from "rxjs/operators";
@@ -77,6 +78,18 @@ export class SimpleMenuComponent
     isPrimaryCommandInput = true;
 
     @ViewChildren("textInput") textInputs!: QueryList<ElementRef<HTMLInputElement>>;
+    // All top-level dropdown triggers, so opening one can close the rest.
+    @ViewChildren(MatMenuTrigger) menuTriggers!: QueryList<MatMenuTrigger>;
+
+    /** Close every other open top-level menu (called when one opens). */
+    closeOtherMenus(current: MatMenuTrigger): void {
+        if (!this.menuTriggers) return;
+        this.menuTriggers.forEach((t) => {
+            if (t !== current && t.menuOpen) {
+                try { t.closeMenu(); } catch (e) { }
+            }
+        });
+    }
 
     get textInput(): ElementRef<HTMLInputElement> | undefined {
         return this.textInputs?.first;

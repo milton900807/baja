@@ -5,6 +5,14 @@
   --cmd-line-height: 1;
   /* keep 1 for precise caret alignment */
   --cmd-letter-spacing: 0;
+
+  /* Tropical theme: navy surfaces, cyan accents, light text. */
+  --toolbar-bg: #0a2540;
+  --toolbar-fg: #eaf6f9;
+  --app-fg: #eaf6f9;
+  --panel-bg: #0a2540;
+  --btn-group-bg: rgba(255, 255, 255, 0.06);
+  --btn-group-border: #1aa3bd;
 }
 
 /* ========= Base / existing styles ========= */
@@ -89,17 +97,17 @@ mat-toolbar.mat-default {
 }
 
 .menu-buttons button:hover {
-  background-color: #eef2f8;
-  box-shadow: inset 0 0 0 1px #dbe3ef;
+  background-color: rgba(26, 163, 189, 0.18);
+  box-shadow: inset 0 0 0 1px rgba(26, 163, 189, 0.55);
 }
 
 .menu-buttons button:active {
-  background-color: #e2e8f2;
+  background-color: rgba(26, 163, 189, 0.30);
   transform: translateY(0.5px);
 }
 
 .menu-buttons button:focus-visible {
-  outline: 2px solid #2f6feb;
+  outline: 2px solid #1aa3bd;
   outline-offset: 1px;
 }
 
@@ -850,7 +858,7 @@ mat-toolbar.mat-default,
 .menu-wrapper>button:not(:first-of-type),
 .menu-wrapper>.mat-mdc-button:not(:first-of-type),
 .menu-wrapper>ng-container+ng-container {
-  border-left: 1px solid #e3e7ee !important;
+  border-left: 1px solid rgba(26, 163, 189, 0.40) !important;
   border-radius: 0 !important;
 }
 
@@ -953,4 +961,80 @@ mat-toolbar.mat-default,
   height: 20px;
   padding: 1px;
   line-height: 18px;
+}
+
+/* ============================================================
+   Dropdown menu bar: a bit bigger, dark-gray background,
+   white foreground. Applies to every `wid:'menu'` dropdown
+   group (the `.menu-wrapper` container and its text buttons).
+   ============================================================ */
+.menu-wrapper {
+  height: 28px !important;
+  min-height: 28px !important;
+  padding: 0 4px !important;
+  background: #0a2540 !important;
+  border: 1px solid #1aa3bd !important;
+}
+
+.menu-wrapper button,
+.menu-wrapper .mat-button,
+.menu-wrapper .mat-mdc-button {
+  height: 26px !important;
+  min-height: 26px !important;
+  line-height: 26px !important;
+  padding: 0 10px !important;
+  font-size: 12.5px !important;
+  font-weight: 600 !important;
+  color: #ffffff !important;
+}
+
+/* Angular Material internal label element */
+:host ::ng-deep .menu-wrapper .mdc-button__label,
+:host ::ng-deep .menu-wrapper .mat-button-wrapper {
+  font-size: 12.5px !important;
+  line-height: 26px !important;
+  color: #ffffff !important;
+}
+
+/* Icons in the dark menu render white too */
+.menu-wrapper mat-icon,
+.menu-wrapper .mat-icon {
+  color: #ffffff !important;
+  width: 16px !important;
+  height: 16px !important;
+  font-size: 16px !important;
+  line-height: 16px !important;
+}
+
+/* Hover: a slightly lighter gray, keep white text */
+.menu-wrapper button:hover,
+.menu-wrapper .mat-mdc-button:hover {
+  background-color: rgba(26, 163, 189, 0.28) !important;
+  color: #ffffff !important;
+}
+
+/* Dividers between items, lighter so they read on the dark bg */
+.menu-wrapper > button:not(:first-of-type),
+.menu-wrapper > .mat-mdc-button:not(:first-of-type),
+.menu-wrapper > ng-container + ng-container {
+  border-left: 1px solid rgba(26, 163, 189, 0.40) !important;
+}
+
+/* Give the toolbar a little more height so the bigger menu isn't clipped */
+mat-toolbar.mat-default,
+.white-toolbar {
+  height: 34px !important;
+  min-height: 34px !important;
+  max-height: 34px !important;
+  line-height: 34px !important;
+}
+.left-section { height: 34px; min-height: 34px; }
+
+/* Keep the menu off the left edge of the browser */
+mat-toolbar.mat-default,
+.white-toolbar {
+  padding-left: 16px !important;
+}
+.left-section {
+  margin-left: 8px;
 }

@@ -82,24 +82,40 @@ export interface Option {
 
       padding: 14px;
 
-      background: #e2efff;
-      border: 2px solid #c4d9ff;
+      /* Tropical theme: light card, cyan border, navy text. */
+      background: #eef6f9;
+      border: 2px solid #1aa3bd;
+      color: #0a2540;
       border-radius: 14px;
 
-      box-shadow:
-        0px 3px 6px rgba(0,0,0,0.10),
-        0px 8px 18px rgba(70,120,200,0.18);
+      box-shadow: 0 2px 6px rgba(10,37,64,0.12);
 
       transition:
         transform 0.2s ease,
         box-shadow 0.25s ease,
-        background-color 0.25s ease,
+        background 0.25s ease,
+        color 0.2s ease,
         border-color 0.25s ease;
 
       cursor: pointer;
       overflow: hidden;
       position: relative;
       box-sizing: border-box;
+    }
+
+    /* Hover: lift + navy border. */
+    mat-radio-button.radio-button:hover,
+    mat-radio-button.radio-button.hovered {
+      border-color: #0a2540;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 14px rgba(10,37,64,0.22);
+    }
+
+    /* Selected: inverted tropical fill (navy -> cyan) with white text. */
+    mat-radio-button.radio-button.mat-mdc-radio-checked {
+      background: linear-gradient(160deg, #0a2540 0%, #1aa3bd 100%);
+      border-color: #1aa3bd;
+      color: #ffffff;
     }
 
     /* ✅ Make the Material radio circle occupy a reserved left column,
@@ -130,18 +146,15 @@ export interface Option {
       padding: 0;
     }
 
-    /* ✅ Top-left label: wrap fully, no ellipsis, never overlaps circle */
+    /* ✅ Top-left label (media cards): wrap fully, no ellipsis, never overlaps circle */
     mat-radio-button.radio-button .label-top-left {
       position: absolute;
       top: 10px;
       left: calc(var(--radio-icon-space) + 8px);
 
       font-size: 16px;
-      font-weight: 900;
-      color: #002575ff;
-      text-shadow:
-        0 2px 3px rgba(255,255,255,0.7),
-        0 1px 2px rgba(0,0,0,0.25);
+      font-weight: 800;
+      color: inherit;   /* driven by the card (navy, or white when selected) */
 
       pointer-events: none;
 
@@ -152,15 +165,39 @@ export interface Option {
       overflow: visible;
       text-overflow: unset;
       overflow-wrap: break-word;   /* or normal */
-      word-break: normal;
+      word-break: break-word;
       hyphens: none;
-      line-height: 1.1;
+      line-height: 1.15;
       padding-right: 2px;
     }
 
-    /* ✅ When NO icon/svg: let the label have more vertical room */
+    /* ✅ Text-only (no icon/svg) cards: hide the radio circle and CENTER the label
+       so genome names read cleanly and fill the card. */
+    mat-radio-button.radio-button.no-media .mdc-form-field {
+      grid-template-columns: 1fr;
+    }
+    mat-radio-button.radio-button.no-media .mdc-radio,
+    mat-radio-button.radio-button.no-media .mat-mdc-radio-touch-target,
+    mat-radio-button.radio-button.no-media .mdc-radio__background {
+      display: none;
+    }
     mat-radio-button.radio-button.no-media {
-      padding-top: 10px;
+      padding: 10px;
+    }
+    mat-radio-button.radio-button.no-media .label-top-left {
+      position: static;
+      top: auto;
+      left: auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      width: 100%;
+      height: 100%;
+      max-width: 100%;
+      padding: 4px;
+      font-size: 15px;
+      font-weight: 700;
     }
 
     /* ✅ Media scales relative to card size (prevents overflow) */
@@ -212,7 +249,8 @@ export interface Option {
       max-width: 100%;
       font-size: 12px;
       font-weight: 500;
-      color: #003080;
+      color: inherit;
+      opacity: 0.85;
       line-height: 1.15;
     }
   `],

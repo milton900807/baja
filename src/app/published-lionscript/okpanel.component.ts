@@ -12,7 +12,9 @@ import { PubComponentListener } from "./pub-component-listener";
     templateUrl: './okpanel.component.html',
     styles: [
         '.shadow-textarea textarea.form-control::placeholder { font-weight: 300;  }',
-        '.shadow-textarea textarea.form-control {  padding-left: 0.8rem;    } ']
+        '.shadow-textarea textarea.form-control {  padding-left: 0.8rem;    } ',
+        '.okpanel-btn { background-color: #011c3c; color: #ffffff; border: 1px solid #011c3c; margin-right: 6px; }',
+        '.okpanel-btn:hover, .okpanel-btn:focus, .okpanel-btn:active { background-color: #012a5a; color: #ffffff; border-color: #012a5a; }']
 })
 export class OKPanel implements OnInit, PubComponent {
     ionfunction: any;

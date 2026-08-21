@@ -81,7 +81,8 @@ org.helm.webeditor.MonomerExplorer = scil.extend(scil._base, {
             tabs.push({ caption: "Monomers", tabkey: "monomers" });
         else
             this.addMonomerTabs(tabs);
-        tabs.push({ caption: "Rules", tabkey: "rule" });
+        // Rules tab removed per app requirement.
+        // tabs.push({ caption: "Rules", tabkey: "rule" });
 
         var width = this.options.width != null ? this.options.width : 300;
         this.height = this.options.height != null ? this.options.height : 400;

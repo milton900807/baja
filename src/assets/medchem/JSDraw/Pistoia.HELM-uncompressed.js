@@ -2,7 +2,7 @@
 * Copyright (C)2018, The Pistoia Alliance
 *  Version 1.1.0.2018--03-13
 *
-* Created by Scilligence, built on JSDraw.Lite
+* Created by sc900807, built on _drawnm.Lite
 *
 * Permission is hereby granted, free of charge, to any person obtaining
 * a copy of this software and associated documentation files (the
@@ -30,7 +30,7 @@
 /**
 @project HELM Web Editor
 @version 1.1.4
-@description HELM Web Editor built on JSDraw.Lite
+@description HELM Web Editor built on _drawnm.Lite
 */
 
 /**
@@ -53,6 +53,15 @@ org.helm.webeditor = {
     kVersion: "1.1.4",
     atomscale: 2,
     bondscale: 1.6,
+    // Horizontal spacing between adjacent backbone monomers (along the chain).
+    // Kept separate from bondscale so the backbone can be drawn tighter on the
+    // x-axis while the vertical hydrogen-bond distance (which uses bondscale)
+    // stays unchanged.
+    bondscalex: 1.0,
+    // Covalent sugar->base bond: SHORT (base sits close under its sugar).
+    basescale: 0.8,
+    // Hydrogen bond base<->complement across the duplex: LONG (drawn dotted).
+    hbondscale: 2.0,
     allowHeadToHeadConnection: true,
     ambiguity: false,
 
@@ -109,7 +118,7 @@ org.helm.webeditor = {
             var div = scil.Utils.createElement(null, "div");
             scil.Utils.createElement(div, "img", null, { width: 425, height: 145 }, { src: scil.Utils.imgSrc("img/helm.png") });
 
-            scil.Utils.createElement(div, "div", "Built on <a target=_blank href='http://www.jsdraw.com'>JSDraw.Lite " + JSDraw2.kFileVersion + "</a> (open source), by <a target=_blank href='http://www.scillignece.com'>Scilligence</a>", { textAlign: "right", paddingRight: "26px" });
+            scil.Utils.createElement(div, "div", "Built on <a target=_blank href='http://www.jsdraw.com'>_drawnm.Lite " + _drawnm2.kFileVersion + "</a> (open source), by <a target=_blank href='http://www.scillignece.com'>sc900807</a>", { textAlign: "right", paddingRight: "26px" });
             var tbody = scil.Utils.createTable(div, null, null, { borderTop: "solid 1px gray", width: "100%" });
             var tr = scil.Utils.createElement(tbody, "tr");
             scil.Utils.createElement(tr, "td", this.kVersion);
@@ -117,7 +126,7 @@ org.helm.webeditor = {
             scil.Utils.createElement(scil.Utils.createElement(tbody, "tr"), "td", "&nbsp;");
             var btn = scil.Utils.createElement(scil.Utils.createElement(div, "div", null, { textAlign: "center" }), "button", "OK", { width: scil.Utils.buttonWidth + "px" });
 
-            me.aboutDlg = new JSDraw2.Dialog("About HELM Web Editor", div);
+            me.aboutDlg = new _drawnm2.Dialog("About HELM Web Editor", div);
             scil.connect(btn, "onclick", function (e) { me.aboutDlg.hide(); e.preventDefault(); });
         }
         this.aboutDlg.show();
@@ -148,7 +157,7 @@ org.helm.webeditor = {
 scil.helm = org.helm.webeditor;
 ﻿/*******************************************************************************
 * Copyright (C) 2018, The Pistoia Alliance
-* Created by Scilligence, built on JSDraw.Lite
+* Created by sc900807, built on _drawnm.Lite
 * 
 * Permission is hereby granted, free of charge, to any person obtaining
 * a copy of this software and associated documentation files (the
@@ -179,10 +188,10 @@ org.helm.webeditor.Interface = {
     * Create the canvas
     * @function createCanvas
     * @param {DOM} div
-    * @param {dict} args - check <a href='http://www.scilligence.com/sdk/jsdraw/logical/scilligence/JSDraw2/Editor.html'>JSDraw SDK</a>
+    * @param {dict} args - check <a href='http://www.scilligence.com/sdk/jsdraw/logical/scilligence/_drawnm2/Editor.html'>_drawnm SDK</a>
     */
     createCanvas: function (div, args) {
-        return new JSDraw2.Editor(div, args);
+        return new _drawnm2.Editor(div, args);
     },
 
     /**
@@ -191,7 +200,7 @@ org.helm.webeditor.Interface = {
     * @param {string} molfile
     */
     createMol: function (molfile) {
-        var m = new JSDraw2.Mol();
+        var m = new _drawnm2.Mol();
         m.setMolfile(molfile);
         return m;
     },
@@ -203,7 +212,7 @@ org.helm.webeditor.Interface = {
     * @param {number} y
     */
     createPoint: function (x, y) {
-        return new JSDraw2.Point(x, y);
+        return new _drawnm2.Point(x, y);
     },
 
     /**
@@ -215,47 +224,47 @@ org.helm.webeditor.Interface = {
     * @param {number} h - height
     */
     createRect: function (l, t, w, h) {
-        return new JSDraw2.Rect(l, t, w, h);
+        return new _drawnm2.Rect(l, t, w, h);
     },
 
     /**
     * Create an atom
     * @function createAtom
-    * @param {JSDraw2.Mol} m
-    * @param {JSDraw2.Point} p - the coordinate
+    * @param {_drawnm2.Mol} m
+    * @param {_drawnm2.Point} p - the coordinate
     */
     createAtom: function (m, p) {
-        return m.addAtom(new JSDraw2.Atom(p));
+        return m.addAtom(new _drawnm2.Atom(p));
     },
 
     /**
     * Create a bond between two atoms
     * @function createBond
-    * @param {JSDraw2.Mol} m
-    * @param {JSDraw2.Atom} a1
-    * @param {JSDraw2.Atom} a2
+    * @param {_drawnm2.Mol} m
+    * @param {_drawnm2.Atom} a1
+    * @param {_drawnm2.Atom} a2
     */
     createBond: function (m, a1, a2, bondtype) {
-        return m.addBond(new JSDraw2.Bond(a1, a2, bondtype == null ? JSDraw2.BONDTYPES.SINGLE : bondtype));
+        return m.addBond(new _drawnm2.Bond(a1, a2, bondtype == null ? _drawnm2.BONDTYPES.SINGLE : bondtype));
     },
 
     /**
     * Get atom counts
     * @function getAtomStats
-    * @param {JSDraw2.Mol} m
+    * @param {_drawnm2.Mol} m
     * @param {array} atoms
     */
     getAtomStats: function (m, atoms) {
         var mol = { atoms: atoms, bonds: m.bonds };
-        var ret = JSDraw2.FormulaParser.getAtomStats(m);
+        var ret = _drawnm2.FormulaParser.getAtomStats(m);
         return ret == null ? null : ret.elements;
     },
 
     /**
     * Test if two molecules are equal
     * @function molEquals
-    * @param {JSDraw2.Mol} m1
-    * @param {JSDraw2.Mol} m2
+    * @param {_drawnm2.Mol} m1
+    * @param {_drawnm2.Mol} m2
     */
     molEquals: function (m1, m2) {
         var mol1 = m1.mol != null ? m1.mol : (m1.mol = this.createMol(scil.helm.Monomers.getMolfile(m1)));
@@ -271,7 +280,7 @@ org.helm.webeditor.Interface = {
     molStats: function (molfile) {
         var mol = this.createMol(molfile);
         mol.calcHCount();
-        return JSDraw2.FormulaParser.getAtomStats(mol).elements;
+        return _drawnm2.FormulaParser.getAtomStats(mol).elements;
     },
 
     /**
@@ -280,35 +289,35 @@ org.helm.webeditor.Interface = {
     * @param {string} e - element name
     */
     getElementMass: function (e) {
-        return JSDraw2.PT[e].m;
+        return _drawnm2.PT[e].m;
     },
 
     /**
     * Get the current object
     * @function getCurrentAtom
-    * @param {JSDraw2.Editor} jsd - JSDraw Editor
+    * @param {_drawnm2.Editor} jsd - _drawnm Editor
     */
     getCurrentAtom: function (jsd) {
-        return JSDraw2.Atom.cast(jsd.curObject)
+        return _drawnm2.Atom.cast(jsd.curObject)
     },
 
     /**
     * Scale the canvas
     * @function scaleCanvas
-    * @param {JSDraw2.Editor} jsd - JSDraw Editor
+    * @param {_drawnm2.Editor} jsd - _drawnm Editor
     */
     scaleCanvas: function (jsd) {
-        var scale = JSDraw2.Editor.BONDLENGTH / jsd.bondlength;
-        if (JSDraw2.Editor.BONDLENGTH / jsd.bondlength > 1)
-            jsd.scale(JSDraw2.Editor.BONDLENGTH / jsd.bondlength);
+        var scale = _drawnm2.Editor.BONDLENGTH / jsd.bondlength;
+        if (_drawnm2.Editor.BONDLENGTH / jsd.bondlength > 1)
+            jsd.scale(_drawnm2.Editor.BONDLENGTH / jsd.bondlength);
     },
 
     /**
     * called by the canvas to draw a monomer
     * @function drawMonomer
     * @param {SVG} surface
-    * @param {JSDraw2.Atom} a - monomer object
-    * @param {JSDraw2.Point} p - coordinate
+    * @param {_drawnm2.Atom} a - monomer object
+    * @param {_drawnm2.Point} p - coordinate
     * @param {number} fontsize
     * @param {number} linewidth
     * @param {string} color
@@ -323,46 +332,69 @@ org.helm.webeditor.Interface = {
         var w = fontsize * org.helm.webeditor.atomscale;
         var lw = linewidth / 2; //(c.nature ? 1 : 2);
         if (biotype == org.helm.webeditor.HELM.LINKER)
-            JSDraw2.Drawer.drawEllipse(surface, org.helm.webeditor.Interface.createRect(p.x - w / 2, p.y - w / 2, w, w), c.linecolor, lw).setFill(c.backgroundcolor);
+            _drawnm2.Drawer.drawEllipse(surface, org.helm.webeditor.Interface.createRect(p.x - w / 2, p.y - w / 2, w, w), c.linecolor, lw).setFill(c.backgroundcolor);
         else if (biotype == org.helm.webeditor.HELM.SUGAR)
-            JSDraw2.Drawer.drawRect(surface, org.helm.webeditor.Interface.createRect(p.x - w / 2, p.y - w / 2, w, w), c.linecolor, lw, linewidth * 3).setFill(c.backgroundcolor);
+            _drawnm2.Drawer.drawEllipse(surface, org.helm.webeditor.Interface.createRect(p.x - w / 2, p.y - w / 2, w, w), c.linecolor, lw).setFill(c.backgroundcolor);
         else if (biotype == org.helm.webeditor.HELM.BASE)
-            JSDraw2.Drawer.drawDiamond(surface, org.helm.webeditor.Interface.createRect(p.x - w / 2, p.y - w / 2, w, w), c.linecolor, lw).setFill(c.backgroundcolor);
+            _drawnm2.Drawer.drawEllipse(surface, org.helm.webeditor.Interface.createRect(p.x - w / 2, p.y - w / 2, w, w), c.linecolor, lw).setFill(c.backgroundcolor);
         else if (biotype == org.helm.webeditor.HELM.AA)
-            JSDraw2.Drawer.drawHexgon(surface, org.helm.webeditor.Interface.createRect(p.x - w / 2, p.y - w / 2, w, w), c.linecolor, lw, linewidth * 3).setFill(c.backgroundcolor);
+            _drawnm2.Drawer.drawHexgon(surface, org.helm.webeditor.Interface.createRect(p.x - w / 2, p.y - w / 2, w, w), c.linecolor, lw, linewidth * 3).setFill(c.backgroundcolor);
         else if (biotype == org.helm.webeditor.HELM.CHEM)
-            JSDraw2.Drawer.drawRect(surface, org.helm.webeditor.Interface.createRect(p.x - w / 2, p.y - w / 2, w, w), c.linecolor, lw).setFill(c.backgroundcolor);
+            _drawnm2.Drawer.drawRect(surface, org.helm.webeditor.Interface.createRect(p.x - w / 2, p.y - w / 2, w, w), c.linecolor, lw).setFill(c.backgroundcolor);
         else if (biotype == org.helm.webeditor.HELM.BLOB)
-            JSDraw2.Drawer.drawRect(surface, org.helm.webeditor.Interface.createRect(p.x - w / 2, p.y - w / 2, w, w), c.linecolor, lw * 2, linewidth * 5).setFill(c.backgroundcolor);
+            _drawnm2.Drawer.drawRect(surface, org.helm.webeditor.Interface.createRect(p.x - w / 2, p.y - w / 2, w, w), c.linecolor, lw * 2, linewidth * 5).setFill(c.backgroundcolor);
         else if (biotype == org.helm.webeditor.HELM.NUCLEOTIDE)
-            JSDraw2.Drawer.drawPentagon(surface, org.helm.webeditor.Interface.createRect(p.x - w / 2, p.y - w / 2, w, w), c.linecolor, lw, linewidth * 3).setFill(c.backgroundcolor);
+            _drawnm2.Drawer.drawPentagon(surface, org.helm.webeditor.Interface.createRect(p.x - w / 2, p.y - w / 2, w, w), c.linecolor, lw, linewidth * 3).setFill(c.backgroundcolor);
         var pt = p.clone();
         p.offset(0, -1);
-        JSDraw2.Drawer.drawLabel(surface, p, a.elem, c.textcolor, fontsize * (a.elem.length > 1 ? 2 / a.elem.length : 1.0), null, null, null, false);
+        _drawnm2.Drawer.drawLabel(surface, p, a.elem, c.textcolor, fontsize * (a.elem.length > 1 ? 2 / a.elem.length : 1.0), null, null, null, false);
 
         if (a.bio.id > 0) {
             var p1 = p.clone();
-            p1.offset(-fontsize * 1.2, -fontsize * 1.2);
-            JSDraw2.Drawer.drawLabel(surface, p1, a.bio.id, "#00FF00", fontsize, null, null, null, false);
+            // For a base, draw its nucleotide index on the OUTER side of the base
+            // icon — i.e. along the sugar→base axis, on the far side away from the
+            // sugar/backbone — so it never overlaps the backbone. Works for bases
+            // pointing down (top strand), up (bottom strand) or at an angle.
+            var placed = false;
+            if (biotype == org.helm.webeditor.HELM.BASE && a.bonds != null) {
+                for (var _bi = 0; _bi < a.bonds.length; _bi++) {
+                    var _bo = a.bonds[_bi];
+                    var _sugar = _bo.a1 == a ? _bo.a2 : _bo.a1;
+                    if (_sugar != null && typeof _sugar.biotype == "function" && _sugar.biotype() == org.helm.webeditor.HELM.SUGAR) {
+                        var _dx = a.p.x - _sugar.p.x, _dy = a.p.y - _sugar.p.y;
+                        var _len = Math.sqrt(_dx * _dx + _dy * _dy) || 1;
+                        var _off = fontsize * 1.6;
+                        p1.offset(_dx / _len * _off, _dy / _len * _off);
+                        placed = true;
+                        break;
+                    }
+                }
+            }
+            if (!placed) p1.offset(-fontsize * 1.2, -fontsize * 1.2);   // sugars/linkers: above-left
+            _drawnm2.Drawer.drawLabel(surface, p1, a.bio.id, "#555555", fontsize, null, null, null, false);
         }
         if (!scil.Utils.isNullOrEmpty(a.bio.annotation)) {
             var p1 = p.clone();
             var s = a.bio.annotation;
+            // Larger, clearer orientation labels (5'/3'), pushed well clear of the
+            // structure so the monomers never overlap them.
+            var annfont = fontsize * 1.7;
+            var anndy = -fontsize * 2.8;
             if (a.bio.annotationshowright) {
                 var c = a.biotype() == org.helm.webeditor.HELM.AA ? 0.7 : 1;
-                p1.offset(fontsize * c, -fontsize * 1.5);
-                JSDraw2.Drawer.drawLabel(surface, p1, s, "#FFA500", fontsize, null, "start", null, false);
+                p1.offset(fontsize * c, anndy);
+                _drawnm2.Drawer.drawLabel(surface, p1, s, "#555555", annfont, null, "start", null, false);
             }
             else {
                 var c = a.biotype() == org.helm.webeditor.HELM.AA ? 1.5 : 1;
-                p1.offset(-fontsize * c, -fontsize * 1.5);
-                JSDraw2.Drawer.drawLabel(surface, p1, s, "#FFA500", fontsize, null, "end", null, false);
+                p1.offset(-fontsize * c, anndy);
+                _drawnm2.Drawer.drawLabel(surface, p1, s, "#555555", annfont, null, "end", null, false);
             }
         }
 
         if (!scil.Utils.isNullOrEmpty(a.tag)) {
             var r = fontsize / 2;
-            JSDraw2.Drawer.drawEllipse(surface, org.helm.webeditor.Interface.createRect(pt.x + r / 2, pt.y - w / 3 - r / 2, r, r), "white", lw).setFill("red");
+            _drawnm2.Drawer.drawEllipse(surface, org.helm.webeditor.Interface.createRect(pt.x + r / 2, pt.y - w / 3 - r / 2, r, r), "white", lw).setFill("red");
         }
     },
 
@@ -379,7 +411,7 @@ org.helm.webeditor.Interface = {
         buttons.push(main);
 
         buttons.push({ c: "new", t: "New", label: "New" });
-        if (typeof (JSDrawServices) != "undefined" && JSDrawServices.url != null) {
+        if (typeof (_drawnmServices) != "undefined" && _drawnmServices.url != null) {
             buttons.push({ c: "open", t: "Load", label: "Load" });
             buttons.push({ c: "save", t: "Save", label: "Save" });
         }
@@ -425,7 +457,7 @@ org.helm.webeditor.Interface = {
     /**
     * called when the canvas is trying to display context menu
     * @function onContextMenu
-    * @param {JSDraw2.Editor} ed - JSDraw Editor
+    * @param {_drawnm2.Editor} ed - _drawnm Editor
     * @param {Event} e - Javascript event
     * @param {bool} viewonly - indicate if this is viewonly mode
     */
@@ -433,9 +465,9 @@ org.helm.webeditor.Interface = {
         var items = [];
 
         if (ed.options.helmtoolbar) {
-            var a = JSDraw2.Atom.cast(ed.curObject);
-            var b = JSDraw2.Bond.cast(ed.curObject);
-            var grp = JSDraw2.Group.cast(ed.curObject);
+            var a = _drawnm2.Atom.cast(ed.curObject);
+            var b = _drawnm2.Bond.cast(ed.curObject);
+            var grp = _drawnm2.Group.cast(ed.curObject);
             if (a != null) {
                 var biotype = a.biotype();
                 if (biotype == scil.helm.HELM.SUGAR && a.bio != null) {
@@ -475,14 +507,14 @@ org.helm.webeditor.Interface = {
             }
         }
         else {
-            var a = JSDraw2.Atom.cast(ed.curObject);
+            var a = _drawnm2.Atom.cast(ed.curObject);
             if (a != null && a.bio == null)
                 items.push({ caption: "R Group", callback: function (cmd, obj) { ed.menuSetAtomType(cmd, obj); }, children: ["R1", "R2", "R3", "R4", "R5"] });
 
             items.push({ caption: "Copy Molfile", key: "copymolfile" });
         }
 
-        var br = JSDraw2.Bracket.cast(ed.curObject);
+        var br = _drawnm2.Bracket.cast(ed.curObject);
         if (br != null)
             items.push({ caption: "Set Subscript", key: "setbracketsubscription" });
 
@@ -492,12 +524,12 @@ org.helm.webeditor.Interface = {
         if (ed.options.helmtoolbar)
             ; //items.push({ caption: "About HELM Web Editor", key: "abouthelm" });
         else
-            items.push({ caption: "About JSDraw", key: "about" });
+            items.push({ caption: "About _drawnm", key: "about" });
         return items;
     }
 };﻿/*******************************************************************************
 * Copyright (C) 2018, The Pistoia Alliance
-* Created by Scilligence, built on JSDraw.Lite
+* Created by sc900807, built on _drawnm.Lite
 * 
 * Permission is hereby granted, free of charge, to any person obtaining
 * a copy of this software and associated documentation files (the
@@ -535,13 +567,13 @@ org.helm.webeditor.MonomerColors = {
     },
 
     linkers: {
-        P: "#9aa5e1",
-        p: "#9aa5e1"
+        P: "#e0a93b",
+        p: "#e0a93b"
     },
 
     sugars: {
-        R: "#7a85c1",
-        r: "#7a85c1"
+        R: "#ffffff",
+        r: "#ffffff"
     },
 
     aas: {
@@ -578,7 +610,7 @@ org.helm.webeditor.MonomerColors = {
 };
 ﻿/*******************************************************************************
 * Copyright (C) 2018, The Pistoia Alliance
-* Created by Scilligence, built on JSDraw.Lite
+* Created by sc900807, built on _drawnm.Lite
 * 
 * Permission is hereby granted, free of charge, to any person obtaining
 * a copy of this software and associated documentation files (the
@@ -725,7 +757,7 @@ org.helm.webeditor.Monomers = {
         var ret = "";
         for (var id in set) {
             var s = this.writeOneAsText({ id: ++n.n, symbol: id, monomertype: mt, polymertype: type, name: set[id].n, naturalanalog: set[id].na, m: set[id] }, cols);
-            ret += JSDraw2.Base64.encode(s) + "\n";
+            ret += _drawnm2.Base64.encode(s) + "\n";
         }
 
         return ret;
@@ -1096,7 +1128,7 @@ org.helm.webeditor.Monomers = {
         if (ss == null || ss.length == 0)
             return null;
 
-        smiles = this.chemAxon2JSDrawSmiles(smiles);
+        smiles = this.chemAxon2_drawnmSmiles(smiles);
         if (this.smilesmonomers[smiles] != null)
             return this.smilesmonomers[smiles];
 
@@ -1125,7 +1157,7 @@ org.helm.webeditor.Monomers = {
         return m;
     },
 
-    chemAxon2JSDrawSmiles: function (smiles) {
+    chemAxon2_drawnmSmiles: function (smiles) {
         return smiles;
     },
 
@@ -1133,7 +1165,7 @@ org.helm.webeditor.Monomers = {
         // "C[13C@H](N[*])C([*])=O |$;;;_R1;;_R2;$|"
 
         var ret = [];
-        // JSDraw like Rs
+        // _drawnm like Rs
         for (var i = 1; i <= 10; ++i) {
             var s2 = s.replace(new RegExp("\\[R" + i + "\\]"), "");
             if (s2.length == s.length)
@@ -1332,7 +1364,7 @@ scil.helm.Monomers.chems = {
     'r': { id: 'R', n: 'R', na: null, m: null, rs: 0, at: {}}
 };﻿/*******************************************************************************
 * Copyright (C) 2018, The Pistoia Alliance
-* Created by Scilligence, built on JSDraw.Lite
+* Created by sc900807, built on _drawnm.Lite
 * 
 * Permission is hereby granted, free of charge, to any person obtaining
 * a copy of this software and associated documentation files (the
@@ -1363,12 +1395,12 @@ org.helm.webeditor.Plugin = scil.extend(scil._base, {
     @property {MonomerExplorer} monomerexplorer - Monomer Explorer
     **/
     /**
-    @property {JSDraw2.Editor} jsd - Drawing Canvas
+    @property {_drawnm2.Editor} jsd - Drawing Canvas
     **/
 
     /**
     * @constructor Plugin
-    * @param {JSDraw2.Editor} jsd - The JSDraw canvas
+    * @param {_drawnm2.Editor} jsd - The _drawnm canvas
     **/
     constructor: function (jsd) {
         this.jsd = jsd;
@@ -1454,7 +1486,7 @@ org.helm.webeditor.Plugin = scil.extend(scil._base, {
     },
 
     setAtomProp: function (obj) {
-        var a = JSDraw2.Atom.cast(obj);
+        var a = _drawnm2.Atom.cast(obj);
         if (a == null)
             return;
 
@@ -1530,7 +1562,7 @@ org.helm.webeditor.Plugin = scil.extend(scil._base, {
     },
 
     setBondProp: function (obj) {
-        var b = JSDraw2.Bond.cast(obj);
+        var b = _drawnm2.Bond.cast(obj);
         if (b == null)
             return;
 
@@ -1672,7 +1704,7 @@ org.helm.webeditor.Plugin = scil.extend(scil._base, {
     },
 
     expandSuperAtom: function (obj) {
-        var a = JSDraw2.Atom.cast(obj);
+        var a = _drawnm2.Atom.cast(obj);
         if (a == null || a.bio == null || !org.helm.webeditor.isHelmNode(a))
             return false;
 
@@ -1826,7 +1858,7 @@ org.helm.webeditor.Plugin = scil.extend(scil._base, {
         var list = [];
         var graphics = this.jsd.m.graphics;
         for (var i = 0; i < graphics.length; ++i) {
-            if (JSDraw2.Group.cast(graphics[i]) != null && graphics[i].selected)
+            if (_drawnm2.Group.cast(graphics[i]) != null && graphics[i].selected)
                 list.push(graphics[i]);
         }
 
@@ -1901,7 +1933,7 @@ org.helm.webeditor.Plugin = scil.extend(scil._base, {
     },
 
     createGroup2: function (list, collapse) {
-        var g = new JSDraw2.Group("", "helmgroup");
+        var g = new _drawnm2.Group("", "helmgroup");
         g.gap = 10;
         this.jsd.m.addGraphics(g);
 
@@ -1915,7 +1947,7 @@ org.helm.webeditor.Plugin = scil.extend(scil._base, {
     },
 
     collapseGroup: function (g, clean) {
-        if (JSDraw2.Group.cast(g) == null)
+        if (_drawnm2.Group.cast(g) == null)
             return null;
 
         this.jsd.m.clearFlag();
@@ -1927,9 +1959,9 @@ org.helm.webeditor.Plugin = scil.extend(scil._base, {
     },
 
     _collapseGroup: function (g) {
-        var sa = g.a != null ? g.a : org.helm.webeditor.Interface.createAtom(this.jsd.m, new JSDraw2.Point());
+        var sa = g.a != null ? g.a : org.helm.webeditor.Interface.createAtom(this.jsd.m, new _drawnm2.Point());
         //sa.tag = "Group";
-        var mol = new JSDraw2.Mol();
+        var mol = new _drawnm2.Mol();
         sa.superatom = mol;
         sa.hidden = null;
         sa.group = g.group;
@@ -2021,7 +2053,7 @@ org.helm.webeditor.Plugin = scil.extend(scil._base, {
 
         this.jsd.m.mergeMol(m);
 
-        var g = new JSDraw2.Group("", "helmgroup");
+        var g = new _drawnm2.Group("", "helmgroup");
         g.gap = 10;
         this.jsd.m.addGraphics(g);
         for (var i = 0; i < m.atoms.length; ++i)
@@ -2103,19 +2135,19 @@ org.helm.webeditor.Plugin = scil.extend(scil._base, {
         if (a1 == null || a2 == null || a1 == a2)
             return null;
         var b = org.helm.webeditor.Interface.createBond(this.jsd.m, a1, a2);
-        b.type = JSDraw2.BONDTYPES.UNKNOWN;
+        b.type = _drawnm2.BONDTYPES.UNKNOWN;
         return b;
     },
 
     connnectGroup: function (p1, object) {
         var object1 = this.jsd.toggle(p1);
         var object2 = object;
-        var t1 = JSDraw2.Atom.cast(object1);
-        var t2 = JSDraw2.Atom.cast(object2);
+        var t1 = _drawnm2.Atom.cast(object1);
+        var t2 = _drawnm2.Atom.cast(object2);
 
         var showmsg = false;
         if (t1 == null) {
-            var g1 = JSDraw2.Group.cast(object1);
+            var g1 = _drawnm2.Group.cast(object1);
             if (g1 != null && !scil.Utils.isNullOrEmpty(g1.ratio)) {
                 showmsg = true;
                 g1.ratio = null;
@@ -2125,7 +2157,7 @@ org.helm.webeditor.Plugin = scil.extend(scil._base, {
         }
 
         if (t2 == null) {
-            var g2 = JSDraw2.Group.cast(object2);
+            var g2 = _drawnm2.Group.cast(object2);
             if (g2 != null && !scil.Utils.isNullOrEmpty(g2.ratio)) {
                 showmsg = true;
                 g2.ratio = null;
@@ -2219,7 +2251,7 @@ org.helm.webeditor.Plugin = scil.extend(scil._base, {
         if ((rs1 == null || rs2 == null)) {
             if (this.canPair(a1, a2) && this.jsd.m.findBond(a1, a2) == null) {
                 // hydrogen bond
-                org.helm.webeditor.Interface.createBond(this.jsd.m, a1, a2, JSDraw2.BONDTYPES.UNKNOWN);
+                org.helm.webeditor.Interface.createBond(this.jsd.m, a1, a2, _drawnm2.BONDTYPES.UNKNOWN);
                 this.finishConnect(extendchain);
             }
             else {
@@ -2675,7 +2707,7 @@ org.helm.webeditor.Plugin = scil.extend(scil._base, {
     /**
     * Clean the layout
     * @function clean
-    * @param {JSDraw2.Atom} a - the start monomer.  Use null to clean all
+    * @param {_drawnm2.Atom} a - the start monomer.  Use null to clean all
     * @param {bool} redraw - indicate if redrawing the structure after cleaning
     */
     clean: function (a, redraw) {
@@ -2899,7 +2931,7 @@ org.helm.webeditor.Plugin = scil.extend(scil._base, {
             this.setNodeType(a, org.helm.webeditor.HELM.SUGAR, m);
 
             if (org.helm.webeditor.Monomers.hasR(org.helm.webeditor.HELM.SUGAR, m, "R3")) {
-                var a3 = this.addNode(org.helm.webeditor.Interface.createPoint(a.p.x, a.p.y + this.jsd.bondlength * org.helm.webeditor.bondscale), org.helm.webeditor.HELM.BASE, this.getDefaultNodeType(org.helm.webeditor.HELM.BASE));
+                var a3 = this.addNode(org.helm.webeditor.Interface.createPoint(a.p.x, a.p.y + this.jsd.bondlength * org.helm.webeditor.basescale), org.helm.webeditor.HELM.BASE, this.getDefaultNodeType(org.helm.webeditor.HELM.BASE));
                 this.addBond(a, a3, 3, 1);
             }
 
@@ -2938,7 +2970,7 @@ org.helm.webeditor.Plugin = scil.extend(scil._base, {
 });
 ﻿/*******************************************************************************
 * Copyright (C) 2018, The Pistoia Alliance
-* Created by Scilligence, built on JSDraw.Lite
+* Created by sc900807, built on _drawnm.Lite
 * 
 * Permission is hereby granted, free of charge, to any person obtaining
 * a copy of this software and associated documentation files (the
@@ -3025,13 +3057,13 @@ org.helm.webeditor.Chain = scil.extend(scil._base, {
                 b2.elem = this.getComplementary(b);
                 m.addAtom(b2);
 
-                var bond = new JSDraw2.Bond(a2, b2);
+                var bond = new _drawnm2.Bond(a2, b2);
                 ret.basebonds.splice(0, 0, bond);
                 bond.r1 = 3;
                 bond.r2 = 1;
                 m.addBond(bond);
 
-                bond = new JSDraw2.Bond(b, b2, JSDraw2.BONDTYPES.UNKNOWN);
+                bond = new _drawnm2.Bond(b, b2, _drawnm2.BONDTYPES.UNKNOWN);
                 m.addBond(bond);
             }
             else {
@@ -3039,7 +3071,7 @@ org.helm.webeditor.Chain = scil.extend(scil._base, {
             }
 
             if (lasta2 != null) {
-                var bond = new JSDraw2.Bond(lasta2, a2);
+                var bond = new _drawnm2.Bond(lasta2, a2);
                 ret.bonds.splice(0, 0, bond);
                 bond.r1 = 1;
                 bond.r2 = 2;
@@ -3344,7 +3376,7 @@ org.helm.webeditor.Chain = scil.extend(scil._base, {
     layoutLine: function (bondlength) {
         var rect = this.getRect();
 
-        var delta = org.helm.webeditor.bondscale * bondlength;
+        var delta = org.helm.webeditor.bondscalex * bondlength;
         var a = this.atoms[0];
         a.p = org.helm.webeditor.Interface.createPoint(rect.left, rect.top);
         for (var i = 1; i < this.atoms.length; ++i) {
@@ -3356,7 +3388,7 @@ org.helm.webeditor.Chain = scil.extend(scil._base, {
 
     layoutRows: function (bondlength, countperrow) {
         var n = 0;
-        var delta = org.helm.webeditor.bondscale * bondlength;
+        var delta = org.helm.webeditor.bondscalex * bondlength;
         var x0 = this.atoms[0].p.x;
         for (var i = 1; i < this.atoms.length; ++i) {
             ++n;
@@ -3435,12 +3467,23 @@ org.helm.webeditor.Chain = scil.extend(scil._base, {
     layoutBases: function () {
         var circle = this.isCircle();
         var n = circle ? this.atoms.length - 1 : this.atoms.length;
+        // The base position is derived by rotating a horizontal backbone neighbour
+        // (spaced by bondscalex) around the sugar, so its distance would follow the
+        // x-spacing. Rescale it to the SHORT covalent sugar->base distance
+        // (basescale) so the base sits close under its sugar; the long dotted
+        // hydrogen bond to the complementary base is set separately (hbondscale).
+        var kbase = org.helm.webeditor.basescale / org.helm.webeditor.bondscalex;
         for (var i = 0; i < n; ++i) {
             var a = this.bases[i];
             if (a == null)
                 continue;
 
             var center = this.atoms[i];
+            var fix = function (pt) {
+                return org.helm.webeditor.Interface.createPoint(
+                    center.p.x + (pt.x - center.p.x) * kbase,
+                    center.p.y + (pt.y - center.p.y) * kbase);
+            };
             var b1 = null;
             var b2 = null;
             if (i == 0) {
@@ -3459,17 +3502,17 @@ org.helm.webeditor.Chain = scil.extend(scil._base, {
 
                 var ang = center.p.angleAsOrigin(a1.p, a2.p);
                 if (Math.abs(ang - 180) > 10)
-                    a.p = a1.p.clone().rotateAround(center.p, 180 + ang / 2);
+                    a.p = fix(a1.p.clone().rotateAround(center.p, 180 + ang / 2));
                 else
-                    a.p = a1.p.clone().rotateAround(center.p, -90);
+                    a.p = fix(a1.p.clone().rotateAround(center.p, -90));
             }
             else if (b1 != null) {
                 var a1 = b1.a1 == center ? b1.a2 : b1.a1;
-                a.p = a1.p.clone().rotateAround(center.p, -90);
+                a.p = fix(a1.p.clone().rotateAround(center.p, -90));
             }
             else if (b2 != null) {
                 var a2 = b2.a1 == center ? b2.a2 : b2.a1;
-                a.p = a2.p.clone().rotateAround(center.p, 90);
+                a.p = fix(a2.p.clone().rotateAround(center.p, 90));
             }
         }
     },
@@ -3725,7 +3768,7 @@ org.helm.webeditor.Chain = scil.extend(scil._base, {
             return null;
 
         for (var k = 0; k < m.graphics.length; ++k) {
-            var br = JSDraw2.Bracket.cast(m.graphics[k]);
+            var br = _drawnm2.Bracket.cast(m.graphics[k]);
             if (br == null)
                 continue;
 
@@ -3979,7 +4022,7 @@ scil.apply(org.helm.webeditor.Chain, {
     }
 });﻿/*******************************************************************************
 * Copyright (C) 2018, The Pistoia Alliance
-* Created by Scilligence, built on JSDraw.Lite
+* Created by sc900807, built on _drawnm.Lite
 * 
 * Permission is hereby granted, free of charge, to any person obtaining
 * a copy of this software and associated documentation files (the
@@ -4188,7 +4231,7 @@ org.helm.webeditor.Layout = {
                     }
                 }
 
-                if (b.type == JSDraw2.BONDTYPES.UNKNOWN) {
+                if (b.type == _drawnm2.BONDTYPES.UNKNOWN) {
                     // hydrogen bond
                     if (b.a1.p.y > b.a2.p.y) {
                         a2 = b.a1;
@@ -4201,7 +4244,7 @@ org.helm.webeditor.Layout = {
                     var chain = chains[a2._chainid];
                     chain.rotate(180);
 
-                    var delta = a1.p.clone().offset(0, bondlength * org.helm.webeditor.bondscale).offset(-a2.p.x, -a2.p.y);
+                    var delta = a1.p.clone().offset(0, bondlength * org.helm.webeditor.hbondscale).offset(-a2.p.x, -a2.p.y);
                     chain.move(delta);
                 }
                 else {
@@ -4212,7 +4255,7 @@ org.helm.webeditor.Layout = {
 
                         var p1 = bonds[0].otherAtom(a1).p;
                         var p2 = bonds[1].otherAtom(a1).p;
-                        var p = new JSDraw2.Point((p1.x + p2.x) / 2, (p1.y + p2.y) / 2);
+                        var p = new _drawnm2.Point((p1.x + p2.x) / 2, (p1.y + p2.y) / 2);
                         if (p.distTo(a1.p) < bondlength / 30) {
                             // p1, a1.p and p2 in a line
                             p = p1.clone();
@@ -4237,7 +4280,7 @@ org.helm.webeditor.Layout = {
 
                             var p1 = bonds[0].otherAtom(a2).p;
                             var p2 = bonds[1].otherAtom(a2).p;
-                            var p = new JSDraw2.Point((p1.x + p2.x) / 2, (p1.y + p2.y) / 2);
+                            var p = new _drawnm2.Point((p1.x + p2.x) / 2, (p1.y + p2.y) / 2);
                             if (p.distTo(c) < bondlength / 30) {
                                 // p1, a2.p and p2 in a line
                                 var ang2 = p2.angleTo(c);
@@ -4365,7 +4408,7 @@ org.helm.webeditor.Layout = {
 };
 ﻿/*******************************************************************************
 * Copyright (C) 2018, The Pistoia Alliance
-* Created by Scilligence, built on JSDraw.Lite
+* Created by sc900807, built on _drawnm.Lite
 * 
 * Permission is hereby granted, free of charge, to any person obtaining
 * a copy of this software and associated documentation files (the
@@ -4468,7 +4511,7 @@ org.helm.webeditor.IO = {
 
         var groups = [];
         for (var i = 0; i < m.graphics.length; ++i) {
-            var g = JSDraw2.Group.cast(m.graphics[i]);
+            var g = _drawnm2.Group.cast(m.graphics[i]);
             if (g != null)
                 groups.push(g);
         }
@@ -4542,7 +4585,7 @@ org.helm.webeditor.IO = {
             if (!scil.Utils.isNullOrEmpty(b.tag))
                 tag = '\"' + b.tag.replace(/"/g, "\\\"") + '\"';
 
-            if (b.type == JSDraw2.BONDTYPES.UNKNOWN) {
+            if (b.type == _drawnm2.BONDTYPES.UNKNOWN) {
                 var c1 = this.findChainID(ret.chains, b.a1);
                 var c2 = this.findChainID(ret.chains, b.a2);
                 var s = c1 + "," + c2 + "," + b.a1._aaid + ":pair-" + b.a2._aaid + ":pair";
@@ -5521,7 +5564,7 @@ org.helm.webeditor.IO = {
             if (scil.Utils.startswith(e.str, "(") && scil.Utils.endswith(e.str, ")")) {
                 // dealing with repeat: PEPTIDE1{S.(D.F)'2-13'.A.S.D.F}$$$$V2.0
                 var atoms = [];
-                var rect = new JSDraw2.Rect(loop.p.x + loop.delta / 2, loop.p.y - loop.delta, 0, loop.delta * 2);
+                var rect = new _drawnm2.Rect(loop.p.x + loop.delta / 2, loop.p.y - loop.delta, 0, loop.delta * 2);
 
                 // I#12364
                 var ss2;
@@ -5541,7 +5584,7 @@ org.helm.webeditor.IO = {
 
                 if (!scil.Utils.isNullOrEmpty(e.repeat)) {
                     rect.width = loop.p.x + loop.delta / 2 - rect.left;
-                    var br = new JSDraw2.Bracket(null, rect);
+                    var br = new _drawnm2.Bracket(null, rect);
                     br.atoms = atoms;
                     mol.addGraphics(br);
                     br.createSubscript(mol, e.repeat);
@@ -5583,7 +5626,7 @@ org.helm.webeditor.IO = {
             var e = this.detachAnnotation(ss[i]);
             if (scil.Utils.startswith(e.str, "(") && scil.Utils.endswith(e.str, ")")) {
                 var atoms = [];
-                var rect = new JSDraw2.Rect(loop.p.x + loop.delta / 2, loop.p.y - loop.delta, 0, loop.delta * 3);
+                var rect = new _drawnm2.Rect(loop.p.x + loop.delta / 2, loop.p.y - loop.delta, 0, loop.delta * 3);
 
                 var ss2 = this.splitChars(e.str.substr(1, e.str.length - 2), '.');
                 for (var k = 0; k < ss2.length; ++k)
@@ -5591,7 +5634,7 @@ org.helm.webeditor.IO = {
 
                 if (!scil.Utils.isNullOrEmpty(e.repeat)) {
                     rect.width = loop.p.x + loop.delta / 2 - rect.left;
-                    var br = new JSDraw2.Bracket(null, rect);
+                    var br = new _drawnm2.Bracket(null, rect);
                     br.atoms = atoms;
                     mol.addGraphics(br);
                     br.createSubscript(mol, e.repeat);
@@ -5798,7 +5841,7 @@ org.helm.webeditor.IO = {
 };
 ﻿/*******************************************************************************
 * Copyright (C) 2018, The Pistoia Alliance
-* Created by Scilligence, built on JSDraw.Lite
+* Created by sc900807, built on _drawnm.Lite
 * 
 * Permission is hereby granted, free of charge, to any person obtaining
 * a copy of this software and associated documentation files (the
@@ -5869,7 +5912,7 @@ org.helm.webeditor.MonomerExplorer = scil.extend(scil._base, {
             var d = scil.Utils.createElement(this.div, "div", null, { background: "#eee", borderBottom: "solid 1px gray", padding: "4px 0 4px 0" });
             var tbody = scil.Utils.createTable(d, 0, 0);
             var tr = scil.Utils.createElement(tbody, "tr");
-            scil.Utils.createElement(tr, "td", JSDraw2.Language.res("Filter") + ":", { paddingLeft: "5px" });
+            scil.Utils.createElement(tr, "td", _drawnm2.Language.res("Filter") + ":", { paddingLeft: "5px" });
             this.filterInput = scil.Utils.createElement(scil.Utils.createElement(tr, "td"), "input");
             scil.connect(this.filterInput, "onkeyup", function (e) { me.filter(e); });
         }
@@ -5879,7 +5922,8 @@ org.helm.webeditor.MonomerExplorer = scil.extend(scil._base, {
             tabs.push({ caption: "Monomers", tabkey: "monomers" });
         else
             this.addMonomerTabs(tabs);
-        tabs.push({ caption: "Rules", tabkey: "rule" });
+        // Rules tab removed per app requirement.
+        // tabs.push({ caption: "Rules", tabkey: "rule" });
 
         var width = this.options.width != null ? this.options.width : 300;
         this.height = this.options.height != null ? this.options.height : 400;
@@ -5901,9 +5945,7 @@ org.helm.webeditor.MonomerExplorer = scil.extend(scil._base, {
     * @function addMonomerTabs
     */
     addMonomerTabs: function (tabs) {
-        if (this.options.mexfavoritetab != false)
-            tabs.push({ caption: "Favorite", tabkey: "favorite" });
-
+        // Favorite tab removed per app requirement.
         tabs.push({ caption: "Chem", tabkey: "chem" });
         tabs.push({ caption: "Peptide", tabkey: "aa" });
         tabs.push({ caption: "RNA", tabkey: "rna" });
@@ -7014,7 +7056,7 @@ scil.apply(org.helm.webeditor.MonomerExplorer, {
 });
 ﻿/*******************************************************************************
 * Copyright (C) 2018, The Pistoia Alliance
-* Created by Scilligence, built on JSDraw.Lite
+* Created by sc900807, built on _drawnm.Lite
 * 
 * Permission is hereby granted, free of charge, to any person obtaining
 * a copy of this software and associated documentation files (the
@@ -7295,7 +7337,7 @@ org.helm.webeditor.MolViewer = {
     }
 };﻿/*******************************************************************************
 * Copyright (C) 2018, The Pistoia Alliance
-* Created by Scilligence, built on JSDraw.Lite
+* Created by sc900807, built on _drawnm.Lite
 * 
 * Permission is hereby granted, free of charge, to any person obtaining
 * a copy of this software and associated documentation files (the
@@ -7388,7 +7430,7 @@ scil.helm.Formula = {
     getAtomStats2: function (m, stats) {
         var brackets = [];
         for (var i = 0; i < m.graphics.length; ++i) {
-            var br = JSDraw2.Bracket.cast(m.graphics[i]);
+            var br = _drawnm2.Bracket.cast(m.graphics[i]);
             if (br != null && br.atoms != null && br.atoms.length > 0) {
                 var n = br.getSubscript(m);
                 if (!(n > 0))
@@ -7426,7 +7468,7 @@ scil.helm.Formula = {
 
         // chemistry
         var ret = atoms.length == null ? null : scil.helm.Interface.getAtomStats(m, atoms);
-        JSDraw2.FormulaParser.mergeStats(stats, ret);
+        _drawnm2.FormulaParser.mergeStats(stats, ret);
 
         if (list.length == 0)
             return stats;
@@ -7510,7 +7552,7 @@ scil.helm.Formula = {
     }
 };﻿/*******************************************************************************
 * Copyright (C) 2018, The Pistoia Alliance
-* Created by Scilligence, built on JSDraw.Lite
+* Created by sc900807, built on _drawnm.Lite
 * 
 * Permission is hereby granted, free of charge, to any person obtaining
 * a copy of this software and associated documentation files (the
@@ -7674,7 +7716,7 @@ org.helm.webeditor.ExtinctionCoefficient = {
     } 
 };﻿/*******************************************************************************
 * Copyright (C) 2018, The Pistoia Alliance
-* Created by Scilligence, built on JSDraw.Lite
+* Created by sc900807, built on _drawnm.Lite
 * 
 * Permission is hereby granted, free of charge, to any person obtaining
 * a copy of this software and associated documentation files (the
@@ -7705,7 +7747,7 @@ org.helm.webeditor.App = scil.extend(scil._base, {
     @property {MonomerExplorer} mex - Monomer Explorer
     **/
     /**
-    @property {JSDraw2.Editor} canvas - Drawing Canvas
+    @property {_drawnm2.Editor} canvas - Drawing Canvas
     **/
     /**
     @property {DIV} notation - HELM Notation
@@ -7717,7 +7759,7 @@ org.helm.webeditor.App = scil.extend(scil._base, {
     @property {scil.Form} properties - HELM Property Table
     **/
     /**
-    @property {JSDraw2.Editor} structureview - Structure Viewer
+    @property {_drawnm2.Editor} structureview - Structure Viewer
     **/
 
     /**
@@ -7765,7 +7807,7 @@ org.helm.webeditor.App = scil.extend(scil._base, {
         if (options.ambiguity != null)
             org.helm.webeditor.ambiguity = options.ambiguity;
         if (!scil.Utils.isNullOrEmpty(this.options.jsdrawservice))
-            JSDrawServices = { url: this.options.jsdrawservice };
+            _drawnmServices = { url: this.options.jsdrawservice };
 
         if (this.options.monomercleanupurl != null && org.helm.webeditor.Monomers.cleanupurl == null)
             org.helm.webeditor.Monomers.cleanupurl = this.options.monomercleanupurl;
@@ -7835,9 +7877,7 @@ org.helm.webeditor.App = scil.extend(scil._base, {
         this.page = new scil.Page(parent, tree, { resizable: true, leftwidth: sizes.leftwidth });
         scil.Utils.unselectable(this.page.explorer.left);
 
-        var control = this.page.addDiv();
-        var sel = scil.Utils.createSelect(control, ["Detailed Sequence", "Sequence"], "Detailed Sequence", null, { border: "none" });
-        scil.connect(sel, "onchange", function () { me.swapCanvasSequence(); });
+        // Detailed Sequence / Sequence selector removed per app requirement.
 
         this.canvasform = this.page.addForm({
             //caption: "Canvas",
@@ -8001,11 +8041,16 @@ org.helm.webeditor.App = scil.extend(scil._base, {
     * @function createCanvas
     */
     createCanvas: function (div, width, height) {
-        div.style.border = "solid 1px #eee";
+        // No outline; rounded corners, clipped so the structure stays inside.
+        div.style.border = "none";
+        div.style.outline = "none";
+        div.style.borderRadius = "14px";
+        div.style.overflow = "hidden";
 
         var me = this;
         var args = {
             skin: "w8", showabout: this.options.showabout, showtoolbar: this.options.canvastoolbar != false, helmtoolbar: true, showmonomerexplorer: true,
+            background: "#eaf6f9",
             inktools: false, width: width, height: height, ondatachange: function () { me.updateProperties(); },
             onselectionchanged: function () { me.onselectionchanged(); },
             onselectcurrent: function (e, obj, ed) { me.onselectcurrent(e, obj, ed); },
@@ -8027,7 +8072,7 @@ org.helm.webeditor.App = scil.extend(scil._base, {
             return;
 
         var t = editor.text;
-        if (t != null && t.fieldtype == "BRACKET_TYPE" && t.anchors.length == 1 && JSDraw2.Bracket.cast(t.anchors[0]) != null) {
+        if (t != null && t.fieldtype == "BRACKET_TYPE" && t.anchors.length == 1 && _drawnm2.Bracket.cast(t.anchors[0]) != null) {
             if (!/^[*]|([0-9]+([-][0-9]+)?)$/.test(s)) {
                 scil.Utils.alert("Invalid subscript");
                 return false;
@@ -8040,7 +8085,7 @@ org.helm.webeditor.App = scil.extend(scil._base, {
     * @function onselectcurrent
     */
     onselectcurrent: function (e, obj, ed) {
-        var a = JSDraw2.Atom.cast(obj);
+        var a = _drawnm2.Atom.cast(obj);
         if (a == null || ed.start != null || ed.contextmenu != null && ed.contextmenu.isVisible()) {
             org.helm.webeditor.MolViewer.hide();
             return;
@@ -8103,7 +8148,7 @@ org.helm.webeditor.App = scil.extend(scil._base, {
     */
     createStructureView: function (div, width, height) {
         var d = scil.Utils.createElement(div, "div", null, { width: width, height: height + this.toolbarheight });
-        this.structureview = new JSDraw2.Editor(d, { viewonly: true })
+        this.structureview = new _drawnm2.Editor(d, { viewonly: true })
     },
 
     /**
@@ -8247,7 +8292,7 @@ org.helm.webeditor.App = scil.extend(scil._base, {
     * @function getSelectedAsMol
     */
     getSelectedAsMol: function (m) {
-        var ret = new JSDraw2.Mol();
+        var ret = new _drawnm2.Mol();
         for (var i = 0; i < m.atoms.length; ++i) {
             if (m.atoms[i].selected)
                 ret.atoms.push(m.atoms[i]);
@@ -8352,7 +8397,7 @@ org.helm.webeditor.App = scil.extend(scil._base, {
 
             var nb = null;
             if (b1 == null) {
-                nb = new JSDraw2.Bond(null, null, JSDraw2.BONDTYPES.SINGLE);
+                nb = new _drawnm2.Bond(null, null, _drawnm2.BONDTYPES.SINGLE);
                 nb.r1 = 2;
                 nb.r2 = 1;
             }
@@ -8400,7 +8445,7 @@ org.helm.webeditor.App = scil.extend(scil._base, {
         var bonds = selected.bonds;
 
         for (var i = 0; i < m2.graphics.length; ++i) {
-            var br = JSDraw2.Bracket.cast(m2.graphics[i]);
+            var br = _drawnm2.Bracket.cast(m2.graphics[i]);
             if (br == null)
                 continue;
 
@@ -8442,7 +8487,7 @@ org.helm.webeditor.App = scil.extend(scil._base, {
                 if (!(bondlength > 0))
                     bondlength = d;
                 else
-                    m.scale(bondlength / d, new JSDraw2.Point(0, 0));
+                    m.scale(bondlength / d, new _drawnm2.Point(0, 0));
             }
             mols.push(m);
         }
@@ -8540,7 +8585,7 @@ org.helm.webeditor.App = scil.extend(scil._base, {
 
 ﻿/*******************************************************************************
 * Copyright (C) 2018, The Pistoia Alliance
-* Created by Scilligence, built on JSDraw.Lite
+* Created by sc900807, built on _drawnm.Lite
 * 
 * Permission is hereby granted, free of charge, to any person obtaining
 * a copy of this software and associated documentation files (the
@@ -8626,7 +8671,7 @@ org.helm.webeditor.AppToolbar.Resources = {
     'settings-2.png': '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'
 };﻿/*******************************************************************************
 * Copyright (C) 2018, The Pistoia Alliance
-* Created by Scilligence, built on JSDraw.Lite
+* Created by sc900807, built on _drawnm.Lite
 * 
 * Permission is hereby granted, free of charge, to any person obtaining
 * a copy of this software and associated documentation files (the
@@ -8740,7 +8785,7 @@ org.helm.webeditor.MonomerLibApp = scil.extend(scil._base, {
             {type: "select", key: "countperpage", labelstyle: { fontSize: "90%" }, label: "Count", items: ["", 10, 25, 50, 100], onchange: function () { me.refresh(); } }
         ];
 
-        if (typeof (JSDrawServices) != "undefined" && JSDrawServices.url != null) {
+        if (typeof (_drawnmServices) != "undefined" && _drawnmServices.url != null) {
             this.buttons.splice(0, 0, "-");
             this.buttons.splice(0, 0, { type: "a", src: scil.Utils.imgSrc("img/open.gif"), title: "Import Monomers", onclick: function () { me.uploadFile(true); } });
             this.buttons.splice(0, 0, "-");
@@ -8748,7 +8793,7 @@ org.helm.webeditor.MonomerLibApp = scil.extend(scil._base, {
         }
 
         var ver = null;
-        if (scil.helm != null && JSDraw2.Security.kEdition != "Lite") {
+        if (scil.helm != null && _drawnm2.Security.kEdition != "Lite") {
             scil.helm.MonomerLibApp.ajaxurl = this.options.ajaxurl;
             ver = { label: "Versions", type: "html", render: function (v, values) { return v > 0 ? "<a href='javascript:scil.helm.MonomerLibApp.showVersions(" + values.id + ")'>" + v + "</a>" : null; } };
         }
@@ -8962,7 +9007,7 @@ scil.apply(org.helm.webeditor.MonomerLibApp, {
     }
 });﻿/*******************************************************************************
 * Copyright (C) 2018, The Pistoia Alliance
-* Created by Scilligence, built on JSDraw.Lite
+* Created by sc900807, built on _drawnm.Lite
 * 
 * Permission is hereby granted, free of charge, to any person obtaining
 * a copy of this software and associated documentation files (the
@@ -9013,7 +9058,7 @@ org.helm.webeditor.RuleSet = {
             var s = "";
             for (var k = 0; k < cols.length; ++k)
                 s += (k > 0 ? "|" : "") + r[cols[k]];
-            ret += JSDraw2.Base64.encode(s) + "\n";
+            ret += _drawnm2.Base64.encode(s) + "\n";
             ++n;
         }
 
@@ -9107,7 +9152,7 @@ org.helm.webeditor.RuleSet = {
         var tbody = scil.Utils.createTable(td, 0, 0, { width: "100%" });
         var tr = scil.Utils.createElement(tbody, "tr");
         scil.Utils.createElement(tr, "td", "[" + rule.id + "] " + s, { padding: "3px 0 3px 0" }, { title: rule.description });
-        var button = scil.Utils.createElement(scil.Utils.createElement(tr, "td", null, { textAlign: "right" }), "button", JSDraw2.Language.res("Apply"), { display: "none" });
+        var button = scil.Utils.createElement(scil.Utils.createElement(tr, "td", null, { textAlign: "right" }), "button", _drawnm2.Language.res("Apply"), { display: "none" });
 
         var me = this;
         scil.connect(button, "onclick", function () { fun(rule.script); });
@@ -9234,7 +9279,7 @@ org.helm.webeditor.RuleSet = {
     }
 };﻿/*******************************************************************************
 * Copyright (C) 2018, The Pistoia Alliance
-* Created by Scilligence, built on JSDraw.Lite
+* Created by sc900807, built on _drawnm.Lite
 * 
 * Permission is hereby granted, free of charge, to any person obtaining
 * a copy of this software and associated documentation files (the
@@ -9404,7 +9449,7 @@ scil.apply(org.helm.webeditor.RuleSetApp, {
     }
 });﻿/*******************************************************************************
 * Copyright (C) 2018, The Pistoia Alliance
-* Created by Scilligence, built on JSDraw.Lite
+* Created by sc900807, built on _drawnm.Lite
 * 
 * Permission is hereby granted, free of charge, to any person obtaining
 * a copy of this software and associated documentation files (the

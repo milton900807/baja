@@ -1,14 +1,14 @@
 /* ---- Scope + sensible defaults ---- */
 :host {
   display: block;
-  min-height: 200px;
+  min-height: 35px;
 }
 
 /* Outer breathing room around the whole section */
 .buffer-height {
-  margin: 4px 0;
-  padding: 8px 4px;
-  min-height: 200px;
+  margin: 2px 0;
+  padding: 4px 4px;
+  min-height: 35px;
 }
 
 /* Section: clean, transparent */
@@ -42,7 +42,7 @@
    =========================================== */
 
 .btn {
-  --btn-focus: var(--accent, #2f6feb);
+  --btn-focus: #1aa3bd;
 
   position: relative;
   display: inline-flex;
@@ -50,20 +50,21 @@
   justify-content: center;
 
   min-width: 92px;
-  padding: 8px 16px;
-  margin-top: 8px;
+  min-height: 35px;
+  padding: 6px 16px;
+  margin-top: 4px;
 
   font-size: 0.875rem;
   font-weight: 600;
   letter-spacing: 0.2px;
   line-height: 1.1;
-  color: var(--metal-text);
 
-  /* Flat matte surface */
-  background: var(--metal-top);
-  border: 1px solid var(--metal-border);
+  /* Tropical: navy surface, cyan border, light text. */
+  color: #eaf6f9;
+  background: #0a2540;
+  border: 1px solid #1aa3bd;
   border-radius: 6px;
-  box-shadow: var(--btn-shadow, 0 1px 2px rgba(16, 24, 40, 0.10));
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.18);
 
   cursor: pointer;
   transition:
@@ -77,18 +78,20 @@
   z-index: 2;
 }
 
-/* Hover: subtle matte tint overlay (works on light & dark) */
+/* Hover: cyan tint + cyan border glow */
 .btn:hover {
+  background-color: #12395a;
+  border-color: #4fd0e6;
   box-shadow:
-    inset 0 0 0 999px var(--btn-hover-overlay, rgba(0, 0, 0, 0.045)),
-    var(--btn-shadow, 0 1px 2px rgba(16, 24, 40, 0.10));
+    inset 0 0 0 999px rgba(26, 163, 189, 0.18),
+    0 1px 2px rgba(16, 24, 40, 0.18);
 }
 
-/* Active: deeper matte tint + slight press, no gradient */
+/* Active: deeper cyan tint + slight press */
 .btn:active {
   transform: translateY(0.5px);
   box-shadow:
-    inset 0 0 0 999px var(--btn-active-overlay, rgba(0, 0, 0, 0.09));
+    inset 0 0 0 999px rgba(26, 163, 189, 0.30);
 }
 
 /* Focus ring */

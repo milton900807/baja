@@ -1,13 +1,13 @@
 /* ===========================================
    Selection list styled to match the dropdown menu:
-   dark-gray surface, white text, compact rows.
+   tropical navy surface, cyan accents, white text.
    =========================================== */
 
 /* Dark card frame (the menu-bar look) */
 :host ::ng-deep .selection-card.mat-mdc-card,
 .selection-card {
-  background: #363b42 !important;
-  border: 1px solid #2b2f35;
+  background: #0a2540 !important;
+  border: 1px solid rgba(26,163,189,0.35);
   border-radius: 8px;
   box-shadow: 0 2px 6px rgba(16, 24, 40, 0.18);
 }
@@ -33,23 +33,23 @@
 .selection-option {
   margin: 2px 0;
   border-radius: 6px;
-  border: 1px solid #2b2f35;
+  border: 1px solid rgba(26,163,189,0.35);
   color: #ffffff;
-  background: #3f444b !important;
+  background: #0e2a44 !important;
   box-shadow: none;
   font-weight: 600;
   transition: background-color 0.12s ease;
 }
 
 .selection-option:hover {
-  background: #565d66 !important;
+  background: rgba(26,163,189,0.25) !important;
   box-shadow: none;
 }
 
 /* Selected = lighter gray with a tropical cyan accent edge */
 :host ::ng-deep .selection-option.mdc-list-item--selected {
   border-color: #35c6d6;
-  background: #565d66 !important;
+  background: rgba(26,163,189,0.25) !important;
   box-shadow: inset 3px 0 0 #35c6d6;
 }
 
@@ -104,24 +104,24 @@
 :host ::ng-deep .mat-mdc-card-actions button,
 :host ::ng-deep button[mat-raised-button] {
   color: #ffffff !important;
-  border: 1px solid #2b2f35 !important;
+  border: 1px solid rgba(26,163,189,0.35) !important;
   border-radius: 6px !important;
   font-weight: 600;
   letter-spacing: 0.2px;
-  background: #3f444b !important;
+  background: #0e2a44 !important;
   box-shadow: none !important;
   transition: background-color 0.12s ease, transform 0.05s ease;
 }
 
 :host ::ng-deep .mat-mdc-card-actions button:hover,
 :host ::ng-deep button[mat-raised-button]:hover {
-  background: #565d66 !important;
+  background: rgba(26,163,189,0.25) !important;
 }
 
 :host ::ng-deep .mat-mdc-card-actions button:active,
 :host ::ng-deep button[mat-raised-button]:active {
   transform: translateY(0.5px);
-  background: #4a515a !important;
+  background: #103150 !important;
 }
 
 /* Empty state */

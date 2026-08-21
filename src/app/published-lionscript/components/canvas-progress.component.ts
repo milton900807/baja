@@ -30,7 +30,7 @@ export class CanvasProgressComponent implements PubComponent, AfterViewInit {
         if (this.data) {
 
             if (this.data['height'] != null) {
-                this.height = this.data['height']
+                this.height = Math.min(35, this.data['height'])   // cap at 35
             }
             if (this.data['width'] != null) {
                 this.width = this.data['width']
@@ -71,14 +71,42 @@ export class CanvasProgressComponent implements PubComponent, AfterViewInit {
     @ViewChild('buttoncanvas__') public canvas: ElementRef;
     // setting a width and height for the canvas
     @Input() public width = 500;
-    @Input() public height = 70;
+    @Input() public height = 35;   // max height 35
     icons = [];
     count = 0;
     private cx: CanvasRenderingContext2D;
     images = [];
     mouseover = null;
-    progress = 0;
+    private _progress = 0;
+    private _completeTimer: any = null;
     mousedown = null;
+
+    get progress() { return this._progress; }
+    set progress(v: number) {
+        this._progress = v;
+        // 10s after reaching 100% with no further updates, remove the bar.
+        if (this._completeTimer) { clearTimeout(this._completeTimer); this._completeTimer = null; }
+        if (v != null && v >= 1) {
+            this._completeTimer = setTimeout(() => this._removeSelf(), 10000);
+        }
+    }
+
+    private _removeSelf() {
+        this._completeTimer = null;
+        // Preferred: clear the progress bar's layout slot (lionscript global).
+        try {
+            const CL = (window as any).CurrentLayout;
+            const panel = (this.data && this.data['panel']) || 'buttonMenuPanel';
+            if (CL && typeof CL.clearComponent === 'function') { CL.clearComponent(panel); return; }
+        } catch (e) { }
+        // Fallback: remove/hide our own host element.
+        try {
+            const el = this.canvas && this.canvas.nativeElement;
+            const host = el && el.closest ? el.closest('progress-canvas') : (el && el.parentElement);
+            if (host && host.parentElement) host.parentElement.removeChild(host);
+            else if (el && el.parentElement) el.parentElement.style.display = 'none';
+        } catch (e) { }
+    }
 
 
 
@@ -216,7 +244,7 @@ export class CanvasProgressComponent implements PubComponent, AfterViewInit {
 
     setSize(w, h) {
         this.width = w;
-        this.height = h;
+        this.height = Math.min(35, h);   // cap at 35
     }
 
 
@@ -679,8 +707,8 @@ export class CanvasProgressComponent implements PubComponent, AfterViewInit {
 
         // Subtle vertical gradient
         const panelGrad = ctx.createLinearGradient(0, yi, 0, yi + gh);
-        panelGrad.addColorStop(0, '#ffffff');
-        panelGrad.addColorStop(1, '#e9e9e9');
+        panelGrad.addColorStop(0, '#12395a');   // navy
+        panelGrad.addColorStop(1, '#0a2540');
         ctx.fillStyle = panelGrad;
         ctx.fill();
         ctx.restore();
@@ -711,7 +739,7 @@ export class CanvasProgressComponent implements PubComponent, AfterViewInit {
         ctx.save();
         roundRect(xi + 1.5, yi + 1.5, gw - 3, gh - 3, Math.max(0, radius - 2));
         ctx.lineWidth = 1;
-        ctx.strokeStyle = 'rgba(255,255,255,0.6)';
+        ctx.strokeStyle = 'rgba(26,163,189,0.55)';
         ctx.stroke();
         ctx.restore();
 
@@ -731,8 +759,8 @@ export class CanvasProgressComponent implements PubComponent, AfterViewInit {
 
             // Track
             const trackGrad = ctx.createLinearGradient(0, barY, 0, barY + barH);
-            trackGrad.addColorStop(0, 'rgba(0,0,0,0.06)');
-            trackGrad.addColorStop(1, 'rgba(0,0,0,0.12)');
+            trackGrad.addColorStop(0, 'rgba(255,255,255,0.10)');
+            trackGrad.addColorStop(1, 'rgba(255,255,255,0.18)');
             ctx.fillStyle = trackGrad;
             roundRect(barX, barY, barWMax, barH, rr); ctx.fill();
 
@@ -741,8 +769,8 @@ export class CanvasProgressComponent implements PubComponent, AfterViewInit {
             if (p > 0) {
                 const fillW = Math.max(1, Math.floor(barWMax * p));
                 const fillGrad = ctx.createLinearGradient(barX, barY, barX, barY + barH);
-                fillGrad.addColorStop(0, '#78c6ff');
-                fillGrad.addColorStop(1, '#2a7bff');
+                fillGrad.addColorStop(0, '#4fd0e6');
+                fillGrad.addColorStop(1, '#1aa3bd');
                 ctx.fillStyle = fillGrad;
                 roundRect(barX, barY, fillW, barH, rr); ctx.fill();
 
@@ -756,7 +784,7 @@ export class CanvasProgressComponent implements PubComponent, AfterViewInit {
 
             // % label
             const label = Math.round(p * 100) + '%';
-            ctx.fillStyle = 'rgba(0,0,0,0.6)';
+            ctx.fillStyle = 'rgba(255,255,255,0.92)';
             ctx.font = `500 ${Math.max(12, Math.floor(gh * 0.18))}px Arial`;
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';

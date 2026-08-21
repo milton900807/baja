@@ -12,20 +12,58 @@ import { PubComponentListener } from "./pub-component-listener";
     selector: 'input-param-items',
     templateUrl: './input-param-items.component.html',
     styles: [
-        '.shadow-textarea textarea.form-control::placeholder { font-weight: 300;  }',
-        '.shadow-textarea textarea.form-control {  padding-left: 0.8rem;    } ',
+        // Tropical, compact prompt fields. Encapsulation is Emulated, so these
+        // (and the ::ng-deep Material overrides) stay scoped to this component.
+        ':host { display: block; font-size: 12px; }',
+        '.shadow-textarea textarea.form-control::placeholder { font-weight: 300; }',
+        '.shadow-textarea textarea.form-control { padding-left: 0.8rem; }',
 
         `.example-form {
-            min-width: 150px;
-            max-width: 500px;
+            min-width: 140px;
+            max-width: 300px;
             width: 100%;
-          }`
-        ,
-        `.example-full-width {
-            width: 100%;
-          }`
+            margin-bottom: 4px;
+          }`,
+        `.example-form label {
+            color: #0a2540;
+            font-weight: 600;
+            font-size: 12px;
+            display: block;
+            margin-bottom: 2px;
+          }`,
+        `.example-full-width { width: 100%; }`,
 
+        // Compact + tropical Material field internals.
+        `:host ::ng-deep .example-form .mat-mdc-text-field-wrapper,
+         :host ::ng-deep .example-form .mat-form-field-wrapper {
+            background: #ffffff;
+            border: 1px solid #1aa3bd;
+            border-radius: 6px;
+            padding: 0 8px;
+          }`,
+        `:host ::ng-deep .example-form .mat-mdc-form-field-infix,
+         :host ::ng-deep .example-form .mat-form-field-infix {
+            min-height: 26px;
+            padding: 3px 0;
+            border-top: 0;
+          }`,
+        `:host ::ng-deep .example-form input.mat-mdc-input-element,
+         :host ::ng-deep .example-form input.mat-input-element {
+            color: #0a2540;
+            font-size: 12px;
+            caret-color: #1aa3bd;
+          }`,
+        // Hide Material's own underline; the cyan border above is the frame.
+        `:host ::ng-deep .example-form .mdc-line-ripple,
+         :host ::ng-deep .example-form .mat-mdc-form-field-subscript-wrapper,
+         :host ::ng-deep .example-form .mat-form-field-underline,
+         :host ::ng-deep .example-form .mat-form-field-subscript-wrapper {
+            display: none;
+          }`,
 
+        // Slimmer separators + tropical button text.
+        `hr { border: 0; border-top: 1px solid rgba(26,163,189,0.25); margin: 6px 0; }`,
+        `:host ::ng-deep .btn-group button { color: #0a2540; }`
     ]
 
 

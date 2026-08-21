@@ -1,5 +1,10 @@
-/* ===== Canonical font metrics (tweak here if needed) ===== */
-:root {
+/* ===== Canonical font metrics (tweak here if needed) =====
+   Scoped to the <simple-menu> host element (NOT :root) so this component's
+   theme variables cascade only to its own DOM and never override the
+   background/foreground of other widgets. The component uses
+   ViewEncapsulation.None (required so its mat-menu overlay panels stay
+   styled), which is why every selector here must be host-scoped by hand. */
+simple-menu {
   --cmd-font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --cmd-font-size: 11px;
   --cmd-line-height: 1;
@@ -16,13 +21,13 @@
 }
 
 /* ========= Base / existing styles ========= */
-mat-toolbar {
+simple-menu mat-toolbar {
   background-color: var(--toolbar-bg, #ffffff) !important;
   color: var(--toolbar-fg, #011c3c) !important;
   /* text/icons */
 }
 
-mat-toolbar.mat-default {
+simple-menu mat-toolbar.mat-default {
   background: var(--toolbar-bg, #ffffff);
   color: var(--app-fg, #011c3c);
   position: relative;
@@ -49,7 +54,7 @@ mat-toolbar.mat-default {
   margin-right: 8px;
 }
 
-.icon {
+simple-menu .icon {
   font-size: 24px;
 }
 
@@ -168,7 +173,7 @@ mat-toolbar.mat-default {
 }
 
 /* An icon button with no label shouldn't reserve label spacing */
-button[mat-icon-button] .menu-btn-icon {
+simple-menu button[mat-icon-button] .menu-btn-icon {
   margin-right: 0;
 }
 
@@ -401,13 +406,13 @@ button[mat-icon-button] .menu-btn-icon {
 }
 
 /* ========= Base / existing styles ========= */
-mat-toolbar {
+simple-menu mat-toolbar {
   background-color: var(--panel-bg, white) !important;
   color: var(--app-fg, black) !important;
   /* text/icons */
 }
 
-mat-toolbar.mat-default {
+simple-menu mat-toolbar.mat-default {
   position: relative;
   height: 48px;
   min-height: 48px;
@@ -478,7 +483,7 @@ mat-toolbar.mat-default {
 }
 
 
-.icon {
+simple-menu .icon {
   font-size: 24px;
 }
 
@@ -684,7 +689,7 @@ mat-toolbar.mat-default {
 
 /* ===== Extra-compact menu bar ===== */
 
-mat-toolbar.mat-default,
+simple-menu mat-toolbar.mat-default,
 .white-toolbar {
   flex: 0 0 28px !important;
   box-sizing: border-box;
@@ -755,7 +760,7 @@ mat-toolbar.mat-default,
 /* Menu icons */
 .menu-wrapper mat-icon,
 .menu-wrapper .mat-icon,
-.icon {
+simple-menu .icon {
   width: 14px !important;
   height: 14px !important;
   font-size: 14px !important;
@@ -1021,7 +1026,7 @@ mat-toolbar.mat-default,
 }
 
 /* Give the toolbar a little more height so the bigger menu isn't clipped */
-mat-toolbar.mat-default,
+simple-menu mat-toolbar.mat-default,
 .white-toolbar {
   height: 34px !important;
   min-height: 34px !important;
@@ -1031,7 +1036,7 @@ mat-toolbar.mat-default,
 .left-section { height: 34px; min-height: 34px; }
 
 /* Keep the menu off the left edge of the browser */
-mat-toolbar.mat-default,
+simple-menu mat-toolbar.mat-default,
 .white-toolbar {
   padding-left: 16px !important;
 }

@@ -559,7 +559,7 @@ org.helm.webeditor.MonomerColors = {
     unknown: "#FFFF00",
 
     bases: {
-        A: "#A0A0FF",
+        A: "#ffffff",
         G: "#FF7070",
         T: "#A0FFA0",
         C: "#FF8C4B",
@@ -585,17 +585,17 @@ org.helm.webeditor.MonomerColors = {
         E: "#00DCDC",
         Q: "#E60A0A",
         G: "#EBEBEB",
-        H: "#8282D2",
+        H: "#ffffff",
         I: "#0F820F",
         L: "#0F820F",
         K: "#145AFF",
         M: "#E6E600",
-        F: "#3232AA",
+        F: "#ffffff",
         P: "#DC9682",
         S: "#FA9600",
         T: "#FA9600",
-        W: "#B45AB4",
-        Y: "#3232AA",
+        W: "#ffffff",
+        Y: "#ffffff",
         V: "#0F820F"
     },
 

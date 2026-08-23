@@ -90,13 +90,11 @@
         border: none !important;
       }
 
-      /* Remove panel outlines/borders (and focus outlines) throughout the editor. */
+      /* Remove ALL borders on panels/containers throughout the editor (border
+         only — border-radius is untouched, so rounded corners stay). */
       body *:focus { outline: none !important; }
-      [style*="solid 1px #aaa"], [style*="solid 1px #ccc"], [style*="solid 1px #ddd"],
-      [style*="solid 1px #eee"], [style*="solid 1px gray"], [style*="solid 1px #999"],
-      [style*="1px solid #4f6d81"], [style*="1px solid gray"] {
-        border: none !important;
-      }
+      [style*="border"] { border: none !important; }
+      #div1, #toolbar, table, td, tr, div { border: none !important; }
       /* Active/selected tab (JSDraw skin blue #6badf6) -> tropical cyan */
       [style*="#6badf6"], [style*="rgb(107, 173, 246)"] {
         background-color: var(--trop-cyan) !important;
@@ -176,6 +174,8 @@
           // monomersurl:'https://app.hts.bio/assets/medchem/helm/lib.json'
         });
         setMonomers = (monomers) => {
+          // Keep the raw monomer list so the "Design" button can send it to the AI.
+          try { window.__medchemMonomers = monomers; } catch (e) { }
           org.helm.webeditor.Monomers.loadDB(monomers, (x) => {
             let t = {
               id: x.symbol,
@@ -358,6 +358,89 @@
             b.onclick = function () { try { app__.__togglePanel(p.which, b); } catch (e) { console.log("toggle panel failed:", e); } };
             bar.appendChild(b);
           });
+
+          // AI Design: prompt the user, then send the HELM + monomers + prompt to
+          // Claude (via the parent app's exec) and apply the returned HELM.
+          var sepD = document.createElement("span");
+          sepD.style.borderLeft = "1px solid #bfe4ec";
+          sepD.style.height = "18px";
+          sepD.style.margin = "0 2px";
+          bar.appendChild(sepD);
+
+          // In-page prompt box (instead of window.prompt). Resolves to the entered
+          // text, or null on cancel / empty.
+          function askDesignPrompt() {
+            return new Promise(function (resolve) {
+              var overlay = document.createElement("div");
+              overlay.style.cssText = "position:fixed;inset:0;z-index:2000;background:rgba(10,37,64,0.35);display:flex;align-items:center;justify-content:center;";
+              var box = document.createElement("div");
+              box.style.cssText = "background:#fff;border-radius:14px;box-shadow:0 12px 40px rgba(10,37,64,0.3);padding:18px;width:min(90vw,520px);font-family:Inter,Arial,sans-serif;color:#0a2540;";
+              var title = document.createElement("div");
+              title.textContent = "Design chemistry with AI";
+              title.style.cssText = "font-weight:700;font-size:16px;margin-bottom:6px;";
+              var sub = document.createElement("div");
+              sub.textContent = "Describe the chemistry change. The current HELM string and the monomer library are sent along with your request.";
+              sub.style.cssText = "font-size:12px;color:#14395c;margin-bottom:10px;";
+              var ta = document.createElement("textarea");
+              ta.placeholder = "e.g. make it a 5-10-5 MOE gapmer with a full PS backbone";
+              ta.style.cssText = "width:100%;height:92px;box-sizing:border-box;border:1px solid #bfe4ec;border-radius:8px;padding:8px;font-family:inherit;font-size:13px;color:#0a2540;resize:vertical;";
+              var row = document.createElement("div");
+              row.style.cssText = "display:flex;justify-content:flex-end;gap:8px;margin-top:12px;";
+              var cancelBtn = document.createElement("button");
+              cancelBtn.type = "button"; cancelBtn.textContent = "Cancel";
+              var okBtn = document.createElement("button");
+              okBtn.type = "button"; okBtn.textContent = "Design";
+              row.appendChild(cancelBtn); row.appendChild(okBtn);
+              box.appendChild(title); box.appendChild(sub); box.appendChild(ta); box.appendChild(row);
+              overlay.appendChild(box);
+              document.body.appendChild(overlay);
+              setTimeout(function () { try { ta.focus(); } catch (e) { } }, 0);
+              function done(v) { try { document.body.removeChild(overlay); } catch (e) { } resolve(v); }
+              cancelBtn.onclick = function () { done(null); };
+              okBtn.onclick = function () { var v = ta.value; done(v && v.trim() ? v : null); };
+              overlay.onclick = function (e) { if (e.target === overlay) done(null); };
+              ta.addEventListener("keydown", function (e) {
+                if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) { e.preventDefault(); okBtn.onclick(); }
+                else if (e.key === "Escape") { e.preventDefault(); done(null); }
+              });
+            });
+          }
+
+          var design = document.createElement("button");
+          design.type = "button";
+          design.textContent = "Design ✦";
+          design.title = "Ask AI to modify the chemistry — sends the HELM, the monomer library and your prompt";
+          design.onclick = async function () {
+            try {
+              var helm = (app__.canvas && app__.canvas.getHelm) ? app__.canvas.getHelm() : (typeof getHELM === "function" ? getHELM() : "");
+              if (!helm) { alert("Draw or load a structure first."); return; }
+              var ask = await askDesignPrompt();
+              if (ask == null || !("" + ask).trim()) return;
+              var mons = window.__medchemMonomers || [];
+              var P = window.parent;
+              if (!P || typeof P.exec !== "function") { alert("AI design is not available in this context."); return; }
+              design.disabled = true;
+              var label0 = design.textContent;
+              design.textContent = "Designing…";
+              try {
+                var res = await P.exec("baja/manchester/menu/design-helm-from-prompt.js", helm, "" + ask, JSON.stringify(mons));
+                if (res && res.helm) {
+                  if (typeof setHELM === "function") setHELM(res.helm);
+                  else app__.canvas.setHelm(res.helm);
+                  if (res.notes) console.log("Design:", res.notes);
+                } else {
+                  alert("Design failed: " + ((res && res.error) || "no result returned"));
+                }
+              } finally {
+                design.textContent = label0;
+                design.disabled = false;
+              }
+            } catch (e) {
+              alert("Design error: " + e);
+              design.disabled = false;
+            }
+          };
+          bar.appendChild(design);
         })();
       });
     </script>

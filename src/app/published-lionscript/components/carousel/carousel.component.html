@@ -1,30 +1,55 @@
 <div class="carousel" *ngIf="images.length" tabindex="0"
-  (keydown.arrowLeft)="prev()" (keydown.arrowRight)="next()">
+  (keydown.arrowLeft)="prev()" (keydown.arrowRight)="next()"
+  (mouseenter)="pause()" (mouseleave)="resume()"
+  (focusin)="pause()" (focusout)="resume()">
 
-  <div class="carousel-stage">
+  <div class="carousel-stage"
+    (pointerdown)="onPointerDown($event)" (pointerup)="onPointerUp($event)">
+
+    <!-- Stacked slides crossfade via the .active class (no blank frame). -->
+    <div class="slides">
+      <div *ngFor="let img of images; let i = index" class="slide"
+        [class.active]="i === currentIndex" [attr.aria-hidden]="i !== currentIndex">
+        <img [src]="img" alt="Slide {{ i + 1 }}"
+          [class.clickable]="links.length > i && links[i]"
+          (click)="onImageClick(i)" draggable="false" />
+        <div class="slide__caption" *ngIf="captions[i]">{{ captions[i] }}</div>
+      </div>
+    </div>
+
+    <div class="stage-vignette" aria-hidden="true"></div>
+
     <button *ngIf="hasMultiple" type="button" class="nav nav--prev" aria-label="Previous slide"
       (click)="prev()">
       <span class="nav__chevron">&#8249;</span>
     </button>
 
-    <div class="carousel-image" [class.fade-in]="fade" [class.fade-out]="!fade">
-      <img [src]="images[currentIndex]" alt="Slide {{ currentIndex + 1 }}"
-        [class.clickable]="links.length > currentIndex"
-        (click)="onImageClick(currentIndex)" />
-    </div>
-
     <button *ngIf="hasMultiple" type="button" class="nav nav--next" aria-label="Next slide"
       (click)="next()">
       <span class="nav__chevron">&#8250;</span>
     </button>
+
+    <!-- autoplay progress bar — the *ngFor recreates the bar each slide so its fill
+         animation restarts in sync with the autoplay interval. -->
+    <div class="progress" *ngIf="hasMultiple && isPlaying" aria-hidden="true">
+      <div class="progress__bar" *ngFor="let k of [currentIndex]"
+        [style.animationDuration.ms]="interval"></div>
+    </div>
   </div>
 
   <div class="carousel-footer" *ngIf="hasMultiple">
+    <button type="button" class="play" [attr.aria-label]="isPlaying ? 'Pause' : 'Play'"
+      (click)="toggleAutoplay()">
+      <span *ngIf="isPlaying">&#10073;&#10073;</span>
+      <span *ngIf="!isPlaying">&#9654;</span>
+    </button>
+
     <div class="dots" role="tablist" aria-label="Slides">
       <button *ngFor="let img of images; let i = index" type="button" class="dot"
         [class.dot--active]="i === currentIndex" [attr.aria-label]="'Go to slide ' + (i + 1)"
-        [attr.aria-selected]="i === currentIndex" (click)="goTo(i)"></button>
+        [attr.aria-selected]="i === currentIndex" (click)="goTo(i); restartAutoplay()"></button>
     </div>
+
     <span class="counter">{{ currentIndex + 1 }} / {{ images.length }}</span>
   </div>
 </div>

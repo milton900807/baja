@@ -1,0 +1,32 @@
+import { inject } from '@angular/core';
+import { CanActivateFn, Router, UrlTree } from '@angular/router';
+import { OidcAuthService } from './oidc-auth.service';
+import { SubscriptionService } from './subscription.service';
+
+/**
+ * Route guard: require a valid session (→ /login) and, once signed in, an active Stripe
+ * subscription (→ /subscribe). The subscription check "fails open" so a Stripe outage or an
+ * unconfigured backend never locks users out.
+ */
+export const authGuard: CanActivateFn = async (route, state): Promise<boolean | UrlTree> => {
+  const auth = inject(OidcAuthService);
+  const sub = inject(SubscriptionService);
+  const router = inject(Router);
+
+  // Don't gate the app until at least one OIDC provider is actually configured — this
+  // avoids locking everyone out during rollout (before client IDs are set in window.env).
+  if (!auth.providers.some(p => p.configured)) return true;
+
+  if (!auth.isAuthenticated()) {
+    try { sessionStorage.setItem('oidc.returnTo', state.url); } catch { /* ignore */ }
+    return router.parseUrl('/login');
+  }
+
+  // Signed in — require an active subscription. Fail open on error / no email so a Stripe
+  // outage (or a backend without STRIPE_SECRET_KEY) never blocks access.
+  const s = await sub.statusCached();
+  if (s.active || s.status === 'error' || s.status === 'no-user') return true;
+
+  try { sessionStorage.setItem('oidc.returnTo', state.url); } catch { /* ignore */ }
+  return router.parseUrl('/subscribe');
+};

@@ -7,6 +7,7 @@ import { ThemeService } from './theme.service';
 import { IoniScriptManager, RunStatus } from './engine/io-manager';
 import { IoniScriptFile } from './engine/lion-file';
 import { AuthService } from './onedrive/auth.service';
+import { OidcAuthService, AuthUser } from './auth/oidc-auth.service';
 import { OAuthSettings } from './onedrive/oath.settings';
 import { PubComponent } from './published-lionscript/pub-component';
 import { PubDirective } from './published-lionscript/pub.directive';
@@ -251,7 +252,8 @@ export class AppComponent implements OnInit {
     private authService: MsalService,
     private msalBroadcastService: MsalBroadcastService,
     private gs: GraphService,
-    private theme: ThemeService
+    private theme: ThemeService,
+    private oidc: OidcAuthService
 
   ) {
     AppComponent.titleService = titleService;
@@ -551,6 +553,17 @@ export class AppComponent implements OnInit {
       resolve(this.dialog)
     });
   }
+
+  // --- OIDC session (from the /login providers) ---
+  get oidcUser(): AuthUser | null { return this.oidc.getUser(); }
+  get oidcInitials(): string {
+    const u = this.oidcUser;
+    const s = (u?.name || u?.email || '').trim();
+    if (!s) return '?';
+    const parts = s.split(/[\s@._-]+/).filter(Boolean);
+    return ((parts[0]?.[0] || '') + (parts[1]?.[0] || '')).toUpperCase() || s[0].toUpperCase();
+  }
+  oidcSignOut() { this.oidc.logout('/login'); }
 
   logout() {
     OAuthSettings.access_token = null;

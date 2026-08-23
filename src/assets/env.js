@@ -46,6 +46,33 @@
 
   window['env']['auth'] = 'b2c'
 
+  // --- OAuth2 / OIDC sign-in (login page at /login) --------------------------------------
+  // Redirect URI our flow uses. You MUST also add these exact URIs to each provider's
+  // console: https://localhost:4200/auth/callback , https://oligodesigner.com/auth/callback ,
+  // https://baja.bio/auth/callback
+  window['env']['oidcRedirectUri'] = window.location.origin + '/auth/callback';
+
+  // Microsoft — BajaBio SPA app (registered as Single-page application → browser PKCE, no
+  // secret, no proxy). "All Microsoft account users" => the `common` authority.
+  window['env']['oidc.microsoft.clientId'] = 'ed0a4ac0-1444-4834-9bbe-19e1ea0acb4b';
+  window['env']['oidc.microsoft.tenant']   = 'common';
+
+  // Google (baja-506413). Only the CLIENT ID goes here — the client secret must NOT live in
+  // browser JS. This is a "Web application" client, so the token exchange needs the secret:
+  // set authTokenProxy to a small backend endpoint that holds the secret and calls Google's
+  // token URL, and force this provider through it with oidc.google.needsBackend = 'true'.
+  window['env']['oidc.google.clientId'] = '13198802175-31a467kjje763k3ku458edorpnd4igod.apps.googleusercontent.com';
+  // This is a Google "Web application" client, so its token exchange needs the secret →
+  // route it through the backend proxy.
+  window['env']['oidc.google.needsBackend'] = 'true';
+
+  // Facebook (App ID only — the App Secret lives on the token-exchange backend).
+  window['env']['oidc.facebook.clientId'] = '1929386837758136';
+
+  // Backend that holds the client secrets and exchanges the code (Google web / Facebook /
+  // Apple / GitHub). Served by baja-server at POST /oidc/token.
+  window['env']['authTokenProxy'] = (window['env']['apiUrl'] || '') + '/oidc/token';
+
 
 
   window["env"]["data"] = [

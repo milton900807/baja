@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { PubComponent } from '../../pub-component';
 import { LionEngine } from '../../../engine/io-engine';
 import { MatTableDataSource } from '@angular/material/table';
@@ -11,7 +11,7 @@ import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
   templateUrl: './carousel.component.html',
   styleUrls: ['./carousel.component.css']
 })
-export class CarouselComponent implements OnInit, PubComponent {
+export class CarouselComponent implements OnInit, OnDestroy, PubComponent {
 
   constructor(private sanitizer: DomSanitizer) { }
 
@@ -24,87 +24,100 @@ export class CarouselComponent implements OnInit, PubComponent {
   dataSource: MatTableDataSource<any>;
   selection: SelectionModel<any>;
 
-  rawImages: string[] = [62, 83, 466, 965, 982, 1043, 738].map((n) => `https://picsum.photos/id/${n}/900/500`);
+  rawImages: string[] = [62, 83, 466, 965, 982, 1043, 738].map((n) => `https://picsum.photos/id/${n}/1200/675`);
   images: SafeUrl[] = [];
-  links = []
-  currentIndex: number = 0;
+  links: any[] = [];
+  captions: string[] = [];
+  currentIndex = 0;
+
+  // Autoplay (configurable via data.autoplay / data.interval).
+  autoplay = true;
+  interval = 5500;
+  private timer: any = null;
+  private touchX: number | null = null;
 
   submitIonFunction: any;
   submitButtonLabel = 'Save';
 
+  private applyConfig(): void {
+    if (this.data?.images?.length > 0) this.rawImages = this.data.images;
+    if (this.data?.links?.length > 0) this.links = this.data.links;
+    if (this.data?.captions?.length > 0) this.captions = this.data.captions;
+    if (this.data?.autoplay != null) this.autoplay = !!this.data.autoplay;
+    if (this.data?.interval) this.interval = Math.max(1500, +this.data.interval);
+    this.images = this.rawImages.map(img => this.sanitizeImage(img));
+  }
 
   init(): string {
-    if (this.data?.images?.length > 0) {
-      this.rawImages = this.data.images;
-    }
-    if (this.data?.links?.length > 0) {
-      this.links = this.data.links;
-    }
-    this.images = this.rawImages.map(img => this.sanitizeImage(img));
-    if (this.resolveFunction) {
-      this.resolveFunction(this);
-    }
+    this.applyConfig();
+    this.startAutoplay();
+    if (this.resolveFunction) this.resolveFunction(this);
     return '';
   }
 
-  ngOnInit() {
-    if (this.data?.images?.length > 0) {
-      this.rawImages = this.data.images;
-    }
-    this.images = this.rawImages.map(img => this.sanitizeImage(img));
+  ngOnInit(): void {
+    this.applyConfig();
+    this.startAutoplay();
+  }
+
+  ngOnDestroy(): void {
+    this.stopAutoplay();
   }
 
   sanitizeImage(img: string): SafeUrl {
     return this.sanitizer.bypassSecurityTrustUrl(img);
   }
 
-  get selected() {
-    return this.selection?.selected;
-  }
+  get selected() { return this.selection?.selected; }
 
   submit() {
-    if (this.submitIonFunction) {
-      this.submitIonFunction(this.selection?.selected);
-    }
+    if (this.submitIonFunction) this.submitIonFunction(this.selection?.selected);
   }
 
-
   onImageClick(index: number): void {
-    if (this.links && index < this.links.length) {
+    if (this.links && index < this.links.length && typeof this.links[index] === 'function') {
       this.links[index]();
     }
   }
-  fade = true;
 
-  next() {
-    this.fade = false;
-    setTimeout(() => {
-      this.currentIndex = (this.currentIndex + 1) % this.images.length;
-      this.fade = true;
-    }, 300); // 300ms should match your fade duration
+  // --- navigation (crossfade handled purely in CSS via the .active slide) ---------------
+  goTo(index: number): void {
+    if (!this.images.length) return;
+    this.currentIndex = (index + this.images.length) % this.images.length;
   }
+  next(): void { this.goTo(this.currentIndex + 1); this.restartAutoplay(); }
+  prev(): void { this.goTo(this.currentIndex - 1); this.restartAutoplay(); }
 
-  prev() {
-    this.fade = false;
-    setTimeout(() => {
-      this.currentIndex = (this.currentIndex - 1 + this.images.length) % this.images.length;
-      this.fade = true;
-    }, 300);
-  }
-
-  goTo(index: number) {
-    if (index === this.currentIndex) {
-      return;
+  // --- autoplay -------------------------------------------------------------------------
+  startAutoplay(): void {
+    this.stopAutoplay();
+    if (this.autoplay && this.hasMultiple) {
+      this.timer = setInterval(() => this.goTo(this.currentIndex + 1), this.interval);
     }
-    this.fade = false;
-    setTimeout(() => {
-      this.currentIndex = (index + this.images.length) % this.images.length;
-      this.fade = true;
-    }, 300);
+  }
+  stopAutoplay(): void {
+    if (this.timer) { clearInterval(this.timer); this.timer = null; }
+  }
+  restartAutoplay(): void { if (this.autoplay && this.hasMultiple) this.startAutoplay(); }
+  pause(): void { this.stopAutoplay(); }
+  resume(): void { this.restartAutoplay(); }
+
+  get isPlaying(): boolean { return this.timer != null; }
+  toggleAutoplay(): void {
+    this.autoplay = !this.isPlaying;
+    this.autoplay ? this.startAutoplay() : this.stopAutoplay();
   }
 
-  get hasMultiple(): boolean {
-    return this.images.length > 1;
+  // --- touch / pointer swipe ------------------------------------------------------------
+  onPointerDown(e: PointerEvent): void { this.touchX = e.clientX; this.pause(); }
+  onPointerUp(e: PointerEvent): void {
+    if (this.touchX != null) {
+      const dx = e.clientX - this.touchX;
+      if (Math.abs(dx) > 40) { dx < 0 ? this.next() : this.prev(); }
+      this.touchX = null;
+    }
+    this.resume();
   }
 
+  get hasMultiple(): boolean { return this.images.length > 1; }
 }

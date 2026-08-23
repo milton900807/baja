@@ -1,4 +1,8 @@
 import { AppComponent } from './app.component';
+import { LoginComponent } from './auth/login.component';
+import { AuthCallbackComponent } from './auth/auth-callback.component';
+import { SubscriptionPromptComponent } from './auth/subscription-prompt.component';
+import { authGuard } from './auth/auth.guard';
 import { LionAppComponent } from "./published-lionscript/dash.component";
 import { PublishLIONScriptModule } from "./published-lionscript/publish-lionscript.module";
 import { NgxMonacoEditorConfig, MonacoEditorModule } from "ngx-monaco-editor-v2";
@@ -200,38 +204,50 @@ export const protectedResourceMap: [string, string[]][] = [
     WebcamModule,
     MatNativeDateModule,
     DragDropModule,
+    LoginComponent,
+    AuthCallbackComponent,
+    SubscriptionPromptComponent,
     RouterModule.forRoot(
       [
+        { path: "login", component: LoginComponent },
+        { path: "auth/callback", component: AuthCallbackComponent },
+        { path: "subscribe", component: SubscriptionPromptComponent },
         { path: "auth/microsoft-callback", component: MicrosoftCallbackComponent },
-        { path: "lft/:id", component: LionAppComponent },
+        { path: "lft/:id", component: LionAppComponent, canActivate: [authGuard] },
         {
           path: "app/:id",
           component: LionAppComponent,
+          canActivate: [authGuard],
         },
         {
           path: "books/:id",
           component: LionAppComponent,
+          canActivate: [authGuard],
         },
         {
           path: "edit/:id",
           component: LionAppComponent,
+          canActivate: [authGuard],
         },
         { path: "signup", component: SignupRedirectComponent },
 
         {
           path: "",
+          canActivate: [authGuard],
           children: [{ path: "**", component: LionAppComponent }],
           component: LionAppComponent,
         },
         {
           path: "_app/:id",
           pathMatch: "prefix",
+          canActivate: [authGuard],
           children: [{ path: "**", component: LionAppComponent }],
           component: LionAppComponent,
         },
         {
           path: "doc/:id",
           pathMatch: "prefix",
+          canActivate: [authGuard],
           children: [{ path: "**", component: LionAppComponent }],
           component: LionAppComponent,
         }

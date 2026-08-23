@@ -419,9 +419,15 @@ export class LionEngine {
     processListeners: Array<ProcessListener> = [];
 
     static stashed = {}
-    // these are references 
+    // these are references
     static ionfunctions = {};
     static componentRefs = {};
+    // Toolbar history per component label + deferred-restore timers, so that clearing a
+    // toolbar panel (a "reset") falls back to the previous toolbar instead of nothing.
+    static toolbarStack: { [k: string]: any[] } = {};
+    static toolbarRestoreTimer: { [k: string]: any } = {};
+    // Labels whose "reset" should restore the previous toolbar rather than go blank.
+    static restorableToolbarLabels: string[] = ['buttonMenuPanel'];
     static history = [];
     static exec_log = [];
     static events = []
@@ -596,6 +602,18 @@ export class LionEngine {
         if (!vc) {
             return;
         }
+
+        // Toolbar history: setting a toolbar cancels any pending restore for this label and
+        // records it so a later "reset" (clearComponent) can fall back to the previous one.
+        if (LionEngine.restorableToolbarLabels.indexOf(label) >= 0) {
+            if (LionEngine.toolbarRestoreTimer[label]) {
+                clearTimeout(LionEngine.toolbarRestoreTimer[label]);
+                LionEngine.toolbarRestoreTimer[label] = null;
+            }
+            const st = LionEngine.toolbarStack[label] || (LionEngine.toolbarStack[label] = []);
+            if (st[st.length - 1] !== compObj) st.push(compObj);
+            if (st.length > 10) st.shift();
+        }
         let viewContainerRef = vc.viewContainerRef;
 
         // Explicitly destroy existing components
@@ -678,6 +696,24 @@ export class LionEngine {
                 let viewContainerRef = vc.viewContainerRef;
                 viewContainerRef.clear(); // Clear the view container reference
                 vc.components = []; // Reset the components array
+            }
+
+            // For a toolbar panel, a bare clear is a "reset": instead of leaving it blank,
+            // restore the PREVIOUS toolbar. Deferred so the common clear-then-setComponent
+            // pattern cancels the restore (setComponent clears this timer + sets the new one).
+            if (LionEngine.restorableToolbarLabels.indexOf(label) >= 0) {
+                const st = LionEngine.toolbarStack[label];
+                if (st && st.length > 0) {
+                    if (LionEngine.toolbarRestoreTimer[label]) clearTimeout(LionEngine.toolbarRestoreTimer[label]);
+                    LionEngine.toolbarRestoreTimer[label] = setTimeout(() => {
+                        LionEngine.toolbarRestoreTimer[label] = null;
+                        const stack = LionEngine.toolbarStack[label];
+                        if (!stack || !stack.length) return;
+                        stack.pop();                             // drop the toolbar that was cleared
+                        const prev = stack[stack.length - 1];    // the previous toolbar
+                        if (prev != null) this.setComponent(label, prev);
+                    }, 0);
+                }
             }
         });
     }

@@ -2,7 +2,7 @@
   <mat-toolbar *ngIf="showToolbar" class="custom-toolbar" [color]="fg"
     [ngStyle]="{ 'background-color': 'white', 'position': 'relative', 'z-index': 5 }"
     style="max-height:36px;font-size:small">
-    <img src="assets/logos/baja-logo.svg" alt="Baja Bio" class="baja-brand-logo"
+    <img src="assets/logos/baja-logo.png" alt="Baja Bio" class="baja-brand-logo"
       style="width:26px;height:26px;margin-right:8px;vertical-align:middle;flex:0 0 auto;" />
 
     <button mat-icon-button [matMenuTriggerFor]="menu">
@@ -17,6 +17,25 @@
     {{ message }}
     <span style="flex: 1 1 auto" class="flexExpand"></span>
 
+    <!-- Signed-in user (OIDC providers): chip + sign-out -->
+    <ng-container *ngIf="oidcUser as u">
+      <button mat-button class="oidc-chip" [matMenuTriggerFor]="oidcMenu" title="{{ u.email || u.name }}">
+        <span class="oidc-avatar" *ngIf="!u.picture">{{ oidcInitials }}</span>
+        <img class="oidc-avatar" *ngIf="u.picture" [src]="u.picture" alt="" referrerpolicy="no-referrer" />
+        <span class="oidc-name">{{ u.name || u.email }}</span>
+      </button>
+      <mat-menu #oidcMenu="matMenu">
+        <div class="oidc-menu-head" *ngIf="u.email">
+          <div class="oidc-menu-name">{{ u.name || u.email }}</div>
+          <div class="oidc-menu-email">{{ u.email }}</div>
+          <div class="oidc-menu-prov">via {{ u.provider }}</div>
+        </div>
+        <button mat-menu-item (click)="oidcSignOut()">
+          <mat-icon>logout</mat-icon><span>Sign out</span>
+        </button>
+      </mat-menu>
+    </ng-container>
+
     <mat-button *ngIf="lg && user != '' && user != 'ljl'" mat-stroked-button type="button" data-bs-toggle="collapse"
       style="padding-top: 0px; padding-bottom: 1px" (click)="logout()">
       Log out ({{ user }})
@@ -26,11 +45,6 @@
       style="padding-top: 0px; padding-bottom: 1px" (click)="signUp()">
       New Account
       <label>&nbsp;<span> | </span>&nbsp;</label>
-    </mat-button>
-
-    <mat-button *ngIf="!lg" mat-stroked-button type="button" data-bs-toggle="collapse"
-      style="padding-top: 0px; padding-bottom: 1px" (click)="login()">
-      Login
     </mat-button>
   </mat-toolbar>
 

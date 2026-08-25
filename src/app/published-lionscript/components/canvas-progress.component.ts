@@ -668,10 +668,18 @@ export class CanvasProgressComponent implements PubComponent, AfterViewInit {
         this.grid.setWidth(this.width);
         this.grid.rescale();
 
-        const xi = this.grid.xi;
+        let xi = this.grid.xi;
         const yi = this.grid.yi;
-        const gw = this.grid.width;
+        let gw = this.grid.width;
         const gh = this.grid.height;
+
+        // Shorter, centered progress panel: cap the panel width and center it within the
+        // (white) canvas so it doesn't stretch the full slot width.
+        const __maxPanelW = 420;
+        if (gw > __maxPanelW) {
+            xi = xi + (gw - __maxPanelW) / 2;
+            gw = __maxPanelW;
+        }
 
         // ---- Helpers ----
         const roundRect = (x: number, y: number, w: number, h: number, r: number) => {
@@ -705,10 +713,10 @@ export class CanvasProgressComponent implements PubComponent, AfterViewInit {
         ctx.shadowOffsetY = 4;
         roundRect(xi, yi, gw, gh, radius);
 
-        // Subtle vertical gradient
+        // White panel with a subtle light gradient (so the aqua→navy fill reads on it).
         const panelGrad = ctx.createLinearGradient(0, yi, 0, yi + gh);
-        panelGrad.addColorStop(0, '#12395a');   // navy
-        panelGrad.addColorStop(1, '#0a2540');
+        panelGrad.addColorStop(0, '#ffffff');   // white
+        panelGrad.addColorStop(1, '#eef2f6');   // very light grey
         ctx.fillStyle = panelGrad;
         ctx.fill();
         ctx.restore();
@@ -757,20 +765,23 @@ export class CanvasProgressComponent implements PubComponent, AfterViewInit {
             const barY = yi + gh / 2 - barH / 2;
             const rr = Math.min(barH / 2, 10);
 
-            // Track
+            // Track: a faint navy-grey groove on the white panel.
             const trackGrad = ctx.createLinearGradient(0, barY, 0, barY + barH);
-            trackGrad.addColorStop(0, 'rgba(255,255,255,0.10)');
-            trackGrad.addColorStop(1, 'rgba(255,255,255,0.18)');
+            trackGrad.addColorStop(0, 'rgba(10,37,64,0.07)');
+            trackGrad.addColorStop(1, 'rgba(10,37,64,0.13)');
             ctx.fillStyle = trackGrad;
             roundRect(barX, barY, barWMax, barH, rr); ctx.fill();
 
-            // Fill (from sim progress)
+            // Fill: a HORIZONTAL gradient across the full track — aqua at the start,
+            // deepening to navy at the end — clipped to the filled width, so the bar
+            // "starts off aqua and turns navy" as it advances.
             const p = this._clamp01(this.progress || 0);
             if (p > 0) {
                 const fillW = Math.max(1, Math.floor(barWMax * p));
-                const fillGrad = ctx.createLinearGradient(barX, barY, barX, barY + barH);
-                fillGrad.addColorStop(0, '#4fd0e6');
-                fillGrad.addColorStop(1, '#1aa3bd');
+                const fillGrad = ctx.createLinearGradient(barX, barY, barX + barWMax, barY);
+                fillGrad.addColorStop(0, '#4fd0e6');    // aqua (start)
+                fillGrad.addColorStop(0.55, '#1aa3bd'); // teal (mid)
+                fillGrad.addColorStop(1, '#0a2540');    // navy (end)
                 ctx.fillStyle = fillGrad;
                 roundRect(barX, barY, fillW, barH, rr); ctx.fill();
 
@@ -782,12 +793,16 @@ export class CanvasProgressComponent implements PubComponent, AfterViewInit {
                 ctx.globalAlpha = 1;
             }
 
-            // % label
+            // % label — dark navy, readable on the white panel and the aqua/teal fill.
             const label = Math.round(p * 100) + '%';
-            ctx.fillStyle = 'rgba(255,255,255,0.92)';
-            ctx.font = `500 ${Math.max(12, Math.floor(gh * 0.18))}px Arial`;
+            ctx.font = `600 ${Math.max(12, Math.floor(gh * 0.18))}px Arial`;
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
+            // Soft white halo so it stays legible if the fill reaches the center.
+            ctx.lineWidth = 3;
+            ctx.strokeStyle = 'rgba(255,255,255,0.65)';
+            ctx.strokeText(label, xi + gw / 2, yi + gh / 2);
+            ctx.fillStyle = '#0a2540';
             ctx.fillText(label, xi + gw / 2, yi + gh / 2);
 
             ctx.restore();

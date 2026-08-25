@@ -13,6 +13,13 @@ export const authGuard: CanActivateFn = async (route, state): Promise<boolean | 
   const sub = inject(SubscriptionService);
   const router = inject(Router);
 
+  // Public read-only viewer: shared "view-only" links (manchester/viewer) must open
+  // without any login or subscription. Allow them through unconditionally.
+  try {
+    const u = (state.url || '').toLowerCase();
+    if (u.includes('/manchester/viewer') || u.includes('manchester%2fviewer')) return true;
+  } catch { /* ignore */ }
+
   // Don't gate the app until at least one OIDC provider is actually configured — this
   // avoids locking everyone out during rollout (before client IDs are set in window.env).
   if (!auth.providers.some(p => p.configured)) return true;

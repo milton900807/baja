@@ -1043,3 +1043,63 @@ simple-menu mat-toolbar.mat-default,
 .left-section {
   margin-left: 8px;
 }
+
+/* ============================================================
+   SUNSET GRADIENT TOOLBARS (final override)
+   Warm dusk blend behind every buttonPanel menubar (`wid:'menu'`
+   → .sub-container / mat-toolbar). The menu-button group becomes
+   a translucent pill so the gradient shows through it, and text
+   gets a soft shadow so it stays readable across the bright end.
+   Placed last so it wins over the earlier solid-navy rules.
+   ============================================================ */
+simple-menu {
+  --sunset: linear-gradient(90deg,
+      #1a2a4f 0%, #5e2c6b 24%, #a83a55 50%, #dd6a37 76%, #f4a84b 100%);
+}
+
+simple-menu mat-toolbar,
+simple-menu mat-toolbar.mat-default,
+.white-toolbar,
+.sub-container {
+  background: var(--sunset) !important;
+  background-color: transparent !important;
+  color: #ffffff !important;
+}
+
+.toolbar-title {
+  color: #ffffff !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.55) !important;
+}
+
+/* Menu-button group: a translucent pill so the sunset shows through */
+.menu-wrapper {
+  background: rgba(10, 20, 40, 0.22) !important;
+  border: 1px solid rgba(255, 255, 255, 0.35) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
+}
+
+.menu-wrapper button,
+.menu-wrapper .mat-button,
+.menu-wrapper .mat-mdc-button,
+:host ::ng-deep .menu-wrapper .mdc-button__label,
+:host ::ng-deep .menu-wrapper .mat-button-wrapper {
+  color: #ffffff !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.55) !important;
+}
+
+.menu-wrapper mat-icon,
+.menu-wrapper .mat-icon {
+  color: #ffffff !important;
+}
+
+.menu-wrapper button:hover,
+.menu-wrapper .mat-mdc-button:hover {
+  background-color: rgba(255, 255, 255, 0.20) !important;
+  color: #ffffff !important;
+}
+
+.menu-wrapper > button:not(:first-of-type),
+.menu-wrapper > .mat-mdc-button:not(:first-of-type),
+.menu-wrapper > ng-container + ng-container {
+  border-left: 1px solid rgba(255, 255, 255, 0.35) !important;
+}

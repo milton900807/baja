@@ -848,6 +848,10 @@ export class LionAppComponent
         components: [instance]
       };
 
+      // Expose the componentRef on the host element so named frames (e.g. the
+      // buttonMenuPanel toolbar frame) can be targeted from CSS.
+      try { hostElement.setAttribute('data-cref', String(wid["componentRef"])); } catch (e) { }
+
       this.zone.run(() => { });
     }
 

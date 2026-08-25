@@ -23,9 +23,9 @@
 
 /* Circular labelled button — matches the app's navy button tokens. */
 .circle-btn {
-  /* diameter reduced by 1/3 (64px -> ~43px), then +20% (~43px -> ~52px) */
-  width: 52px;
-  height: 52px;
+  /* diameter reduced by 1/3 (64px -> ~43px), +20% (~52px), then +5% (~54.6px) */
+  width: 54.6px;
+  height: 54.6px;
   border-radius: 50%;
   display: inline-flex;
   align-items: center;
@@ -41,14 +41,14 @@
 
   cursor: pointer;
   font-weight: 600;
-  font-size: 0.58rem;
+  font-size: 0.609rem; /* 0.58rem + 5% */
   line-height: 1.05;
   transition: box-shadow 0.12s ease, transform 0.05s ease;
 }
 
 .circle-btn__label {
   display: block;
-  max-width: 44px;
+  max-width: 46.2px; /* 44px + 5% */
   overflow: hidden;
   word-break: break-word;
 }

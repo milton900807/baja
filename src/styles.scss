@@ -588,3 +588,18 @@ textarea.mat-mdc-input-element,
 .mat-mdc-card-subtitle {
   color: var(--muted-fg) !important;
 }
+
+/* ---------------------------------------------------------------------------
+ * Toolbars injected into the buttonMenuPanel frame get a navy → orange
+ * gradient. The frame's host element carries data-cref="buttonMenuPanel"
+ * (set in dash.component.ts); the toolbar cards inside render transparent so
+ * the gradient shows through them.
+ * ------------------------------------------------------------------------- */
+[data-cref="buttonMenuPanel"] {
+  background: linear-gradient(100deg, #0a2540 0%, #14416e 48%, #ff851b 100%) !important;
+}
+[data-cref="buttonMenuPanel"] .card-container,
+[data-cref="buttonMenuPanel"] .card-row,
+[data-cref="buttonMenuPanel"] .card-item {
+  background: transparent !important;
+}

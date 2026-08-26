@@ -1,8 +1,9 @@
 <div
   *ngIf="mode === 'simple'"
-  style="padding: 5; border: rgb(255, 255, 255) solid 2px; overflow: hidden; height: 100%; width: 100%;   flex: 1 1 auto; display: flex; 
-  flex-direction: column; width: 100%; 
-  padding: 0px; padding-bottom: 0; border: 0px solid rgb(255, 255, 255);"
+  class="nt-monaco"
+  style="overflow: hidden; height: 100%; width: 100%; flex: 1 1 auto; display: flex;
+  flex-direction: column; padding: 0; border: 2px solid #0a2a66; border-radius: 12px;
+  background: #e8e8e8;"
   [style.height]="height">
   <ngx-monaco-editor
     [(ngModel)]="code"

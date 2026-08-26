@@ -12,7 +12,18 @@ import { BaseEditor } from 'ngx-monaco-editor-v2/lib/base-editor';
 @Component({
   selector: 'text-editor',
   templateUrl: './texteditor-component.html',
-  styleUrls: ['./../jsonviewer.component.scss']
+  styleUrls: ['./../jsonviewer.component.scss'],
+  // Navy rounded border + light-gray panel for the simple text-editor. The border/radius
+  // sit on the .nt-monaco container; ::ng-deep paints Monaco's own background light gray
+  // (Monaco renders its bg inline from the theme, so it needs piercing overrides). Scoped
+  // to .nt-monaco so other Monaco editors are unaffected.
+  styles: [`
+    .nt-monaco { border: 2px solid #0a2a66 !important; border-radius: 12px !important; overflow: hidden !important; background: #e8e8e8; }
+    .nt-monaco ::ng-deep .monaco-editor,
+    .nt-monaco ::ng-deep .monaco-editor .monaco-editor-background,
+    .nt-monaco ::ng-deep .monaco-editor .margin,
+    .nt-monaco ::ng-deep .monaco-editor .overflow-guard { background-color: #e8e8e8 !important; }
+  `]
 })
 export class TextEditorComponent implements OnInit, PubComponent, OnDestroy {
   [x: string]: any;

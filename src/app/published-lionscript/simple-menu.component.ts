@@ -123,6 +123,17 @@ export class SimpleMenuComponent
 
     menu_button_color = "lightGray";
 
+    // Optional "load a track first" guard: when guardFn() is truthy, every top-level menu
+    // whose label is NOT in guardAllow is blocked (its dropdown won't open / its action
+    // won't fire) and onBlockedFn() is called instead. Labels in guardHighlight get a
+    // sunset-orange highlight to point the user at what to do (e.g. the Track menu).
+    guardFn: any = null;
+    onBlockedFn: any = null;
+    guardAllow: string[] = [];
+    guardHighlight: string[] = [];
+    readonly GUARD_HL_BG = "#FD5E53";   // sunset orange
+    readonly GUARD_HL_FG = "#000000";
+
     // which characters open autocomplete (math operators + brackets + comma)
     private readonly TRIGGER_CHARS: Array<TriggerSpan["ch"]> = [
         "=",
@@ -457,7 +468,10 @@ export class SimpleMenuComponent
                 this.txtListener = LionEngine.ionfunctions[this.data["txtListener"]];
             }
 
-
+            if (this.data["guard"]) this.guardFn = LionEngine.ionfunctions[this.data["guard"]];
+            if (this.data["onBlocked"]) this.onBlockedFn = LionEngine.ionfunctions[this.data["onBlocked"]];
+            if (this.data["guardAllow"]) this.guardAllow = this.data["guardAllow"] || [];
+            if (this.data["guardHighlight"]) this.guardHighlight = this.data["guardHighlight"] || [];
 
         }
 
@@ -471,12 +485,54 @@ export class SimpleMenuComponent
     }
 
     click(item: any): void {
+        if (this.isBlocked(item)) { this.notifyBlocked(); return; }
         if (item["ionfunction"]) {
             const func = item["ionfunction"];
             if (func != null) LionEngine.ionfunctions[func]();
         } else if (item["ionFunction"]) {
             const func = item["ionFunction"];
             if (func != null) LionEngine.ionfunctions[func]();
+        }
+    }
+
+    // ---------- "load a track first" guard ----------
+
+    /** True when the guard predicate is active (e.g. no tracks are loaded). */
+    guardActive(): boolean {
+        try { return !!(this.guardFn && this.guardFn()); } catch (e) { return false; }
+    }
+
+    /** A top-level item is blocked when the guard is active and it is not allow-listed. */
+    isBlocked(item: any): boolean {
+        return this.guardActive() && this.guardAllow.indexOf(item?.label) < 0;
+    }
+
+    /** ngStyle for a top-level menu button: sunset-orange highlight for guardHighlight
+     *  labels while blocked, otherwise the normal foreground color. */
+    topStyle(item: any): any {
+        if (this.guardActive() && this.guardHighlight.indexOf(item?.label) >= 0) {
+            return { background: this.GUARD_HL_BG, color: this.GUARD_HL_FG };
+        }
+        return { color: item?.color || this.menu_button_color };
+    }
+
+    /** Called when a blocked top-level button is clicked / its menu is suppressed. */
+    notifyBlocked(): void {
+        try { if (this.onBlockedFn) this.onBlockedFn(); } catch (e) { }
+    }
+
+    /** Click handler on a top-level dropdown button — surfaces the guard message. */
+    onTopClick(item: any): void {
+        if (this.isBlocked(item)) this.notifyBlocked();
+    }
+
+    /** menuOpened handler — closes other menus, and closes this one if it is blocked
+     *  (belt-and-suspenders in case the trigger still opened). */
+    onTopMenuOpened(item: any, trigger: MatMenuTrigger): void {
+        this.closeOtherMenus(trigger);
+        if (this.isBlocked(item)) {
+            try { trigger.closeMenu(); } catch (e) { }
+            this.notifyBlocked();
         }
     }
 

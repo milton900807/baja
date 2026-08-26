@@ -15,8 +15,10 @@
         <!-- Dropdown menu -->
         <ng-container *ngIf="item?.items?.length > 0">
           <app-menu-item #menu [items]="item.items"></app-menu-item>
-          <button mat-button *ngIf="menu?.childMenu" [matMenuTriggerFor]="menu.childMenu"
-            #topTrigger="matMenuTrigger" (menuOpened)="closeOtherMenus(topTrigger)"
+          <button mat-button *ngIf="menu?.childMenu"
+            [matMenuTriggerFor]="isBlocked(item) ? null : menu.childMenu"
+            #topTrigger="matMenuTrigger" (menuOpened)="onTopMenuOpened(item, topTrigger)"
+            (click)="onTopClick(item)" [ngStyle]="topStyle(item)"
             [attr.title]="item.tooltip || item.label || ''">
             <ng-container *ngIf="item.icon">
               <img *ngIf="isImageIcon(item.icon)" [src]="item.icon" class="menu-btn-img" alt="" />

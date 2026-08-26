@@ -29,7 +29,7 @@ import { SubscriptionService } from './subscription.service';
         <ul class="feats">
           <li *ngFor="let f of features">{{ f }}</li>
         </ul>
-        <a class="demo-link" href="assets/demo/index.html" target="baja-demo" (click)="openDemo($event)">▶ See the feature tour — no sign-in needed</a>
+        <a class="demo-link" href="assets/demo/index.html" target="baja-demo" (click)="openDemo($event)">▶ See the feature tour</a>
       </div>
 
       <div class="notice" *ngIf="checking">Checking your subscription…</div>
@@ -82,9 +82,11 @@ import { SubscriptionService } from './subscription.service';
       box-shadow:0 2px 6px rgba(0,0,0,0.25); }
     .beta-note { margin-top:10px; padding:8px 10px; border-radius:9px; font-size:12.5px; line-height:1.45;
       color:#ffe0c2; background: rgba(255,140,26,0.12); border:1px solid rgba(255,140,26,0.4); }
-    .demo-link { display:inline-block; margin-top:12px; font-size:13px; font-weight:700; cursor:pointer;
-      color:#12c2e0; text-decoration:none; border-bottom:1px dashed rgba(18,194,224,0.5); padding-bottom:1px; }
-    .demo-link:hover { color:#7fe3f2; }
+    .demo-link { display:inline-block; margin-top:14px; font-size:13.5px; font-weight:800; cursor:pointer;
+      color:#3a1e00; text-decoration:none; background: linear-gradient(135deg,#ffca28,#ff9a3c);
+      border-radius:10px; padding:9px 15px; box-shadow:0 6px 16px rgba(255,154,60,0.35);
+      transition: transform .1s ease, filter .15s ease; }
+    .demo-link:hover { filter:brightness(1.06); transform: translateY(-1px); }
     .plan__price { font-size:34px; font-weight:800; color:#eaf6f9; margin-top:4px; }
     .plan__price .per { font-size:14px; font-weight:500; color:#9db6c4; margin-left:4px; }
     .feats { list-style:none; margin:12px 0 0; padding:0; }

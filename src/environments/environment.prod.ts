@@ -20,6 +20,8 @@ export const environment = {
   file_bug: host + "/file-bug",
   bug_attachment: host + "/bug-attachment",
   get_helm_rule: host + "/get-script",
+  get_script_url: host + "/script",
+  apps_version_url: host + "/apps-version",
   devEnvironment: host + "/get-dev-script",
   load_script_for_category: host + "/get-package",
   devEnvironmentPackage: host + "/get-dev-package",

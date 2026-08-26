@@ -159,8 +159,10 @@ export class SubscriptionPromptComponent implements OnInit {
   private goIn() {
     const dest = sessionStorage.getItem('oidc.returnTo') || '/';
     sessionStorage.removeItem('oidc.returnTo');
-    window.history.replaceState({}, document.title, window.location.pathname);
-    this.router.navigateByUrl(dest);
+    // Full page LOAD (not an Angular SPA route change) so the app bootstraps via
+    // window.env.init (/app/baja/init.js). A client-side navigateByUrl leaves the
+    // engine un-initialized and the "taking you in…" screen stalls.
+    window.location.assign(dest);
   }
 
   async subscribe() {

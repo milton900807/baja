@@ -14,6 +14,9 @@ export class FunctionUtil {
     static http: HttpClient;
     static cache: { [key: string]: any } = {}
     static cache_on = true;
+    // App version (server boot id) used to cache-bust module GETs. Fetched once.
+    static appsVersion: string = null;
+    static appsVersionPromise: Promise<string> = null;
     private static connectedObject: any = null;
 
 
@@ -26,6 +29,23 @@ export class FunctionUtil {
     }
 
 
+
+    // Fetch the app version (server boot id) ONCE; used to cache-bust module GETs.
+    static async getAppsVersion(): Promise<string> {
+        if (FunctionUtil.appsVersion != null) return FunctionUtil.appsVersion;
+        if (!FunctionUtil.appsVersionPromise) {
+            FunctionUtil.appsVersionPromise = (async () => {
+                try {
+                    const r: any = await FunctionUtil.GETJSON((environment as any).apps_version_url);
+                    FunctionUtil.appsVersion = (r && r.version != null) ? String(r.version) : '';
+                } catch (e) {
+                    FunctionUtil.appsVersion = '';
+                }
+                return FunctionUtil.appsVersion;
+            })();
+        }
+        return FunctionUtil.appsVersionPromise;
+    }
 
     public async loadFunctionFromDB(function_path: string, parentLib: string) {
         // console.log(' function path ' + function_path);
@@ -40,23 +60,39 @@ export class FunctionUtil {
 
 
         return (new Promise<Function>(async (resolve) => {
-            // FunctionUtil.GETJSON(environment.get_helm_rule).then(functionObject => {
-            let js = { "spath": path.trim(), "rule_name": rule_name.trim() };
-            let functionObject = await FunctionUtil.POSTJSON(js, environment.get_helm_rule)
-            if (functionObject != null) {
-                let src = functionObject['rule_value'];
-                if (!src) {
-                    return resolve(null)
-                }
-                // if it is a json object then we will turn it into a javascript function that returns the json object
-                if (rule_name.toLowerCase().endsWith('.json')) {
-                    src = 'return ' + src;
-                }
-                let f = FunctionUtil.getFunction(src, parentLib);
-                FunctionUtil.cache[rule_path] = f;
-                resolve(f);
+            let src: string = null;
+
+            // Fast path: CACHEABLE GET (browser caches immutably per app version), so
+            // reloads/revisits serve modules from disk cache — no network round-trip.
+            try {
+                const v = await FunctionUtil.getAppsVersion();
+                const url = (environment as any).get_script_url
+                    + '?spath=' + encodeURIComponent(path.trim())
+                    + '&rule_name=' + encodeURIComponent(rule_name.trim())
+                    + (v ? ('&v=' + encodeURIComponent(v)) : '');
+                const fo: any = await FunctionUtil.GETJSON(url);
+                if (fo && fo['rule_value']) src = fo['rule_value'];
+            } catch (e) {
+                // fall through to the POST endpoint
             }
 
+            // Fallback: original POST endpoint (uncacheable, but always available).
+            if (!src) {
+                let js = { "spath": path.trim(), "rule_name": rule_name.trim() };
+                let functionObject = await FunctionUtil.POSTJSON(js, environment.get_helm_rule);
+                if (functionObject != null) src = functionObject['rule_value'];
+            }
+
+            if (!src) {
+                return resolve(null);
+            }
+            // A .json module becomes a function that returns the parsed object.
+            if (rule_name.toLowerCase().endsWith('.json')) {
+                src = 'return ' + src;
+            }
+            let f = FunctionUtil.getFunction(src, parentLib);
+            FunctionUtil.cache[rule_path] = f;
+            resolve(f);
         }));
 
     }

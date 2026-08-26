@@ -9,9 +9,43 @@ import { PubComponentListener } from '../pub-component-listener';
 
 @Component({
     selector: 'progress-canvas',
-    template: `<canvas [width]="width" [height]="height" #buttoncanvas__></canvas>
+    template: `
+    <div class="baja-progress-wrap">
+      <!-- Newspaper — shown ONLY while the progress bar is loading (progress < 100%). -->
+      <div class="baja-news" *ngIf="showNews">
+        <div class="baja-news-card">
+          <div class="baja-news-head">
+            <div class="baja-news-title">The Baja Times</div>
+            <div class="baja-news-sub">{{ dateStr }} &nbsp;&bull;&nbsp; Genomics Edition</div>
+          </div>
+          <div class="baja-news-article" *ngFor="let m of news; let i = index" [class.bordered]="i > 0">
+            <div class="baja-news-headline">{{ m }}</div>
+          </div>
+          <div class="baja-news-foot">loading&hellip;</div>
+        </div>
+      </div>
+      <canvas [width]="width" [height]="height" #buttoncanvas__></canvas>
+    </div>
     `,
-    styles: ['canvas { border: 0px solid black; }']
+    styles: [
+        'canvas { border: 0px solid black; }',
+        '.baja-progress-wrap { display: flex; flex-direction: column; align-items: center; gap: 12px; }',
+        '.baja-news { width: 100%; display: flex; justify-content: center; }',
+        `.baja-news-card {
+            width: min(560px, 86vw);
+            background: #f6f1e3; color: #1a1a1a;
+            border: 2px solid #1a1a1a;
+            box-shadow: 0 16px 48px rgba(0,0,0,0.42);
+            padding: 18px 24px;
+            font-family: Georgia, 'Times New Roman', serif;
+        }`,
+        `.baja-news-head { text-align: center; border-bottom: 4px double #1a1a1a; padding-bottom: 8px; margin-bottom: 12px; }`,
+        `.baja-news-title { font-size: 34px; font-weight: 900; letter-spacing: 1px; font-variant: small-caps; line-height: 1; }`,
+        `.baja-news-sub { font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: #555; margin-top: 6px; }`,
+        `.baja-news-article.bordered { border-top: 1px solid #cbb6a0; padding-top: 10px; margin-top: 10px; }`,
+        `.baja-news-headline { font-size: 17px; font-weight: 700; line-height: 1.3; }`,
+        `.baja-news-foot { text-align: center; font-size: 10px; color: #8a8172; margin-top: 14px; border-top: 1px solid #cbb6a0; padding-top: 8px; font-family: system-ui, sans-serif; }`,
+    ]
 })
 export class CanvasProgressComponent implements PubComponent, AfterViewInit {
     data: any;
@@ -21,13 +55,34 @@ export class CanvasProgressComponent implements PubComponent, AfterViewInit {
     grid: MGrid;
     background = 'white';
     ymax = 10;
+    // Newspaper — OPT-IN: shows only when data['news'] (array) or data['showNews']=true
+    // is passed, so ordinary/inline progress bars are unaffected.
+    static DEFAULT_NEWS = [
+        'Next week patents from 2020-2026 will be installed',
+        'Sept 29 release of liver RNASeq data',
+    ];
+    news: string[] = CanvasProgressComponent.DEFAULT_NEWS;
+    newsEnabled = false;
+    dateStr = '';
     saveFunction;
     clickFunction;
     listenerFunction;
     private _sim: any;
 
     init(): string {
+        try {
+            this.dateStr = new Date().toLocaleDateString('en-US',
+                { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+        } catch (e) { }
         if (this.data) {
+            // Opt-in newspaper: an array of headlines, or showNews:true for defaults.
+            const n = this.data['news'] || this.data['newsMessages'];
+            if (Array.isArray(n) && n.length) {
+                this.news = n.map((x: any) => '' + x);
+                this.newsEnabled = true;
+            } else if (this.data['showNews']) {
+                this.newsEnabled = true;
+            }
 
             if (this.data['height'] != null) {
                 this.height = Math.min(35, this.data['height'])   // cap at 35
@@ -80,6 +135,13 @@ export class CanvasProgressComponent implements PubComponent, AfterViewInit {
     private _progress = 0;
     private _completeTimer: any = null;
     mousedown = null;
+
+    // The newspaper shows only when enabled AND while loading (progress below 100%).
+    get showNews(): boolean {
+        return this.newsEnabled
+            && (this._progress == null || this._progress < 1)
+            && !!(this.news && this.news.length);
+    }
 
     get progress() { return this._progress; }
     set progress(v: number) {

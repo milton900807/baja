@@ -220,15 +220,20 @@ export class FunctionUtil {
 
 
     public static removeComments(code) {
-        const endOfCommentRegex = /\*\/\s*\n/;
-        const match = endOfCommentRegex.exec(code);
-        if (match) {
-            const endIndex = match.index + match[0].length;
-            const cleanedCode = code.slice(endIndex);
-            return cleanedCode.trim();
-        } else {
-            return code;
+        if (code == null) return code;
+        // Strip a leading block-comment header ONLY (a banner/description at the very start
+        // of the module). Do NOT chop at a */ that appears later in the code: an interior
+        // block comment — e.g. a CSS /* ... */ inside an injected <style> — must not corrupt
+        // the module (that previously produced "Unexpected token" at new Function). Modules
+        // that don't begin with /* are returned unchanged.
+        const lead = code.replace(/^\s+/, '');
+        if (lead.startsWith('/*')) {
+            const end = lead.indexOf('*/');
+            if (end >= 0) {
+                return lead.slice(end + 2).trim();
+            }
         }
+        return code;
     }
 
     // tslint:disable-next-line:member-ordering

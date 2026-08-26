@@ -30,6 +30,11 @@ import { b2cPolicies, rarePolicies } from '../onedrive/auth-config';
     <div class="login-card">
       <div class="brandline"></div>
 
+      <div class="beta-banner" role="status">
+        <span class="beta-tag">Beta release!</span>
+        <span class="beta-text">Early access now open</span>
+      </div>
+
       <div class="head">
         <div class="logo"><img src="assets/img/icons/yak.png" alt="Sign in" /></div>
         <h1>Sign in</h1>
@@ -94,6 +99,19 @@ import { b2cPolicies, rarePolicies } from '../onedrive/auth-config';
       position:absolute; top:0; left:0; right:0; height:5px;
       background: linear-gradient(90deg, #16c47f, #12c2c2, #12a7e8, #ff8c1a);
     }
+    .beta-banner {
+      display:flex; align-items:center; justify-content:center; gap:9px; flex-wrap:wrap;
+      margin: 4px 0 18px; padding: 9px 12px; border-radius: 11px;
+      background: linear-gradient(90deg, rgba(22,196,127,0.18), rgba(18,167,232,0.18), rgba(255,140,26,0.18));
+      border: 1px solid rgba(18,194,224,0.35);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.25) inset;
+    }
+    .beta-tag {
+      font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:.5px;
+      color:#0a2540; background:#ffca28; border-radius:6px; padding:3px 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+    }
+    .beta-text { font-size:13.5px; font-weight:600; color:#eaf6f9; letter-spacing:.2px; }
     .head { text-align:center; margin-bottom: 22px; }
     .logo {
       width:72px; height:72px; margin:6px auto 12px; border-radius:18px;

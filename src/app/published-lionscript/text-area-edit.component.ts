@@ -37,6 +37,7 @@ export class TextAreaEditComponent implements OnInit, PubComponent, HookFunction
 
     updateValue(value) {
         this.init_text = value;
+        this.value = value;   // keep the ngModel display in sync (used to prefill/clear examples)
     }
 
     append(value) {
@@ -56,6 +57,7 @@ export class TextAreaEditComponent implements OnInit, PubComponent, HookFunction
             // this.initData = this.data;
             if (this.data['text'] != null) {
                 this.init_text = this.data['text']
+                this.value = this.data['text']
             }
             if (this.data['height'] != null) {
                 this.height = this.data['height']
@@ -90,6 +92,15 @@ export class TextAreaEditComponent implements OnInit, PubComponent, HookFunction
 
     onKeydown(event: KeyboardEvent): void {
         event.stopPropagation();
+    }
+
+    // Fires when the textarea gains focus. Lets a caller pass data['onFocus'] (an ion
+    // function) e.g. to clear an example/placeholder the first time the user clicks in.
+    onFocus(): void {
+        try {
+            const f = this.data && this.data['onFocus'];
+            if (f && LionEngine.ionfunctions[f]) { LionEngine.execIon(f, this.init_text); }
+        } catch (e) { }
     }
     init(): string {
         if (this.data['showButton']) {

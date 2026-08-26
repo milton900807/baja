@@ -7,6 +7,7 @@
         [(ngModel)]="value"
         [contentEditable]="editable"
         (change)="updateValue($event.target.value)"
+        (focus)="onFocus()"
         [rows]="rows"
         style="width: 100%; height: auto; box-sizing: border-box;"
         (keydown)="onKeydown($event)"

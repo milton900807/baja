@@ -3,3 +3,20 @@
     flex-direction: column;
     align-items: flex-start;
   }
+
+/* Navy rounded border + light-gray panel, matching the Monaco text-editor. Mat-form-field
+   renders its own MDC internals, so the fill/border/ripple need ::ng-deep overrides. */
+.nt-field { width: 100%; }
+.nt-field ::ng-deep mat-form-field,
+.nt-field ::ng-deep .mat-mdc-form-field { width: 100%; }
+.nt-field ::ng-deep .mat-mdc-text-field-wrapper {
+    background-color: #e8e8e8 !important;
+    border: 2px solid #0a2a66 !important;
+    border-radius: 12px !important;
+    overflow: hidden !important;
+}
+.nt-field ::ng-deep .mat-mdc-form-field-infix,
+.nt-field ::ng-deep .mat-mdc-form-field-focus-overlay { background: transparent !important; }
+/* drop the default fill underline so the navy border reads cleanly */
+.nt-field ::ng-deep .mdc-line-ripple::before,
+.nt-field ::ng-deep .mdc-line-ripple::after { display: none !important; }

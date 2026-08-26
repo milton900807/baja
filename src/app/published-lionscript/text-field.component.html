@@ -1,4 +1,4 @@
-<div style="padding-top:3px">
+<div class="nt-field" style="padding-top:3px">
     <mat-form-field class="ex">
         <input matInput type="text" [(ngModel)]="init_text_value" (ngModelChange)="updateValue($event)" [matAutocomplete]="auto">
         <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onOptionSelected($event)">

@@ -2326,9 +2326,33 @@ function execPyPost(path: string, args): PromiseLike<{}> {
         } else
             if (path.startsWith('http')) {
                 let indexIO = path.indexOf('/ionworks/')
-                host = path.substring(0, indexIO) + '/ionworks';
-
-                path = path.substring(indexIO + 10)
+                if (indexIO >= 0) {
+                    // Absolute URL that already targets an /ionworks/ endpoint
+                    // (e.g. the external data server). Keep the /ionworks host and
+                    // the trailing 'py/...' path; the '/py/' re-prefix below yields
+                    // the doubled '/py/py/...' the exec route expects.
+                    host = path.substring(0, indexIO) + '/ionworks';
+                    path = path.substring(indexIO + 10)
+                } else {
+                    // Absolute URL against the app server with NO '/ionworks/'
+                    // segment, e.g. `apiUrl + '/py/sequence/foo.py'`. The old code
+                    // used indexOf('/ionworks/') === -1 blindly, which sliced the URL
+                    // apart (host became '<url minus last char>/ionworks' and path
+                    // became 'ligodesigner.com/py/...'), so the server resolved the
+                    // wrong script and python exited code 2. Split origin from
+                    // pathname instead so `host + '/py/' + path` reconstructs the
+                    // correct '/py/py/...' path.
+                    try {
+                        const u = new URL(path);
+                        host = u.origin;
+                        path = u.pathname.replace(/^\/+/, '');   // 'py/sequence/foo.py'
+                    } catch (e) {
+                        // Malformed URL: fall back to the apiUrl host (already set)
+                        // and strip the scheme+authority best-effort.
+                        const m = path.match(/^https?:\/\/[^/]+(\/.*)$/);
+                        if (m && m[1]) path = m[1].replace(/^\/+/, '');
+                    }
+                }
             }
 
 

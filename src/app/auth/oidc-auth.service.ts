@@ -172,12 +172,19 @@ export class OidcAuthService {
   }
 
   private async loadUser(p: OidcProvider, session: AuthSession, tokens: any): Promise<AuthUser> {
+    // Some providers (e.g. Entra External ID / CIAM accounts with no display name) send a
+    // placeholder like "unknown" for the name claim. Treat that (and blanks) as NO name so
+    // the UI falls back to the email instead of showing "U unknown".
+    const normName = (n?: string): string | undefined => {
+      const t = ('' + (n || '')).trim();
+      return (!t || /^unknown(\s+user)?$/i.test(t)) ? undefined : t;
+    };
     // Prefer the id_token claims (OIDC); fall back to the userinfo endpoint.
     const claims = session.idToken ? this.decodeJwt(session.idToken) : null;
     let user: AuthUser = {
       provider: p.id,
       sub: claims?.sub,
-      name: claims?.name,
+      name: normName(claims?.name),
       email: claims?.email,
       picture: claims?.picture,
       raw: claims || undefined,
@@ -193,7 +200,7 @@ export class OidcAuthService {
           user = {
             provider: p.id,
             sub: user.sub || info.sub || info.id,
-            name: user.name || info.name || info.login,
+            name: user.name || normName(info.name) || normName(info.login),
             email: user.email || info.email,
             picture: user.picture || info.picture || info.avatar_url || info?.picture?.data?.url,
             raw: info,
@@ -216,7 +223,13 @@ export class OidcAuthService {
   getSession(): AuthSession | null {
     try { return JSON.parse(localStorage.getItem(SESSION_KEY) || 'null'); } catch { return null; }
   }
-  getUser(): AuthUser | null { return this.getSession()?.user || null; }
+  getUser(): AuthUser | null {
+    const u = this.getSession()?.user || null;
+    // Also scrub a placeholder "unknown" name from any already-cached session so the
+    // UI falls back to the email without requiring a re-login.
+    if (u && u.name && /^unknown(\s+user)?$/i.test(('' + u.name).trim())) u.name = undefined;
+    return u;
+  }
   getAccessToken(): string | null { return this.getSession()?.accessToken || null; }
 
   isAuthenticated(): boolean {

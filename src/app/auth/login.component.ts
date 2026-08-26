@@ -39,10 +39,10 @@ import { b2cPolicies, rarePolicies } from '../onedrive/auth-config';
         <button *ngFor="let p of providers"
                 class="pbtn" [class.dark]="isDark(p)"
                 [disabled]="busy"
-                [title]="'Continue with ' + p.name"
+                [title]="'Login with ' + p.name"
                 (click)="signIn(p)">
           <span class="glyph" [innerHTML]="glyph(p)"></span>
-          <span class="ptext">Continue with {{ p.name }}</span>
+          <span class="ptext">Login with {{ p.name }}</span>
         </button>
       </div>
 
@@ -153,14 +153,26 @@ export class LoginComponent {
     private msal: MsalService,
     @Inject(MSAL_GUARD_CONFIG) private msalGuardConfig: MsalGuardConfiguration,
   ) {
-    // Only surface providers that are actually supported/configured.
-    this.providers = this.auth.providers.filter(p => p.configured);
+    // Only surface providers that are actually supported/configured. Facebook is
+    // intentionally excluded as a sign-in option.
+    this.providers = this.auth.providers.filter(p => p.configured && p.id !== 'facebook');
   }
 
   get hasConfigured(): boolean { return this.providers.length > 0; }
 
-  /** Reuse the existing Microsoft (Azure AD B2C) sign-up flow. */
+  /**
+   * "Create an account" → the Oligodesigner (Microsoft Entra External ID / CIAM) sign-up /
+   * sign-in page, when that provider is configured. Falls back to the legacy Azure AD B2C
+   * sign-up flow otherwise.
+   */
   signUp() {
+    const ciam = this.auth.getProvider('oidc');
+    if (ciam && ciam.configured) {
+      this.error = '';
+      this.busy = true;
+      this.auth.login('oidc').catch((e: any) => { this.busy = false; this.error = e?.message || String(e); });
+      return;
+    }
     const policies = (typeof window !== 'undefined' && (window as any)['env']?.['auth'] === 'raredb')
       ? rarePolicies : b2cPolicies;
     const req: RedirectRequest = { authority: policies.authorities.signUp.authority, scopes: [] };

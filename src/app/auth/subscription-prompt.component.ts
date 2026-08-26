@@ -20,8 +20,12 @@ import { SubscriptionService } from './subscription.service';
       </div>
 
       <div class="plan">
-        <div class="plan__name">{{ planName }}</div>
+        <div class="plan__top">
+          <div class="plan__name">{{ planName }}</div>
+          <span class="beta-badge">Beta release</span>
+        </div>
         <div class="plan__price">{{ planPrice }}<span class="per">{{ planPeriod }}</span></div>
+        <div class="beta-note">🔥 Limited beta pricing — only a limited number of early users get this rate, and it's locked in for a full year.</div>
         <ul class="feats">
           <li *ngFor="let f of features">{{ f }}</li>
         </ul>
@@ -70,7 +74,13 @@ import { SubscriptionService } from './subscription.service';
     .sub { margin:6px 0 0; font-size:13px; color:#9db6c4; }
     .plan { border:1px solid rgba(18,194,224,0.22); border-radius:14px; padding:16px 18px; margin-bottom:16px;
       background: rgba(18,194,224,0.06); }
+    .plan__top { display:flex; align-items:center; justify-content:space-between; gap:8px; }
     .plan__name { font-size:13px; font-weight:700; letter-spacing:.4px; text-transform:uppercase; color:#12c2e0; }
+    .beta-badge { font-size:10.5px; font-weight:800; text-transform:uppercase; letter-spacing:.5px;
+      color:#0a2540; background:#ffca28; border-radius:6px; padding:3px 8px; white-space:nowrap;
+      box-shadow:0 2px 6px rgba(0,0,0,0.25); }
+    .beta-note { margin-top:10px; padding:8px 10px; border-radius:9px; font-size:12.5px; line-height:1.45;
+      color:#ffe0c2; background: rgba(255,140,26,0.12); border:1px solid rgba(255,140,26,0.4); }
     .plan__price { font-size:34px; font-weight:800; color:#eaf6f9; margin-top:4px; }
     .plan__price .per { font-size:14px; font-weight:500; color:#9db6c4; margin-left:4px; }
     .feats { list-style:none; margin:12px 0 0; padding:0; }

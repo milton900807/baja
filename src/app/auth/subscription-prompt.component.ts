@@ -126,6 +126,7 @@ export class SubscriptionPromptComponent implements OnInit {
     'Design siRNA, ASO & qPCR assays',
     'Off-target analysis & splicing models',
     'Patent database, RNA-binding proteins & RNA-seq layers',
+    'Comes with a copy of “The Chemistry of RNA Therapeutics”',
   ];
 
   constructor(

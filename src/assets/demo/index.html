@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Baja.bio — Feature Tour</title>
+  <link rel="icon" type="image/svg+xml" href="../logos/baja-logo.png">
+  <style>
+    :root { color-scheme: dark; }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; margin: 0; }
+    body {
+      display: flex; align-items: center; justify-content: center; padding: 20px;
+      font-family: "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif;
+      color: #eaf6f9;
+      background:
+        radial-gradient(1200px 600px at 15% -10%, rgba(22,196,127,0.25), transparent 60%),
+        radial-gradient(1000px 600px at 110% 10%, rgba(18,167,232,0.28), transparent 55%),
+        radial-gradient(900px 700px at 50% 120%, rgba(255,140,26,0.20), transparent 55%),
+        #071b2a;
+    }
+    .wrap {
+      width: 100%; max-width: 760px;
+      background: rgba(10,25,40,0.74); backdrop-filter: blur(14px);
+      border: 1px solid rgba(18,194,224,0.28); border-radius: 18px; overflow: hidden;
+      box-shadow: 0 24px 70px rgba(0,0,0,0.45);
+    }
+    .brandline { height: 5px; background: linear-gradient(90deg,#16c47f,#12c2c2,#12a7e8,#ff8c1a); }
+    .head { display: flex; align-items: center; gap: 12px; padding: 16px 20px 8px; }
+    .head img { width: 34px; height: 34px; border-radius: 8px; background: #fff; padding: 4px; }
+    .head h1 { font-size: 18px; margin: 0; font-weight: 700; }
+    .head .tag { margin-left: auto; font-size: 10.5px; font-weight: 800; text-transform: uppercase;
+      letter-spacing: .5px; color: #0a2540; background: #ffca28; border-radius: 6px; padding: 3px 8px; }
+    .stage { position: relative; padding: 8px 20px 4px; }
+    .frame { position: relative; border-radius: 12px; overflow: hidden; border: 1px solid rgba(18,194,224,0.22);
+      background: #0a343c; aspect-ratio: 16 / 9; }
+    .frame img { display: block; width: 100%; height: 100%; object-fit: cover; }
+    .yt { position: absolute; right: 12px; bottom: 12px; display: none; align-items: center; gap: 7px;
+      padding: 8px 12px; border-radius: 10px; cursor: pointer; border: none;
+      font-size: 13px; font-weight: 700; color: #fff; background: rgba(220,38,38,0.92);
+      box-shadow: 0 6px 18px rgba(0,0,0,0.4); }
+    .yt.show { display: inline-flex; }
+    .yt:hover { background: #dc2626; }
+    .nav { position: absolute; top: 50%; transform: translateY(-50%); width: 42px; height: 42px;
+      border-radius: 50%; border: none; cursor: pointer; color: #062430; font-size: 20px; font-weight: 800;
+      background: rgba(234,246,249,0.9); box-shadow: 0 6px 16px rgba(0,0,0,0.35); }
+    .nav:hover { background: #fff; }
+    .prev { left: 30px; } .next { right: 30px; }
+    .meta { text-align: center; padding: 12px 20px 4px; }
+    .meta .count { font-size: 12px; color: #7e97a6; }
+    .dots { display: flex; gap: 7px; justify-content: center; flex-wrap: wrap; padding: 10px 20px 6px; }
+    .dot { width: 9px; height: 9px; border-radius: 50%; border: none; cursor: pointer; padding: 0;
+      background: rgba(18,194,224,0.3); }
+    .dot.active { background: #12c2e0; transform: scale(1.25); }
+    .foot { display: flex; align-items: center; gap: 12px; padding: 12px 20px 20px; }
+    .foot .note { font-size: 12px; color: #9db6c4; }
+    .cta { margin-left: auto; text-decoration: none; padding: 11px 18px; border-radius: 12px;
+      font-size: 14px; font-weight: 800; color: #062430;
+      background: linear-gradient(135deg,#16c47f,#12a7e8); box-shadow: 0 8px 22px rgba(18,167,232,0.4); }
+    .cta:hover { filter: brightness(1.05); }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="brandline"></div>
+    <div class="head">
+      <img src="../logos/baja-logo.png" alt="">
+      <h1>What you can do in Baja.bio</h1>
+      <span class="tag">Feature tour</span>
+    </div>
+
+    <div class="stage">
+      <div class="frame">
+        <img id="slide" alt="">
+        <button class="yt" id="ytBtn" title="Watch on YouTube">▶ Watch video</button>
+      </div>
+      <button class="nav prev" id="prev" aria-label="Previous">‹</button>
+      <button class="nav next" id="next" aria-label="Next">›</button>
+    </div>
+
+    <div class="meta"><span class="count" id="count"></span></div>
+    <div class="dots" id="dots"></div>
+
+    <div class="foot">
+      <span class="note">No account needed to explore — start free anytime.</span>
+      <a class="cta" href="/login">Get started →</a>
+    </div>
+  </div>
+
+  <script>
+    // ---- Feature-card SVG generator (ported verbatim from the lionscript
+    // icons/svg/editor-features.js so the demo matches the in-app carousel) -------
+    function featureCard(select) {
+      const W = 640, H = 360;
+      const BG_TOP = '#0f4a52', BG_BOT = '#0a343c', PANEL = '#0e3a42';
+      const TEAL = '#19d0d0', CYAN = '#2bb6f0', GREEN = '#22d187', ORANGE = '#ff9a3c',
+        CORAL = '#ff6b81', INK = '#f2fbfd', MUTE = '#a9cbd6', DARK = '#062430';
+      const card = (title, sub, art) => `<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 ${W} ${H}">
+        <rect width="${W}" height="${H}" fill="${BG_BOT}"/>
+        <rect width="${W}" height="200" fill="${BG_TOP}"/>
+        <rect x="0" y="0"   width="${W / 3}" height="6" fill="${GREEN}"/>
+        <rect x="${W / 3}" y="0" width="${W / 3}" height="6" fill="${TEAL}"/>
+        <rect x="${2 * W / 3}" y="0" width="${W / 3}" height="6" fill="${ORANGE}"/>
+        <g transform="translate(40,44)">${art}</g>
+        <text x="40" y="300" fill="${INK}" font-family="Segoe UI, system-ui, Arial, sans-serif" font-size="29" font-weight="700">${title}</text>
+        <text x="40" y="330" fill="${MUTE}" font-family="Segoe UI, system-ui, Arial, sans-serif" font-size="16">${sub}</text>
+      </svg>`;
+      const exonRow = (y, color) => `
+        <line x1="0" y1="${y}" x2="560" y2="${y}" stroke="${MUTE}" stroke-width="3"/>
+        <rect x="20"  y="${y - 13}" width="90"  height="26" rx="5" fill="${color}"/>
+        <rect x="150" y="${y - 13}" width="130" height="26" rx="5" fill="${color}"/>
+        <rect x="330" y="${y - 13}" width="80"  height="26" rx="5" fill="${color}"/>
+        <rect x="450" y="${y - 13}" width="100" height="26" rx="5" fill="${color}"/>`;
+      const features = {
+        'genomics-mutations': card('Visualize genomics with mutations',
+          'SNPs, indels and variants in genomic context',
+          `${exonRow(95, TEAL)}
+           <line x1="70"  y1="82" x2="70"  y2="40" stroke="${ORANGE}" stroke-width="3"/><circle cx="70"  cy="34" r="9" fill="${ORANGE}"/>
+           <line x1="205" y1="82" x2="205" y2="28" stroke="${CORAL}"  stroke-width="3"/><circle cx="205" cy="22" r="9" fill="${CORAL}"/>
+           <line x1="370" y1="82" x2="370" y2="46" stroke="${GREEN}"  stroke-width="3"/><circle cx="370" cy="40" r="9" fill="${GREEN}"/>
+           <line x1="500" y1="82" x2="500" y2="36" stroke="${ORANGE}" stroke-width="3"/><circle cx="500" cy="30" r="9" fill="${ORANGE}"/>`),
+        'sirna': card('Design siRNA and duplexes',
+          "Sense / antisense with 3' overhangs",
+          `<rect x="30"  y="70"  width="470" height="14" rx="7" fill="${CYAN}"/>
+           <rect x="60"  y="100" width="470" height="14" rx="7" fill="${GREEN}"/>
+           <g stroke="${INK}" stroke-width="2" opacity="0.7">
+             ${Array.from({ length: 18 }, (_, i) => `<line x1="${70 + i * 25}" y1="84" x2="${70 + i * 25}" y2="100"/>`).join('')}
+           </g>`),
+        'offtargets': card('Run off-target analysis',
+          'Levenshtein search across the transcriptome',
+          `<circle cx="130" cy="95" r="58" fill="none" stroke="${TEAL}" stroke-width="3"/>
+           <circle cx="130" cy="95" r="36" fill="none" stroke="${TEAL}" stroke-width="3"/>
+           <circle cx="130" cy="95" r="13" fill="${GREEN}"/>
+           <g fill="${ORANGE}">
+             <circle cx="300" cy="45" r="6"/><circle cx="360" cy="80" r="6"/><circle cx="330" cy="120" r="6"/>
+             <circle cx="420" cy="55" r="6"/><circle cx="470" cy="100" r="6"/><circle cx="400" cy="140" r="6"/>
+             <circle cx="520" cy="70" r="6"/><circle cx="290" cy="150" r="6"/>
+           </g>
+           <line x1="205" y1="95" x2="270" y2="95" stroke="${MUTE}" stroke-width="2" stroke-dasharray="4 4"/>`),
+        'primers': card('Design qPCR primers and probes',
+          'Amplicons scored by assay success',
+          `<line x1="10" y1="95" x2="550" y2="95" stroke="${MUTE}" stroke-width="3"/>
+           <rect x="70"  y="88" width="130" height="14" rx="7" fill="${GREEN}"/><polygon points="200,88 220,95 200,102" fill="${GREEN}"/>
+           <rect x="360" y="88" width="130" height="14" rx="7" fill="${CYAN}"/><polygon points="360,88 340,95 360,102" fill="${CYAN}"/>
+           <rect x="245" y="70" width="70" height="12" rx="6" fill="${ORANGE}"/>
+           <text x="280" y="62" fill="${ORANGE}" font-family="Arial" font-size="13" text-anchor="middle">probe</text>`),
+        'splicing': card('Predict splicing (sashimi)',
+          'PSI and site-strength deep-learning models',
+          `${exonRow(140, TEAL)}
+           <path d="M65 127 C 140 30, 205 30, 215 127" fill="none" stroke="${ORANGE}" stroke-width="4"/>
+           <path d="M215 127 C 300 60, 350 60, 370 127" fill="none" stroke="${GREEN}" stroke-width="3"/>
+           <path d="M65 127 C 250 -10, 450 -10, 500 127" fill="none" stroke="${CYAN}" stroke-width="3" opacity="0.85"/>`),
+        'rbp': card('RNA-binding protein sites',
+          'Predicted binding across the transcript',
+          `<path d="M0 120 Q 40 90 80 120 T 160 120 T 240 120 T 320 120 T 400 120 T 480 120 T 560 120" fill="none" stroke="${CYAN}" stroke-width="4"/>
+           <ellipse cx="250" cy="80" rx="52" ry="40" fill="${ORANGE}"/>
+           <text x="250" y="86" fill="${DARK}" font-family="Arial" font-size="18" font-weight="700" text-anchor="middle">RBP</text>
+           <g fill="${GREEN}"><circle cx="120" cy="120" r="6"/><circle cx="380" cy="120" r="6"/><circle cx="470" cy="120" r="6"/></g>`),
+        'rnaseq': card('RNA-seq and IP data layers',
+          'Coverage wiggles and peak tracks',
+          `<path d="M0 150 L0 110 L40 96 L80 130 L120 60 L160 100 L200 50 L240 118 L280 80 L320 130 L360 70 L400 120 L440 90 L480 140 L520 100 L560 150 Z" fill="${TEAL}" fill-opacity="0.45" stroke="${TEAL}" stroke-width="2"/>
+           <line x1="0" y1="150" x2="560" y2="150" stroke="${MUTE}" stroke-width="2"/>`),
+        'mrna': card('Create mRNA transcripts',
+          'Collapse exons into a spliced transcript',
+          `<line x1="0" y1="45" x2="560" y2="45" stroke="${MUTE}" stroke-width="2"/>
+           <rect x="20" y="34" width="90" height="22" rx="4" fill="${TEAL}"/><rect x="180" y="34" width="120" height="22" rx="4" fill="${TEAL}"/><rect x="380" y="34" width="90" height="22" rx="4" fill="${TEAL}"/>
+           <polygon points="270,74 290,74 280,90" fill="${ORANGE}"/>
+           <rect x="120" y="120" width="320" height="26" rx="6" fill="${GREEN}"/>
+           <text x="280" y="138" fill="${DARK}" font-family="Arial" font-size="14" font-weight="700" text-anchor="middle">mRNA</text>`),
+        'structure': card('RNA secondary structure',
+          'Fold and design on stem-loops',
+          `<path d="M40 150 L40 70 Q40 30 90 30 L200 30 Q250 30 250 70 L250 150" fill="none" stroke="${CYAN}" stroke-width="5"/>
+           <path d="M70 150 L70 78 Q70 52 100 52 L190 52 Q220 52 220 78 L220 150" fill="none" stroke="${GREEN}" stroke-width="4"/>
+           <g stroke="${INK}" stroke-width="2" opacity="0.65">
+             <line x1="40" y1="90" x2="70" y2="90"/><line x1="40" y1="110" x2="70" y2="110"/><line x1="40" y1="130" x2="70" y2="130"/>
+             <line x1="220" y1="90" x2="250" y2="90"/><line x1="220" y1="110" x2="250" y2="110"/><line x1="220" y1="130" x2="250" y2="130"/>
+           </g>
+           <circle cx="145" cy="40" r="7" fill="${ORANGE}"/>`),
+        'aso': card('Design ASO and gapmers',
+          'Chemistry-aware oligo patterning',
+          `<rect x="30"  y="82" width="150" height="26" rx="8" fill="${ORANGE}"/>
+           <rect x="185" y="82" width="190" height="26" rx="8" fill="${TEAL}"/>
+           <rect x="380" y="82" width="150" height="26" rx="8" fill="${ORANGE}"/>
+           <text x="105" y="130" fill="${MUTE}" font-family="Arial" font-size="13" text-anchor="middle">wing</text>
+           <text x="280" y="130" fill="${MUTE}" font-family="Arial" font-size="13" text-anchor="middle">DNA gap</text>
+           <text x="455" y="130" fill="${MUTE}" font-family="Arial" font-size="13" text-anchor="middle">wing</text>`),
+        'patents': card('Map patents and IP',
+          'Overlay patent claims on the sequence',
+          `${exonRow(150, TEAL)}
+           <rect x="200" y="20" width="160" height="90" rx="8" fill="${PANEL}" stroke="${CYAN}" stroke-width="2"/>
+           <g stroke="${MUTE}" stroke-width="3"><line x1="220" y1="42" x2="340" y2="42"/><line x1="220" y1="58" x2="340" y2="58"/><line x1="220" y1="74" x2="300" y2="74"/></g>
+           <path d="M400 22 l30 8 v22 c0 20 -15 30 -30 36 c-15 -6 -30 -16 -30 -36 v-22 z" fill="${ORANGE}"/>
+           <path d="M392 52 l8 8 l16 -18" fill="none" stroke="${DARK}" stroke-width="3"/>`),
+        'tracks': card('Multi-track genome browser',
+          'Stacked, editable tracks with live sync',
+          `${[0, 1, 2].map((i) => `<g transform="translate(0,${i * 52})">
+              <rect x="0" y="20" width="560" height="30" rx="6" fill="${[TEAL, GREEN, CYAN][i]}"/>
+              <g stroke="${DARK}" stroke-width="2" opacity="0.5">${Array.from({ length: 11 }, (_, k) => `<line x1="${20 + k * 52}" y1="20" x2="${20 + k * 52}" y2="50"/>`).join('')}</g>
+            </g>`).join('')}`),
+      };
+      const svgMarkup = features[select] || features['genomics-mutations'];
+      const svgData = btoa(unescape(encodeURIComponent(svgMarkup)));
+      return 'data:image/svg+xml;base64,' + svgData;
+    }
+
+    // ---- Carousel --------------------------------------------------------------
+    const SLIDES = [
+      { key: 'genomics-mutations', yt: 't8vHuw33R1Q' },
+      { key: 'sirna', yt: 'AOg7a4N-PCo' },
+      { key: 'offtargets', yt: 'i4f-l5M8rq4' },
+      { key: 'primers', yt: 't8vHuw33R1Q' },
+      { key: 'splicing' },
+      { key: 'rbp' },
+      { key: 'rnaseq' },
+      { key: 'mrna' },
+      { key: 'structure' },
+      { key: 'aso' },
+      { key: 'patents' },
+      { key: 'tracks' },
+    ];
+
+    const slideEl = document.getElementById('slide');
+    const ytBtn = document.getElementById('ytBtn');
+    const countEl = document.getElementById('count');
+    const dotsEl = document.getElementById('dots');
+    let idx = 0, timer = null;
+
+    SLIDES.forEach((_, i) => {
+      const b = document.createElement('button');
+      b.className = 'dot' + (i === 0 ? ' active' : '');
+      b.setAttribute('aria-label', 'Slide ' + (i + 1));
+      b.addEventListener('click', () => { show(i); restart(); });
+      dotsEl.appendChild(b);
+    });
+
+    function show(i) {
+      idx = (i + SLIDES.length) % SLIDES.length;
+      const s = SLIDES[idx];
+      slideEl.src = featureCard(s.key);
+      countEl.textContent = (idx + 1) + ' / ' + SLIDES.length;
+      if (s.yt) { ytBtn.classList.add('show'); ytBtn.onclick = () => window.open('https://www.youtube.com/watch?v=' + s.yt, '_blank'); }
+      else { ytBtn.classList.remove('show'); ytBtn.onclick = null; }
+      [...dotsEl.children].forEach((d, k) => d.classList.toggle('active', k === idx));
+    }
+    function next() { show(idx + 1); }
+    function prev() { show(idx - 1); }
+    function restart() { if (timer) clearInterval(timer); timer = setInterval(next, 5000); }
+
+    document.getElementById('next').addEventListener('click', () => { next(); restart(); });
+    document.getElementById('prev').addEventListener('click', () => { prev(); restart(); });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight') { next(); restart(); }
+      else if (e.key === 'ArrowLeft') { prev(); restart(); }
+    });
+    document.querySelector('.wrap').addEventListener('mouseenter', () => { if (timer) clearInterval(timer); });
+    document.querySelector('.wrap').addEventListener('mouseleave', restart);
+
+    show(0);
+    restart();
+  </script>
+</body>
+
+</html>

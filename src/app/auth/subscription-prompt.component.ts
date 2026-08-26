@@ -29,6 +29,7 @@ import { SubscriptionService } from './subscription.service';
         <ul class="feats">
           <li *ngFor="let f of features">{{ f }}</li>
         </ul>
+        <a class="demo-link" href="assets/demo/index.html" target="baja-demo" (click)="openDemo($event)">▶ See the feature tour — no sign-in needed</a>
       </div>
 
       <div class="notice" *ngIf="checking">Checking your subscription…</div>
@@ -81,6 +82,9 @@ import { SubscriptionService } from './subscription.service';
       box-shadow:0 2px 6px rgba(0,0,0,0.25); }
     .beta-note { margin-top:10px; padding:8px 10px; border-radius:9px; font-size:12.5px; line-height:1.45;
       color:#ffe0c2; background: rgba(255,140,26,0.12); border:1px solid rgba(255,140,26,0.4); }
+    .demo-link { display:inline-block; margin-top:12px; font-size:13px; font-weight:700; cursor:pointer;
+      color:#12c2e0; text-decoration:none; border-bottom:1px dashed rgba(18,194,224,0.5); padding-bottom:1px; }
+    .demo-link:hover { color:#7fe3f2; }
     .plan__price { font-size:34px; font-weight:800; color:#eaf6f9; margin-top:4px; }
     .plan__price .per { font-size:14px; font-weight:500; color:#9db6c4; margin-left:4px; }
     .feats { list-style:none; margin:12px 0 0; padding:0; }
@@ -121,7 +125,7 @@ export class SubscriptionPromptComponent implements OnInit {
     'Full genome editor & multi-track browser',
     'Design siRNA, ASO & qPCR assays',
     'Off-target analysis & splicing models',
-    'Unlimited projects and exports',
+    'Patent database, RNA-binding proteins & RNA-seq layers',
   ];
 
   constructor(
@@ -184,6 +188,13 @@ export class SubscriptionPromptComponent implements OnInit {
       this.busy = false;
       this.error = e?.message || String(e);
     }
+  }
+
+  // Open the public, no-login feature carousel in its own window.
+  openDemo(ev?: Event) {
+    if (ev) ev.preventDefault();
+    window.open('assets/demo/index.html', 'baja-demo',
+      'width=820,height=790,menubar=no,toolbar=no,location=no,status=no');
   }
 
   signOut() { this.auth.logout('/login'); }

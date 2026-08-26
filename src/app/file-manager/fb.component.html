@@ -1,5 +1,5 @@
 
-<div class="fb-host" [style.background-color]="backgroundcolor" style="overflow: auto; border: NONE">
+<div class="fb-host" [style.background-color]="backgroundcolor" style="overflow: auto; border: NONE; position: relative;">
   <mat-card class="fb-card" style="width: 100%; box-sizing: border-box">
     <fileg-manager [folderDialogFunction]="folderDialogFunction" [folderPath]="folderPath" [canAddFolder]="canAddFolder"
       [fileElements]="fileElements | async" [path]="currentPath" [canNavigateUp]="canNavigateUp" [COLS]="columns" [fileType]="filetype"
@@ -9,5 +9,6 @@
       (navigatedDown)="navigateToFolder($event)" (navigatedUp)="navigateUp()" (elementRenamed)="renameElement($event)"
       (elementMoved)="moveElement($event)" (openFileEmitter)="openFile($event)"></fileg-manager>
   </mat-card>
+  <div *ngIf="(fileElements | async)?.length === 0" class="fb-empty">No files</div>
 </div>
 

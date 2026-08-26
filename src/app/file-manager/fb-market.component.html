@@ -1,4 +1,10 @@
-<div [style.background-color]="backgroundcolor" style="overflow: hidden; border: none; height: 100%;">
+<div [style.background-color]="backgroundcolor" style="overflow: hidden; border: none; height: 100%; position: relative;">
+  <div *ngIf="(fileElements | async)?.length === 0"
+    style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+           color: #8a97a6; font: 500 15px system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+           letter-spacing: 0.2px; pointer-events: none; user-select: none;">
+    No files
+  </div>
   <mat-card style="width: 100%; box-sizing: border-box; height: 100%;">
     
     <div style="display: flex; align-items: center; justify-content: space-between; padding: 8px 12px;">

@@ -138,7 +138,7 @@ export class IoniScriptEngine {
     public static preProcessScriptForFunctionalParams(hr: string, args): string {
 
         hr = hr.trim();
-        if (hr.startsWith('function ')) {
+        if (/^function\b/.test(hr)) {
             let sti = hr.indexOf('{');
             let stf = hr.lastIndexOf('}');
             let hs = hr.substring(sti + 1, stf);
@@ -193,7 +193,7 @@ export class IoniScriptEngine {
 
     static parseArgumentsFromFunction(hr: string) {
         hr = hr.trim();
-        if (hr.startsWith('function ')) {
+        if (/^function\b/.test(hr)) {
             let sti = hr.indexOf('{');
             let stf = hr.lastIndexOf('}');
             let af = hr.indexOf('function') + 8;

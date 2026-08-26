@@ -39,3 +39,16 @@
   font-size: 17px;
   width: 100px;
 }
+
+/* Centered empty-state shown when the folder has no files/folders. */
+:host .fb-empty {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #8a97a6;
+  font: 500 15px system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  letter-spacing: 0.2px;
+  pointer-events: none;
+  user-select: none;
+}

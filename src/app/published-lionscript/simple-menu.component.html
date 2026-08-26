@@ -15,11 +15,20 @@
         <!-- Dropdown menu -->
         <ng-container *ngIf="item?.items?.length > 0">
           <app-menu-item #menu [items]="item.items"></app-menu-item>
-          <button mat-button *ngIf="menu?.childMenu"
-            [matMenuTriggerFor]="isBlocked(item) ? null : menu.childMenu"
-            #topTrigger="matMenuTrigger" (menuOpened)="onTopMenuOpened(item, topTrigger)"
-            (click)="onTopClick(item)" [ngStyle]="topStyle(item)"
-            [attr.title]="item.tooltip || item.label || ''">
+          <!-- Blocked by the "load a track first" guard: render WITHOUT any menu trigger so
+               the center menu cannot open; clicking only surfaces the warning. -->
+          <button mat-button *ngIf="isBlocked(item)" (click)="notifyBlocked()"
+            [ngStyle]="topStyle(item)" [attr.title]="item.tooltip || item.label || ''">
+            <ng-container *ngIf="item.icon">
+              <img *ngIf="isImageIcon(item.icon)" [src]="item.icon" class="menu-btn-img" alt="" />
+              <mat-icon *ngIf="!isImageIcon(item.icon)" class="menu-btn-icon">{{ item.icon }}</mat-icon>
+            </ng-container>
+            <span *ngIf="item.label">{{ item.label }}</span>
+          </button>
+          <!-- Normal dropdown trigger (guard inactive or allow-listed). -->
+          <button mat-button *ngIf="!isBlocked(item) && menu?.childMenu" [matMenuTriggerFor]="menu.childMenu"
+            #topTrigger="matMenuTrigger" (menuOpened)="closeOtherMenus(topTrigger)"
+            [ngStyle]="topStyle(item)" [attr.title]="item.tooltip || item.label || ''">
             <ng-container *ngIf="item.icon">
               <img *ngIf="isImageIcon(item.icon)" [src]="item.icon" class="menu-btn-img" alt="" />
               <mat-icon *ngIf="!isImageIcon(item.icon)" class="menu-btn-icon">{{ item.icon }}</mat-icon>

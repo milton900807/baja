@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Baja.bio — Genetics for the Curious</title>
+  <link rel="icon" type="image/svg+xml" href="../logos/baja-logo.png">
+  <style>
+    :root { color-scheme: dark; }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; }
+    body {
+      min-height: 100%; padding: 22px 18px 40px;
+      font-family: "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif;
+      color: #eaf6f9;
+      background:
+        radial-gradient(1200px 600px at 15% -10%, rgba(22,196,127,0.25), transparent 60%),
+        radial-gradient(1000px 600px at 110% 10%, rgba(18,167,232,0.28), transparent 55%),
+        radial-gradient(900px 700px at 50% 120%, rgba(255,140,26,0.20), transparent 55%),
+        #071b2a;
+    }
+    .wrap { width: 100%; max-width: 760px; margin: 0 auto;
+      background: rgba(10,25,40,0.74); backdrop-filter: blur(14px);
+      border: 1px solid rgba(18,194,224,0.28); border-radius: 18px; overflow: hidden;
+      box-shadow: 0 24px 70px rgba(0,0,0,0.45); }
+    .brandline { height: 5px; background: linear-gradient(90deg,#16c47f,#12c2c2,#12a7e8,#ff8c1a); }
+    .pad { padding: 22px 26px 26px; }
+    .kicker { font-size: 10.5px; font-weight: 800; letter-spacing: .6px; text-transform: uppercase; color: #19d0d0; }
+    h1 { font-size: 26px; margin: 4px 0 2px; }
+    .tag { font-size: 14px; font-weight: 700; color: #7de2e9; margin-bottom: 8px; }
+    .lead { font-size: 13.5px; line-height: 1.5; color: #b9d3de; margin: 0 0 16px; }
+    .fig { background: #0a343c; border: 1px solid rgba(18,194,224,0.22); border-radius: 12px; padding: 12px 10px 8px; }
+    .fig svg { display: block; width: 100%; height: auto; }
+    .cap { font-size: 11.5px; color: #90aab6; text-align: center; margin: 6px 4px 0; line-height: 1.4; }
+    .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 18px 0 6px; }
+    .step { background: rgba(255,255,255,0.03); border: 1px solid rgba(18,194,224,0.18); border-radius: 12px; padding: 14px; }
+    .num { width: 30px; height: 30px; border-radius: 9px; display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 15px; color: #04202a; margin-bottom: 8px; }
+    .step h3 { font-size: 14px; margin: 0 0 4px; }
+    .step p { font-size: 12px; line-height: 1.45; color: #a9c4d0; margin: 0; }
+    .note-sm { font-size: 11.5px; color: #90aab6; margin: 8px 2px 0; }
+    .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 18px 0 4px; }
+    .box { background: rgba(255,255,255,0.03); border-radius: 12px; padding: 14px 16px; border-left: 3px solid #16c47f; }
+    .box.b2 { border-left-color: #12a7e8; }
+    .box h3 { font-size: 14px; margin: 0 0 8px; }
+    .box ul { margin: 0; padding: 0; list-style: none; }
+    .box li { font-size: 12px; line-height: 1.4; color: #cfe3ea; margin: 0 0 7px; padding-left: 16px; position: relative; }
+    .box li::before { content: "●"; position: absolute; left: 0; color: #22d187; font-size: 9px; top: 2px; }
+    .box.b2 li::before { color: #2bb6f0; }
+    .gloss { margin-top: 16px; }
+    .gloss .row { display: grid; grid-template-columns: 130px 1fr; gap: 10px; padding: 8px 0;
+      border-bottom: 1px solid rgba(18,194,224,0.14); font-size: 12.5px; line-height: 1.4; }
+    .gloss .row b { color: #eaf6f9; }
+    .gloss .row span { color: #bcd6e0; }
+    .safety { margin-top: 16px; font-size: 11px; color: #8aa6b2; line-height: 1.5;
+      border-top: 1px solid rgba(18,194,224,0.14); padding-top: 10px; }
+    .cta-row { margin-top: 18px; text-align: center; }
+    .cta { display: inline-block; text-decoration: none; font-weight: 800; font-size: 13.5px; color: #04202a;
+      background: linear-gradient(135deg,#16c47f,#12a7e8); border-radius: 12px; padding: 11px 20px;
+      box-shadow: 0 8px 22px rgba(18,167,232,0.4); }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="brandline"></div>
+    <div class="pad">
+      <div class="kicker">For the curious · No biology degree needed</div>
+      <h1>See your genetics — literally</h1>
+      <div class="tag">Upload a paper or a genetic report. Watch the mutations appear on the gene.</div>
+      <p class="lead">Genetics is usually locked inside dense papers and jargon-filled lab reports. Baja.bio finds
+        the genes and mutations for you and shows exactly where they sit — so you can see what a report is
+        actually talking about.</p>
+
+      <!-- The schematic: a gene strip with several mutations -->
+      <div class="fig">
+        <svg viewBox="0 0 640 150" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A gene drawn as a strip with mutations marked">
+          <line x1="20" y1="86" x2="620" y2="86" stroke="#9fb6c2" stroke-width="3"/>
+          <g fill="#19d0d0" stroke="#0c6c82" stroke-width="1.2">
+            <rect x="36"  y="73" width="96"  height="26" rx="6"/>
+            <rect x="190" y="73" width="150" height="26" rx="6"/>
+            <rect x="400" y="73" width="96"  height="26" rx="6"/>
+            <rect x="540" y="73" width="52"  height="26" rx="6"/>
+          </g>
+          <!-- mutation pins: mix of labeled variants and plain markers -->
+          <g stroke-width="2.4" font-family="Segoe UI, Arial, sans-serif" font-size="11" font-weight="700" text-anchor="middle">
+            <line x1="70"  y1="86" x2="70"  y2="40" stroke="#ff6b81"/><circle cx="70"  cy="34" r="6" fill="#ff6b81"/><text x="70"  y="24" fill="#f2fbfd">variant</text>
+            <line x1="128" y1="86" x2="128" y2="56" stroke="#ff9a3c"/><circle cx="128" cy="50" r="6" fill="#ff9a3c"/>
+            <line x1="228" y1="86" x2="228" y2="34" stroke="#ff6b81"/><circle cx="228" cy="28" r="6" fill="#ff6b81"/><text x="228" y="18" fill="#f2fbfd">your variant</text>
+            <line x1="286" y1="86" x2="286" y2="60" stroke="#2bb6f0"/><circle cx="286" cy="54" r="6" fill="#2bb6f0"/>
+            <line x1="330" y1="86" x2="330" y2="46" stroke="#22d187"/><circle cx="330" cy="40" r="6" fill="#22d187"/><text x="330" y="30" fill="#f2fbfd">benign</text>
+            <line x1="430" y1="86" x2="430" y2="38" stroke="#ff9a3c"/><circle cx="430" cy="32" r="6" fill="#ff9a3c"/><text x="430" y="22" fill="#f2fbfd">mutation</text>
+            <line x1="474" y1="86" x2="474" y2="60" stroke="#ff6b81"/><circle cx="474" cy="54" r="6" fill="#ff6b81"/>
+            <line x1="560" y1="86" x2="560" y2="44" stroke="#2bb6f0"/><circle cx="560" cy="38" r="6" fill="#2bb6f0"/><text x="560" y="28" fill="#f2fbfd">variant</text>
+          </g>
+          <g fill="#8aa1ad" font-family="Segoe UI, Arial, sans-serif" font-size="10">
+            <text x="20" y="120">start of the gene</text>
+            <text x="620" y="120" text-anchor="end">end of the gene</text>
+          </g>
+          <rect x="238" y="128" width="12" height="10" rx="2" fill="#19d0d0"/>
+          <text x="256" y="137" fill="#a9cbd6" font-family="Segoe UI, Arial, sans-serif" font-size="10.5">coding parts (exons)</text>
+        </svg>
+      </div>
+      <p class="cap">A gene drawn as a strip: teal blocks are the working parts, and each pin marks a mutation —
+        right where it sits. That is what you get from a document you upload.</p>
+
+      <div class="steps">
+        <div class="step"><div class="num" style="background:#19d0d0">1</div><h3>Upload a document</h3>
+          <p>A research paper, a genetic test report, or a photo of one — PDF, text, or image.</p></div>
+        <div class="step"><div class="num" style="background:#2bb6f0">2</div><h3>It reads it for you</h3>
+          <p>Baja.bio finds the genes and mutations it mentions and looks up exactly where they live.</p></div>
+        <div class="step"><div class="num" style="background:#22d187">3</div><h3>See it on the gene</h3>
+          <p>The gene appears with each mutation marked, and it gently zooms to each one.</p></div>
+      </div>
+      <p class="note-sm">It runs in the background so you can keep looking around, and it asks before it loads
+        anything — you are always in control.</p>
+
+      <div class="cols">
+        <div class="box"><h3>What you can do</h3><ul>
+          <li><b>Make sense of a paper</b> — see the genes and variants it discusses.</li>
+          <li><b>Understand a genetic report</b> — turn variant codes into a picture.</li>
+          <li><b>See a mutation in context</b> — in an important part of the gene, or off to the side?</li>
+          <li><b>Zoom to the DNA letters</b> — all the way down to the sequence at a variant.</li>
+        </ul></div>
+        <div class="box b2"><h3>Who it's for</h3><ul>
+          <li><b>Patients &amp; families</b> with a genetic report to understand.</li>
+          <li><b>Students &amp; teachers</b> learning how genes and mutations work.</li>
+          <li><b>Science-curious readers</b> following a paper they found.</li>
+          <li><b>Anyone</b> who learns better from a picture than a wall of text.</li>
+        </ul></div>
+      </div>
+
+      <div class="gloss">
+        <div class="kicker">The three words that unlock it</div>
+        <div class="row"><b>Gene</b><span>A stretch of DNA with the instructions for one job — like a single recipe in a huge cookbook.</span></div>
+        <div class="row"><b>Exon</b><span>The parts of a gene that carry the instructions — the teal blocks in the picture above.</span></div>
+        <div class="row"><b>Mutation / variant</b><span>A spot where the DNA is spelled differently. Location is a big clue — and that is what you see.</span></div>
+      </div>
+
+      <div class="safety">A learning and exploration tool, not a medical device — it helps you understand and
+        visualize what a document says; it does not diagnose or replace a doctor or genetic counselor. Your files are yours.</div>
+    </div>
+  </div>
+</body>
+
+</html>

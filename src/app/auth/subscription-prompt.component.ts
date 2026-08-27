@@ -29,7 +29,12 @@ import { SubscriptionService } from './subscription.service';
         <ul class="feats">
           <li *ngFor="let f of features">{{ f }}</li>
         </ul>
-        <a class="demo-link" href="assets/demo/index.html" target="baja-demo" (click)="openDemo($event)">▶ See the feature tour</a>
+        <div class="demo-row">
+          <a class="demo-link" href="assets/demo/index.html" target="baja-demo"
+             (click)="openDemo($event, 'index.html')">▶ Feature tour — Scientists</a>
+          <a class="demo-link demo-link--alt" href="assets/demo/for-you.html" target="baja-demo-curious"
+             (click)="openDemo($event, 'for-you.html')">▶ Feature tour — Non-scientists</a>
+        </div>
       </div>
 
       <div class="notice" *ngIf="checking">Checking your subscription…</div>
@@ -82,10 +87,13 @@ import { SubscriptionService } from './subscription.service';
       box-shadow:0 2px 6px rgba(0,0,0,0.25); }
     .beta-note { margin-top:10px; padding:8px 10px; border-radius:9px; font-size:12.5px; line-height:1.45;
       color:#ffe0c2; background: rgba(255,140,26,0.12); border:1px solid rgba(255,140,26,0.4); }
-    .demo-link { display:inline-block; margin-top:14px; font-size:13.5px; font-weight:800; cursor:pointer;
+    .demo-row { display:flex; flex-wrap:wrap; gap:10px; margin-top:14px; }
+    .demo-link { display:inline-block; font-size:13px; font-weight:800; cursor:pointer;
       color:#3a1e00; text-decoration:none; background: linear-gradient(135deg,#ffca28,#ff9a3c);
-      border-radius:10px; padding:9px 15px; box-shadow:0 6px 16px rgba(255,154,60,0.35);
-      transition: transform .1s ease, filter .15s ease; }
+      border-radius:10px; padding:9px 14px; box-shadow:0 6px 16px rgba(255,154,60,0.35);
+      transition: transform .1s ease, filter .15s ease; flex:1 1 200px; text-align:center; }
+    .demo-link--alt { color:#04202a; background: linear-gradient(135deg,#16c47f,#12a7e8);
+      box-shadow:0 6px 16px rgba(18,167,232,0.35); }
     .demo-link:hover { filter:brightness(1.06); transform: translateY(-1px); }
     .plan__price { font-size:34px; font-weight:800; color:#eaf6f9; margin-top:4px; }
     .plan__price .per { font-size:14px; font-weight:500; color:#9db6c4; margin-left:4px; }
@@ -193,11 +201,14 @@ export class SubscriptionPromptComponent implements OnInit {
     }
   }
 
-  // Open the public, no-login feature carousel in its own window.
-  openDemo(ev?: Event) {
+  // Open a public, no-login feature tour in its own window. Two audiences: the scientist
+  // carousel (index.html) and the plain-language "for the curious" tour (for-you.html).
+  openDemo(ev?: Event, page: string = 'index.html') {
     if (ev) ev.preventDefault();
-    window.open('assets/demo/index.html', 'baja-demo',
-      'width=820,height=790,menubar=no,toolbar=no,location=no,status=no');
+    const safe = page === 'for-you.html' ? 'for-you.html' : 'index.html';
+    const win = safe === 'for-you.html' ? 'baja-demo-curious' : 'baja-demo';
+    window.open('assets/demo/' + safe, win,
+      'width=860,height=820,menubar=no,toolbar=no,location=no,status=no');
   }
 
   signOut() { this.auth.logout('/login'); }

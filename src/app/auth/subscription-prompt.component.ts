@@ -25,7 +25,7 @@ import { SubscriptionService } from './subscription.service';
           <span class="beta-badge">Beta release</span>
         </div>
         <div class="plan__price">{{ planPrice }}<span class="per">{{ planPeriod }}</span></div>
-        <div class="beta-note">🔥 Limited beta pricing — only a limited number of early users get this rate, and it's locked in for a full year.</div>
+        <div class="beta-note">🔥 Beta pricing ends soon — lock in $79/year now before the price goes up. Limited early-user spots, and your rate is locked in for a full year.</div>
         <ul class="feats">
           <li *ngFor="let f of features">{{ f }}</li>
         </ul>

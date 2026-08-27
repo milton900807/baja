@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Baja.bio — Genetics for the Curious</title>
+  <title>Baja.bio — See Your Genetics</title>
   <link rel="icon" type="image/svg+xml" href="../logos/baja-logo.png">
   <style>
     :root { color-scheme: dark; }
@@ -40,7 +40,10 @@
     .step h3 { font-size: 14px; margin: 0 0 4px; }
     .step p { font-size: 12px; line-height: 1.45; color: #a9c4d0; margin: 0; }
     .note-sm { font-size: 11.5px; color: #90aab6; margin: 8px 2px 0; }
-    .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 18px 0 4px; }
+    .section-head { margin: 20px 0 2px; }
+    .section-head h2 { font-size: 17px; margin: 2px 0 2px; }
+    .section-head p { font-size: 12.5px; line-height: 1.45; color: #a9c4d0; margin: 0; }
+    .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 12px 0 4px; }
     .box { background: rgba(255,255,255,0.03); border-radius: 12px; padding: 14px 16px; border-left: 3px solid #16c47f; }
     .box.b2 { border-left-color: #12a7e8; }
     .box h3 { font-size: 14px; margin: 0 0 8px; }
@@ -55,10 +58,6 @@
     .gloss .row span { color: #bcd6e0; }
     .safety { margin-top: 16px; font-size: 11px; color: #8aa6b2; line-height: 1.5;
       border-top: 1px solid rgba(18,194,224,0.14); padding-top: 10px; }
-    .cta-row { margin-top: 18px; text-align: center; }
-    .cta { display: inline-block; text-decoration: none; font-weight: 800; font-size: 13.5px; color: #04202a;
-      background: linear-gradient(135deg,#16c47f,#12a7e8); border-radius: 12px; padding: 11px 20px;
-      box-shadow: 0 8px 22px rgba(18,167,232,0.4); }
   </style>
 </head>
 
@@ -66,16 +65,16 @@
   <div class="wrap">
     <div class="brandline"></div>
     <div class="pad">
-      <div class="kicker">For the curious · No biology degree needed</div>
-      <h1>See your genetics — literally</h1>
-      <div class="tag">Upload a paper or a genetic report. Watch the mutations appear on the gene.</div>
-      <p class="lead">Genetics is usually locked inside dense papers and jargon-filled lab reports. Baja.bio finds
-        the genes and mutations for you and shows exactly where they sit — so you can see what a report is
-        actually talking about.</p>
+      <div class="kicker">Product overview · for non-scientists</div>
+      <h1>See your genetics clearly</h1>
+      <div class="tag">Upload a paper or genetic report. Watch the mutations appear on the gene.</div>
+      <p class="lead">Genetics is often locked inside dense papers and jargon-filled reports. Baja.bio finds the
+        genes and variants for you and shows exactly where they sit — turning unfamiliar codes into a picture
+        you can explore.</p>
 
-      <!-- The schematic: a gene strip with several mutations -->
+      <!-- The schematic: a gene strip with several variants -->
       <div class="fig">
-        <svg viewBox="0 0 640 150" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A gene drawn as a strip with mutations marked">
+        <svg viewBox="0 0 640 150" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A gene drawn as a strip with variants marked">
           <line x1="20" y1="86" x2="620" y2="86" stroke="#9fb6c2" stroke-width="3"/>
           <g fill="#19d0d0" stroke="#0c6c82" stroke-width="1.2">
             <rect x="36"  y="73" width="96"  height="26" rx="6"/>
@@ -83,7 +82,7 @@
             <rect x="400" y="73" width="96"  height="26" rx="6"/>
             <rect x="540" y="73" width="52"  height="26" rx="6"/>
           </g>
-          <!-- mutation pins: mix of labeled variants and plain markers -->
+          <!-- variant pins: a mix of labeled variants and plain markers -->
           <g stroke-width="2.4" font-family="Segoe UI, Arial, sans-serif" font-size="11" font-weight="700" text-anchor="middle">
             <line x1="70"  y1="86" x2="70"  y2="40" stroke="#ff6b81"/><circle cx="70"  cy="34" r="6" fill="#ff6b81"/><text x="70"  y="24" fill="#f2fbfd">variant</text>
             <line x1="128" y1="86" x2="128" y2="56" stroke="#ff9a3c"/><circle cx="128" cy="50" r="6" fill="#ff9a3c"/>
@@ -102,44 +101,51 @@
           <text x="256" y="137" fill="#a9cbd6" font-family="Segoe UI, Arial, sans-serif" font-size="10.5">coding parts (exons)</text>
         </svg>
       </div>
-      <p class="cap">A gene drawn as a strip: teal blocks are the working parts, and each pin marks a mutation —
-        right where it sits. That is what you get from a document you upload.</p>
+      <p class="cap">A gene drawn as a strip: teal blocks are its working parts, and each pin marks a variant
+        exactly where it sits. This is what Baja.bio builds from a document you upload.</p>
 
+      <div class="section-head"><div class="kicker">From document to picture in three steps</div></div>
       <div class="steps">
         <div class="step"><div class="num" style="background:#19d0d0">1</div><h3>Upload a document</h3>
-          <p>A research paper, a genetic test report, or a photo of one — PDF, text, or image.</p></div>
+          <p>A research paper, genetic test report, or photo — PDF, text, or image.</p></div>
         <div class="step"><div class="num" style="background:#2bb6f0">2</div><h3>It reads it for you</h3>
-          <p>Baja.bio finds the genes and mutations it mentions and looks up exactly where they live.</p></div>
+          <p>Baja.bio finds the genes and variants mentioned and looks up where they live.</p></div>
         <div class="step"><div class="num" style="background:#22d187">3</div><h3>See it on the gene</h3>
-          <p>The gene appears with each mutation marked, and it gently zooms to each one.</p></div>
+          <p>Each variant appears on the gene, with gentle zooming to show its location.</p></div>
       </div>
-      <p class="note-sm">It runs in the background so you can keep looking around, and it asks before it loads
-        anything — you are always in control.</p>
+      <p class="note-sm">It works in the background while you explore, and it asks before loading anything —
+        you stay in control.</p>
 
+      <div class="section-head">
+        <h2>Explore what the document is saying</h2>
+        <p>Move from unfamiliar genetic language to a visual, searchable representation of the genes and variants
+          being discussed.</p>
+      </div>
       <div class="cols">
         <div class="box"><h3>What you can do</h3><ul>
           <li><b>Make sense of a paper</b> — see the genes and variants it discusses.</li>
           <li><b>Understand a genetic report</b> — turn variant codes into a picture.</li>
-          <li><b>See a mutation in context</b> — in an important part of the gene, or off to the side?</li>
-          <li><b>Zoom to the DNA letters</b> — all the way down to the sequence at a variant.</li>
+          <li><b>See a variant in context</b> — is it in an important part of the gene?</li>
+          <li><b>Zoom to the DNA letters</b> — inspect the sequence at that position.</li>
         </ul></div>
         <div class="box b2"><h3>Who it's for</h3><ul>
-          <li><b>Patients &amp; families</b> with a genetic report to understand.</li>
-          <li><b>Students &amp; teachers</b> learning how genes and mutations work.</li>
+          <li><b>Patients and families</b> with a genetic report they want to understand.</li>
+          <li><b>Students and teachers</b> learning how genes and variants work.</li>
           <li><b>Science-curious readers</b> following a paper they found.</li>
-          <li><b>Anyone</b> who learns better from a picture than a wall of text.</li>
+          <li><b>Visual learners</b> who prefer a picture to a wall of text.</li>
         </ul></div>
       </div>
 
       <div class="gloss">
-        <div class="kicker">The three words that unlock it</div>
-        <div class="row"><b>Gene</b><span>A stretch of DNA with the instructions for one job — like a single recipe in a huge cookbook.</span></div>
-        <div class="row"><b>Exon</b><span>The parts of a gene that carry the instructions — the teal blocks in the picture above.</span></div>
-        <div class="row"><b>Mutation / variant</b><span>A spot where the DNA is spelled differently. Location is a big clue — and that is what you see.</span></div>
+        <div class="kicker">Three words that unlock genetics</div>
+        <div class="row"><b>Gene</b><span>A stretch of DNA carrying instructions for one job — like one recipe in a huge cookbook.</span></div>
+        <div class="row"><b>Exon</b><span>A working part of a gene that carries instructions — shown as a teal block above.</span></div>
+        <div class="row"><b>Mutation / variant</b><span>A place where DNA is spelled differently. Its location provides an important clue.</span></div>
       </div>
 
-      <div class="safety">A learning and exploration tool, not a medical device — it helps you understand and
-        visualize what a document says; it does not diagnose or replace a doctor or genetic counselor. Your files are yours.</div>
+      <div class="safety">Learning and exploration only. Baja.bio helps you understand and visualize what a
+        document says. It does not diagnose, interpret clinical risk, or replace a physician or genetic
+        counselor. Your files remain yours.</div>
     </div>
   </div>
 </body>

@@ -111,12 +111,22 @@ export class SelectionListComponent implements OnInit, AfterViewInit, PubCompone
   trackByItem(index: number, item: any) {
     return item;
   }
+  private _lastActionAt = 0;
+  // A tap on mobile does not reliably fire mat-selection-list's (selectionChange), so the
+  // option also has a direct (click). Route both through onChange, debounced so a desktop
+  // click (which fires BOTH selectionChange and click) only triggers the action once.
+  onOptionClick(item: any) {
+    if (this.singleSelect) this.onChange([item]);
+  }
   onChange(event) {
     this.selectedItems = event;
     if (this.actionIonFunction && this.selectedItems.length > 0) {
       if (this.displayButton) this.showButton = true;
     }
     if (this.singleSelect && this.actionIonFunction) {
+      const now = Date.now();
+      if (now - this._lastActionAt < 350) return;   // de-dupe tap + selectionChange
+      this._lastActionAt = now;
       this.actionIonFunction(this.selectedItems);
     }
   }

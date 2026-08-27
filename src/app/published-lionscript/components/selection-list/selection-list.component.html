@@ -18,6 +18,7 @@
         [value]="item"
         [ngStyle]="{ 'background-color': getOptionBackground(item) }"
         class="selection-option"
+        (click)="onOptionClick(item)"
       >
         <!-- Label / header -->
         <div matLine class="item-title" [class.bracketed]="isBracketed(item)">

@@ -31,9 +31,9 @@ import { SubscriptionService } from './subscription.service';
         </ul>
         <div class="demo-row">
           <a class="demo-link" href="assets/demo/index.html" target="baja-demo"
-             (click)="openDemo($event, 'index.html')">▶ Feature tour — Scientists</a>
+             (click)="openDemo($event, 'index.html')">Scientists</a>
           <a class="demo-link demo-link--alt" href="assets/demo/for-you.html" target="baja-demo-curious"
-             (click)="openDemo($event, 'for-you.html')">▶ Feature tour — Non-scientists</a>
+             (click)="openDemo($event, 'for-you.html')">Non-scientists</a>
         </div>
       </div>
 
@@ -81,19 +81,19 @@ import { SubscriptionService } from './subscription.service';
     .plan { border:1px solid rgba(18,194,224,0.22); border-radius:14px; padding:16px 18px; margin-bottom:16px;
       background: rgba(18,194,224,0.06); }
     .plan__top { display:flex; align-items:center; justify-content:space-between; gap:8px; }
-    .plan__name { font-size:13px; font-weight:700; letter-spacing:.4px; text-transform:uppercase; color:#12c2e0; }
+    .plan__name { font-size:14px; font-weight:800; letter-spacing:.2px; color:#12c2e0; }
     .beta-badge { font-size:10.5px; font-weight:800; text-transform:uppercase; letter-spacing:.5px;
       color:#0a2540; background:#ffca28; border-radius:6px; padding:3px 8px; white-space:nowrap;
       box-shadow:0 2px 6px rgba(0,0,0,0.25); }
     .beta-note { margin-top:10px; padding:8px 10px; border-radius:9px; font-size:12.5px; line-height:1.45;
       color:#ffe0c2; background: rgba(255,140,26,0.12); border:1px solid rgba(255,140,26,0.4); }
-    .demo-row { display:flex; flex-wrap:wrap; gap:10px; margin-top:14px; }
+    .demo-row { display:flex; flex-wrap:nowrap; gap:10px; margin-top:14px; }
+    /* sunset beach: warm gold -> orange -> coral */
     .demo-link { display:inline-block; font-size:13px; font-weight:800; cursor:pointer;
-      color:#3a1e00; text-decoration:none; background: linear-gradient(135deg,#ffca28,#ff9a3c);
-      border-radius:10px; padding:9px 14px; box-shadow:0 6px 16px rgba(255,154,60,0.35);
-      transition: transform .1s ease, filter .15s ease; flex:1 1 200px; text-align:center; }
-    .demo-link--alt { color:#04202a; background: linear-gradient(135deg,#16c47f,#12a7e8);
-      box-shadow:0 6px 16px rgba(18,167,232,0.35); }
+      color:#3a1500; text-decoration:none; background: linear-gradient(135deg,#ffd166,#ff9a3c,#ff6b81);
+      border-radius:10px; padding:10px 14px; box-shadow:0 6px 16px rgba(255,120,80,0.38);
+      transition: transform .1s ease, filter .15s ease; flex:1 1 0; text-align:center; }
+    .demo-link--alt { color:#4a1224; background: linear-gradient(135deg,#ffb15a,#ff7a8a,#ff5e8a); }
     .demo-link:hover { filter:brightness(1.06); transform: translateY(-1px); }
     .plan__price { font-size:34px; font-weight:800; color:#eaf6f9; margin-top:4px; }
     .plan__price .per { font-size:14px; font-weight:500; color:#9db6c4; margin-left:4px; }
@@ -101,10 +101,10 @@ import { SubscriptionService } from './subscription.service';
     .feats li { position:relative; padding:5px 0 5px 22px; color:#cfe4ec; font-size:13.5px; }
     .feats li::before { content:"✓"; position:absolute; left:0; color:#16c47f; font-weight:800; }
     .cta { width:100%; margin-top:4px; padding:13px 16px; border:none; border-radius:12px; cursor:pointer;
-      font-size:15px; font-weight:800; color:#062430;
-      background: linear-gradient(135deg,#16c47f,#12a7e8); box-shadow:0 8px 22px rgba(18,167,232,0.4);
+      font-size:15px; font-weight:800; color:#3a1500;
+      background: linear-gradient(135deg,#ffca28,#ff8c42,#ff6b81); box-shadow:0 8px 22px rgba(255,120,80,0.45);
       transition: transform .1s ease, box-shadow .18s ease, opacity .15s ease; }
-    .cta:hover:not(:disabled) { transform: translateY(-1px); box-shadow:0 10px 26px rgba(18,167,232,0.55); }
+    .cta:hover:not(:disabled) { transform: translateY(-1px); box-shadow:0 10px 26px rgba(255,120,80,0.6); }
     .cta:disabled { opacity:.6; cursor:default; }
     .pay-note { margin-top:10px; text-align:center; font-size:11.5px; color:#7e97a6; }
     .notice { margin:2px 0 14px; padding:9px 12px; border-radius:9px; font-size:13px; color:#bcd3df;
@@ -128,7 +128,7 @@ export class SubscriptionPromptComponent implements OnInit {
 
   // Plan copy. The price/period are fetched live from Stripe in ngOnInit (so the UI always
   // matches STRIPE_PRICE_ID); the env values are only a fallback if that fetch fails.
-  planName = String((window as any)['env']?.['planName'] || 'Baja Pro');
+  planName = String((window as any)['env']?.['planName'] || 'Baja.Bio');
   planPrice = String((window as any)['env']?.['planPrice'] || '');
   planPeriod = String((window as any)['env']?.['planPeriod'] || '');
   features: string[] = ((window as any)['env']?.['planFeatures']) || [

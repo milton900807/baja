@@ -671,7 +671,9 @@ export class CanvasComponent implements PubComponent, AfterViewInit, OnDestroy {
             if (this.touchStart)
                 this.touchStart(evt);
 
-            if (this.mouseDownListener) {
+            // Only start a drag/pan for a SINGLE finger. A two-finger touchstart is the
+            // beginning of a pinch — starting a pan there breaks the zoom.
+            if (this.mouseDownListener && evt.touches && evt.touches.length === 1) {
                 const rect = canvasEl.getBoundingClientRect();
                 canvasEl.focus();
 
@@ -772,16 +774,15 @@ export class CanvasComponent implements PubComponent, AfterViewInit, OnDestroy {
 
 
 
-            if (this.mouseMoveListener) {
+            // Single-finger drag = pan. Do NOT pan while two fingers are down — that is a
+            // pinch (handled above); panning at the same time makes the two fight.
+            if (this.mouseMoveListener && evt.touches && evt.touches.length === 1) {
                 const rect = canvasEl.getBoundingClientRect();
-                if (rect && evt.touches && evt.touches.length > 0) {
-                    const ct = {
-                        x: evt.touches[0].clientX - rect.left,
-                        y: evt.touches[0].clientY - rect.top
-                    };
-                    this.mouseMoveListener(ct.x, ct.y);
-                }
-
+                const ct = {
+                    x: evt.touches[0].clientX - rect.left,
+                    y: evt.touches[0].clientY - rect.top
+                };
+                this.mouseMoveListener(ct.x, ct.y);
             }
         }, false)
 

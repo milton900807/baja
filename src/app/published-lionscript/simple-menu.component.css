@@ -1103,3 +1103,11 @@ simple-menu mat-toolbar.mat-default,
 .menu-wrapper > ng-container + ng-container {
   border-left: 1px solid rgba(255, 255, 255, 0.35) !important;
 }
+
+/* Mobile: shrink the top menubar buttons ~15% so they fit narrow screens (isMobile). */
+@media (max-width: 820px), (pointer: coarse) and (max-width: 1024px) {
+  simple-menu .menu-wrapper,
+  simple-menu .menu-buttons {
+    zoom: 0.85;
+  }
+}

@@ -89,6 +89,8 @@ export class CanvasComponent implements PubComponent, AfterViewInit, OnDestroy {
     touchMove;
     dblclick;
     wheelListener;
+    _touchStartPt: { x: number; y: number } | null = null;   // single-finger touch start
+    _touchNavStarted = false;                                 // drag past threshold -> navigate
     id: string = "canvas"
     canvasListener;
     code: string = '';
@@ -636,6 +638,8 @@ export class CanvasComponent implements PubComponent, AfterViewInit, OnDestroy {
 
             if (this.touchEnd)
                 this.touchEnd(evt);
+            this._touchStartPt = null;
+            this._touchNavStarted = false;
             if (this.mouseUpListener) {
                 const rect = canvasEl.getBoundingClientRect();
                 canvasEl.focus();
@@ -676,12 +680,15 @@ export class CanvasComponent implements PubComponent, AfterViewInit, OnDestroy {
             if (this.mouseDownListener && evt.touches && evt.touches.length === 1) {
                 const rect = canvasEl.getBoundingClientRect();
                 canvasEl.focus();
-
+                const ct = {
+                    x: evt.touches[0].clientX - rect.left,
+                    y: evt.touches[0].clientY - rect.top
+                };
+                // Record the start so a later touchmove can tell a drag from a stationary tap;
+                // navigate/pan is only engaged once movement passes the threshold (see below).
+                this._touchStartPt = { x: ct.x, y: ct.y };
+                this._touchNavStarted = false;
                 if (this.mouseMoveListener && evt && rect && rect.x && rect.y && evt.touches[0] && evt.touches[0].clientX) {
-                    const ct = {
-                        x: evt.touches[0].clientX - rect.left,
-                        y: evt.touches[0].clientY - rect.top
-                    };
                     this.mouseDownListener(ct.x, ct.y);
                 }
             }
@@ -782,6 +789,15 @@ export class CanvasComponent implements PubComponent, AfterViewInit, OnDestroy {
                     x: evt.touches[0].clientX - rect.left,
                     y: evt.touches[0].clientY - rect.top
                 };
+                // Engage navigate/pan only once actual drag movement is detected (>~8px from
+                // the touch start) — a stationary tap keeps the current mode so it can select.
+                if (!this._touchNavStarted && this._touchStartPt) {
+                    const dx = ct.x - this._touchStartPt.x, dy = ct.y - this._touchStartPt.y;
+                    if ((dx * dx + dy * dy) > 64) {
+                        this._touchNavStarted = true;
+                        if (this.touchMove) this.touchMove(ct);   // lionscript: switch to navigate + re-anchor
+                    }
+                }
                 this.mouseMoveListener(ct.x, ct.y);
             }
         }, false)

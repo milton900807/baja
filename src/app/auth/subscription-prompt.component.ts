@@ -25,7 +25,7 @@ import { SubscriptionService } from './subscription.service';
           <span class="beta-badge">Beta release</span>
         </div>
         <div class="plan__price">{{ planPrice }}<span class="per">{{ planPeriod }}</span></div>
-        <div class="beta-note">🔥 Early-access pricing — get full access for a one-time $99 before the price goes up. Limited early-user spots.</div>
+        <div class="beta-note">🔥 Beta pricing ends soon — lock in $79/year now before the price goes up. Limited early-user spots, and your rate is locked in for a full year.</div>
         <ul class="feats">
           <li *ngFor="let f of features">{{ f }}</li>
         </ul>
@@ -38,7 +38,7 @@ import { SubscriptionService } from './subscription.service';
       <div class="error" *ngIf="error">{{ error }}</div>
 
       <button class="cta" [disabled]="busy || checking" (click)="subscribe()">
-        <span *ngIf="!busy">Get access</span>
+        <span *ngIf="!busy">Subscribe</span>
         <span *ngIf="busy">Redirecting…</span>
       </button>
       <div class="pay-note">Card, Apple&nbsp;Pay, Google&nbsp;Pay &amp; Link · secured by Stripe</div>

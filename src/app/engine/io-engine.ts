@@ -20,6 +20,64 @@ import * as pako from 'pako';
 import { Renderer2, RendererFactory2 } from '@angular/core';
 import nlp from 'compromise'
 
+// A DOM "working" indicator: a CSS-animated ring + a live status line, shown while any
+// backend (.py) work is running. CSS drives the spin, so it never freezes even if the
+// canvas redraw loop stalls. The status text mirrors window.__workStatus (set by scripts to
+// a plain-language, science-level description) and is suppressed while the file-upload blur
+// overlay is up (that one has its own spinner).
+function __bajaWorkIndicator(): HTMLElement {
+    let el = document.getElementById('baja-working') as HTMLElement;
+    if (el) return el;
+    if (!document.getElementById('baja-working-kf')) {
+        const st = document.createElement('style'); st.id = 'baja-working-kf';
+        st.textContent = '@keyframes bajaWorkSpin{to{transform:rotate(360deg)}}';
+        document.head.appendChild(st);
+    }
+    el = document.createElement('div');
+    el.id = 'baja-working';
+    el.style.cssText = 'position:fixed;left:50%;top:16px;transform:translateX(-50%);'
+        + 'z-index:2147482000;display:none;align-items:center;gap:11px;padding:9px 16px 9px 12px;'
+        + 'border-radius:22px;background:rgba(12,20,36,0.85);box-shadow:0 6px 20px rgba(0,0,0,.35);'
+        + 'pointer-events:none;';
+    const ring = document.createElement('div');
+    ring.style.cssText = 'width:22px;height:22px;border-radius:50%;flex:0 0 auto;'
+        + 'border:3px solid rgba(255,255,255,0.25);border-top-color:#ffd98a;'
+        + 'animation:bajaWorkSpin 0.8s linear infinite;';
+    const txt = document.createElement('span');
+    txt.id = 'baja-working-txt';
+    txt.style.cssText = 'color:#f6ecd8;font:600 13.5px "Segoe UI",Arial,sans-serif;'
+        + 'white-space:nowrap;max-width:70vw;overflow:hidden;text-overflow:ellipsis;';
+    txt.textContent = 'Working…';
+    el.appendChild(ring); el.appendChild(txt);
+    document.body.appendChild(el);
+    return el;
+}
+let __bajaWorkTimer: any = null;
+function __bajaWorkShow(show: boolean): void {
+    try {
+        const el = __bajaWorkIndicator();
+        const txt = document.getElementById('baja-working-txt');
+        if (show) {
+            if ((window as any).__bajaBlurActive) { el.style.display = 'none'; return; }
+            el.style.display = 'flex';
+            if (!__bajaWorkTimer) {
+                __bajaWorkTimer = setInterval(() => {
+                    try {
+                        if ((window as any).__bajaBlurActive) { el.style.display = 'none'; return; }
+                        el.style.display = 'flex';
+                        const s = (window as any).__workStatus;
+                        if (txt) txt.textContent = (s && ('' + s).trim()) || 'Working…';
+                    } catch (e) { }
+                }, 250);
+            }
+        } else {
+            el.style.display = 'none';
+            if (__bajaWorkTimer) { clearInterval(__bajaWorkTimer); __bajaWorkTimer = null; }
+            try { (window as any).__workStatus = ''; } catch (e) { }
+        }
+    } catch (e) { }
+}
+
 @Injectable()
 export class IoniScriptEngine {
     static iopath = 'editor';
@@ -1394,6 +1452,7 @@ export class LionEngine {
         const __isPyExec = !!(path && typeof path === 'string' && path.endsWith('.py'));
         if (__isPyExec) {
             try { (window as any).__backendWorkCount = (((window as any).__backendWorkCount) || 0) + 1; } catch (e) { }
+            try { __bajaWorkShow(true); } catch (e) { }
         }
         let startDate = new Date();
         let seconds = 0;
@@ -1551,6 +1610,7 @@ export class LionEngine {
                 if (__cleared) return;
                 __cleared = true;
                 try { (window as any).__backendWorkCount = Math.max(0, (((window as any).__backendWorkCount) || 1) - 1); } catch (e) { }
+                try { if (((window as any).__backendWorkCount || 0) <= 0) __bajaWorkShow(false); } catch (e) { }
             };
             // Clear when the call settles (either way); plus a safety timeout in
             // case the backend poll never resolves (its own cap is ~400s).

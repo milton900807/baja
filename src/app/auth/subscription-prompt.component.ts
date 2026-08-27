@@ -25,7 +25,7 @@ import { SubscriptionService } from './subscription.service';
           <span class="beta-badge">Beta release</span>
         </div>
         <div class="plan__price">{{ planPrice }}<span class="per">{{ planPeriod }}</span></div>
-        <div class="beta-note">🔥 Beta access — a one-time $99 gets you a full year. Limited early-user spots; no auto-renewal.</div>
+        <div class="beta-note">🔥 Early-access pricing, limited time — lock in $99/year before it goes up. Limited early-user spots, and your rate stays locked in.</div>
         <ul class="feats">
           <li *ngFor="let f of features">{{ f }}</li>
         </ul>
@@ -43,7 +43,7 @@ import { SubscriptionService } from './subscription.service';
       <div class="error" *ngIf="error">{{ error }}</div>
 
       <button class="cta" [disabled]="busy || checking" (click)="subscribe()">
-        <span *ngIf="!busy">Get access</span>
+        <span *ngIf="!busy">Subscribe</span>
         <span *ngIf="busy">Redirecting…</span>
       </button>
       <div class="pay-note">Card, Apple&nbsp;Pay, Google&nbsp;Pay &amp; Link · secured by Stripe</div>
@@ -136,7 +136,7 @@ export class SubscriptionPromptComponent implements OnInit {
     'Design siRNA, ASO & qPCR assays',
     'Off-target analysis & splicing models',
     'Patent database, RNA-binding proteins & RNA-seq layers',
-    'Comes with a copy of “The Chemistry of RNA Therapeutics”',
+    'Bonus book: "The Chemistry of RNA Therapeutics"',
   ];
 
   constructor(

@@ -65,6 +65,7 @@ import { NewsEditorComponent } from "./published-lionscript/news-editor.componen
 import { NewsletterComponent } from "./published-lionscript/news-letter.component"
 import { RadioBigButtonsComponent } from "./published-lionscript/components/radio-buttons/radio-big-buttons.component";
 import { MarketFBComponent } from "./file-manager/fb-market.component";
+import { BookshelfComponent } from "./file-manager/bookshelf.component";
 import { PdfPurchaseViewerComponent } from "./published-lionscript/pdf-viewer-purchase.component";
 import { LibraryViewerComponent } from "./published-lionscript/library-viewer.component";
 import { TitleWidgetComponent } from "./published-lionscript/components/title/title-widget.component";
@@ -95,6 +96,7 @@ export class WidgetFactory {
         'ionworks-menu': IonWorksMenuComponent,
         'market-file-browser': MarketFBComponent,
         'simple-file-browser': FBComponent,
+        'pdf-bookshelf': BookshelfComponent,
         'ionworks-navbar': IonWorksNavbarComponent,
         'folder-list': FolderListComponent,
         'file-gallery': FileGalleryComponent,

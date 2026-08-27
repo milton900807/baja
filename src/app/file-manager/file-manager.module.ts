@@ -18,11 +18,13 @@ import { NewFolderDialogComponent } from "./modals/newFolderDialog/newFolderDial
 import { RenameDialogComponent } from "./modals/renameFolderDialog/renameDialog.component";
 import { FBComponent } from "./fb.component";
 import { MarketFBComponent } from "./fb-market.component";
+import { BookshelfComponent } from "./bookshelf.component";
 import { DragDropModule } from '@angular/cdk/drag-drop';
 
 
 @NgModule({
     imports: [
+        CommonModule,
         MatCardModule,
         MatDialogModule,
         MatIconModule,
@@ -37,10 +39,10 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
         FormsModule,
         MatButtonModule],
     declarations: [FileManagerComponent, FileBrowserComponent,
-        FilenameFilter, NewFolderDialogComponent, RenameDialogComponent, FBComponent, MarketFBComponent],
+        FilenameFilter, NewFolderDialogComponent, RenameDialogComponent, FBComponent, MarketFBComponent, BookshelfComponent],
 
     providers: [FileService],
-    exports: [FileManagerComponent, FileBrowserComponent, FBComponent, MarketFBComponent]
+    exports: [FileManagerComponent, FileBrowserComponent, FBComponent, MarketFBComponent, BookshelfComponent]
 })
 export class FileManagerModule {
 }

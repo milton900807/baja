@@ -1,0 +1,42 @@
+<div class="bookshelf-wrap">
+
+  <div class="bookshelf-head">
+    <div class="bookshelf-title">
+      <span class="bk-icon">📚</span>
+      <span>{{ title }}</span>
+      <span class="bk-count" *ngIf="!loading">{{ filteredBooks.length }}</span>
+    </div>
+
+    <div class="bookshelf-search" *ngIf="showSearch">
+      <span class="bk-search-icon">🔍</span>
+      <input
+        type="text"
+        [(ngModel)]="search"
+        placeholder="Search titles…"
+        autocomplete="off"
+        spellcheck="false" />
+      <button *ngIf="search" class="bk-clear" (click)="search=''" title="Clear">×</button>
+    </div>
+  </div>
+
+  <div class="bk-status" *ngIf="loading">Loading library…</div>
+  <div class="bk-status bk-error" *ngIf="!loading && error">{{ error }}</div>
+  <div class="bk-status" *ngIf="!loading && !error && filteredBooks.length === 0">
+    No books match “{{ search }}”.
+  </div>
+
+  <div class="shelf" *ngIf="!loading && !error">
+    <button
+      class="book"
+      *ngFor="let b of filteredBooks; trackBy: trackByPath"
+      [style.background]="b.color"
+      (click)="openBook(b)"
+      [attr.title]="b.title">
+      <span class="book-spine"></span>
+      <span class="book-title">{{ b.title }}</span>
+      <span class="book-foot">PDF</span>
+      <span class="book-pages"></span>
+    </button>
+  </div>
+
+</div>

@@ -1,0 +1,187 @@
+:host {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+}
+
+.bookshelf-wrap {
+  min-height: 100%;
+  box-sizing: border-box;
+  padding: 16px 18px 28px;
+  /* Warm reading-room backdrop */
+  background:
+    radial-gradient(120% 80% at 50% -10%, #5a4130 0%, #3c2b1e 55%, #2c1f15 100%);
+  font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+/* ---- Header + search ---------------------------------------------------- */
+.bookshelf-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+
+.bookshelf-title {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: #f5e9d6;
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: .3px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, .5);
+}
+.bookshelf-title .bk-icon { font-size: 21px; }
+.bk-count {
+  font-size: 12px;
+  font-weight: 600;
+  color: #3c2b1e;
+  background: #e6c98f;
+  border-radius: 11px;
+  padding: 1px 9px;
+}
+
+.bookshelf-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: #fbf6ec;
+  border: 1px solid #b98f57;
+  border-radius: 22px;
+  padding: 0 8px 0 30px;
+  min-width: 220px;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, .15);
+}
+.bk-search-icon {
+  position: absolute;
+  left: 9px;
+  font-size: 13px;
+  opacity: .6;
+}
+.bookshelf-search input {
+  border: none;
+  outline: none;
+  background: transparent;
+  padding: 8px 4px;
+  font-size: 14px;
+  color: #2c1f15;
+  width: 100%;
+}
+.bk-clear {
+  border: none;
+  background: transparent;
+  font-size: 18px;
+  line-height: 1;
+  color: #8a6a3f;
+  cursor: pointer;
+  padding: 0 4px;
+}
+.bk-clear:hover { color: #2c1f15; }
+
+/* ---- Status lines ------------------------------------------------------- */
+.bk-status {
+  color: #e8d9c1;
+  font-size: 14px;
+  padding: 24px 4px;
+  text-align: center;
+}
+.bk-error { color: #ffb4a8; }
+
+/* ---- The shelves -------------------------------------------------------- */
+/* Fixed row height + fixed row-gap so a wooden board can be painted into
+   every gap with a repeating gradient that lines up with each book row. */
+.shelf {
+  --book-h: 208px;
+  --board: 34px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(148px, 1fr));
+  grid-auto-rows: var(--book-h);
+  column-gap: 20px;
+  row-gap: var(--board);
+  align-items: end;
+  padding-top: 4px;
+  /* Wooden shelf board drawn in each row-gap (period = book height + board). */
+  background-image:
+    repeating-linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0) 0,
+      rgba(0, 0, 0, 0) var(--book-h),
+      #7c5230 var(--book-h),
+      #8a5d37 calc(var(--book-h) + 6px),
+      #5c3c21 calc(var(--book-h) + 20px),
+      #3f2916 calc(var(--book-h) + var(--board))
+    );
+  background-position: 0 4px;
+}
+
+/* ---- A book ------------------------------------------------------------- */
+.book {
+  position: relative;
+  height: var(--book-h);
+  border: none;
+  border-radius: 3px 7px 7px 3px;
+  cursor: pointer;
+  padding: 16px 12px 12px 18px;
+  text-align: left;
+  color: #fdf6e9;
+  overflow: hidden;
+  box-shadow:
+    0 10px 14px -6px rgba(0, 0, 0, .55),
+    inset 0 0 0 1px rgba(255, 255, 255, .06);
+  transition: transform .16s ease, box-shadow .16s ease;
+  display: flex;
+  flex-direction: column;
+}
+.book:hover {
+  transform: translateY(-8px) rotate(-.4deg);
+  box-shadow:
+    0 18px 22px -8px rgba(0, 0, 0, .6),
+    inset 0 0 0 1px rgba(255, 255, 255, .1);
+}
+.book:focus-visible { outline: 2px solid #ffdf9e; outline-offset: 2px; }
+
+/* Darker spine down the left edge (hardcover look) */
+.book-spine {
+  position: absolute;
+  top: 0; left: 0; bottom: 0;
+  width: 9px;
+  background: linear-gradient(to right, rgba(0, 0, 0, .45), rgba(0, 0, 0, 0));
+  border-right: 1px solid rgba(0, 0, 0, .25);
+}
+/* Page block peeking on the right edge */
+.book-pages {
+  position: absolute;
+  top: 5px; bottom: 5px; right: 0;
+  width: 5px;
+  background: repeating-linear-gradient(
+    to bottom, #f3ead6 0, #f3ead6 2px, #d9cbb0 2px, #d9cbb0 3px);
+  border-radius: 0 3px 3px 0;
+  opacity: .85;
+}
+
+.book-title {
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: .2px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, .4);
+  display: -webkit-box;
+  -webkit-line-clamp: 6;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.book-foot {
+  margin-top: auto;
+  align-self: flex-start;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  padding: 2px 7px;
+  border-radius: 3px;
+  background: rgba(0, 0, 0, .28);
+  color: #ffe9c2;
+}

@@ -1,9 +1,15 @@
 <mat-menu #childMenu="matMenu" [overlapTrigger]="false">
-  <span *ngFor="let child of items">
-    <span >
-      <button mat-menu-item (click)="click(child)">
+  <ng-container *ngFor="let child of items">
+    <!-- Nested submenu: a child that itself has items opens a flyout instead of firing. -->
+    <ng-container *ngIf="child?.items?.length > 0">
+      <app-menu-item #sub [items]="child.items"></app-menu-item>
+      <button mat-menu-item [matMenuTriggerFor]="sub.childMenu">
         <span>{{child?.label}}</span>
       </button>
-    </span>
-  </span>
+    </ng-container>
+    <!-- Leaf item -->
+    <button *ngIf="!child?.items || child.items.length === 0" mat-menu-item (click)="click(child)">
+      <span>{{child?.label}}</span>
+    </button>
+  </ng-container>
 </mat-menu>

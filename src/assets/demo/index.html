@@ -42,6 +42,12 @@
       box-shadow: 0 6px 18px rgba(0,0,0,0.4); }
     .yt.show { display: inline-flex; }
     .yt:hover { background: #dc2626; }
+    .doc { position: absolute; left: 12px; bottom: 12px; display: none; align-items: center; gap: 7px;
+      padding: 8px 12px; border-radius: 10px; cursor: pointer; border: none; text-decoration: none;
+      font-size: 13px; font-weight: 700; color: #062430; background: rgba(25,208,208,0.95);
+      box-shadow: 0 6px 18px rgba(0,0,0,0.4); }
+    .doc.show { display: inline-flex; }
+    .doc:hover { background: #19d0d0; }
     .nav { position: absolute; top: 50%; transform: translateY(-50%); width: 42px; height: 42px;
       border-radius: 50%; border: none; cursor: pointer; color: #062430; font-size: 20px; font-weight: 800;
       background: rgba(234,246,249,0.9); box-shadow: 0 6px 16px rgba(0,0,0,0.35); }
@@ -75,6 +81,7 @@
       <div class="frame">
         <img id="slide" alt="">
         <button class="yt" id="ytBtn" title="Watch on YouTube">▶ Watch video</button>
+        <a class="doc" id="docBtn" target="_blank" rel="noopener noreferrer">📄 Read the paper</a>
       </div>
       <button class="nav prev" id="prev" aria-label="Previous">‹</button>
       <button class="nav next" id="next" aria-label="Next">›</button>
@@ -138,21 +145,30 @@
              <circle cx="520" cy="70" r="6"/><circle cx="290" cy="150" r="6"/>
            </g>
            <line x1="205" y1="95" x2="270" y2="95" stroke="${MUTE}" stroke-width="2" stroke-dasharray="4 4"/>`),
-        'primers': card('Design qPCR primers and probes',
-          'Amplicons scored by assay success',
-          `<line x1="10" y1="95" x2="550" y2="95" stroke="${MUTE}" stroke-width="3"/>
-           <rect x="70"  y="88" width="130" height="14" rx="7" fill="${GREEN}"/><polygon points="200,88 220,95 200,102" fill="${GREEN}"/>
-           <rect x="360" y="88" width="130" height="14" rx="7" fill="${CYAN}"/><polygon points="360,88 340,95 360,102" fill="${CYAN}"/>
-           <rect x="245" y="70" width="70" height="12" rx="6" fill="${ORANGE}"/>
-           <text x="280" y="62" fill="${ORANGE}" font-family="Arial" font-size="13" text-anchor="middle">probe</text>`),
-        'splicing': card('Predict splicing (sashimi)',
-          'PSI and site-strength deep-learning models',
+        'primers': card('Design primers with djPrimer',
+          'Design with primer3 · ranked by predicted assay success',
+          `<line x1="10" y1="66" x2="360" y2="66" stroke="${MUTE}" stroke-width="3"/>
+           <rect x="40"  y="59" width="110" height="13" rx="6" fill="${GREEN}"/><polygon points="150,59 168,66 150,73" fill="${GREEN}"/>
+           <rect x="250" y="59" width="110" height="13" rx="6" fill="${CYAN}"/><polygon points="250,59 232,66 250,73" fill="${CYAN}"/>
+           <rect x="165" y="43" width="60" height="11" rx="5" fill="${ORANGE}"/>
+           <text x="195" y="36" fill="${ORANGE}" font-family="Arial" font-size="12" text-anchor="middle">probe</text>
+           <line x1="405" y1="170" x2="560" y2="170" stroke="${MUTE}" stroke-width="2"/>
+           <line x1="405" y1="120" x2="560" y2="120" stroke="${MUTE}" stroke-width="1.5" stroke-dasharray="5 4" opacity="0.7"/>
+           <text x="560" y="114" fill="${MUTE}" font-family="Arial" font-size="10" text-anchor="end">chance</text>
+           <rect x="420" y="120" width="40" height="50" rx="4" fill="${MUTE}"/>
+           <rect x="500" y="86"  width="40" height="84" rx="4" fill="${GREEN}"/>
+           <text x="440" y="186" fill="${MUTE}"  font-family="Arial" font-size="11" text-anchor="middle">primer3</text>
+           <text x="520" y="186" fill="${GREEN}" font-family="Arial" font-size="11" text-anchor="middle">djPrimer</text>`),
+        'splicing': card('Predict splicing with BajaSplice',
+          'Splice sites, exon inclusion & cryptic exons',
           `${exonRow(140, TEAL)}
            <path d="M65 127 C 140 30, 205 30, 215 127" fill="none" stroke="${ORANGE}" stroke-width="4"/>
            <path d="M215 127 C 300 60, 350 60, 370 127" fill="none" stroke="${GREEN}" stroke-width="3"/>
-           <path d="M65 127 C 250 -10, 450 -10, 500 127" fill="none" stroke="${CYAN}" stroke-width="3" opacity="0.85"/>`),
-        'rbp': card('RNA-binding protein sites',
-          'Predicted binding across the transcript',
+           <path d="M65 127 C 250 -10, 450 -10, 500 127" fill="none" stroke="${CYAN}" stroke-width="3" opacity="0.85"/>
+           <rect x="288" y="127" width="42" height="26" rx="4" fill="none" stroke="${ORANGE}" stroke-width="2" stroke-dasharray="5 4"/>
+           <text x="309" y="176" fill="${ORANGE}" font-family="Arial" font-size="12" text-anchor="middle">cryptic exon</text>`),
+        'rbp': card('RBP binding with BajaCLIP',
+          'Predicted protein–RNA binding across the transcript',
           `<path d="M0 120 Q 40 90 80 120 T 160 120 T 240 120 T 320 120 T 400 120 T 480 120 T 560 120" fill="none" stroke="${CYAN}" stroke-width="4"/>
            <ellipse cx="250" cy="80" rx="52" ry="40" fill="${ORANGE}"/>
            <text x="250" y="86" fill="${DARK}" font-family="Arial" font-size="18" font-weight="700" text-anchor="middle">RBP</text>
@@ -207,10 +223,9 @@
     // ---- Carousel --------------------------------------------------------------
     const SLIDES = [
       { key: 'genomics-mutations' },
-      { key: 'sirna' },
       { key: 'offtargets' },
       { key: 'primers' },
-      { key: 'splicing' },
+      { key: 'splicing', doc: 'pubs/BajaSplice-V1.pdf', docLabel: 'Read the BajaSplice paper' },
       { key: 'rbp' },
       { key: 'rnaseq' },
       { key: 'mrna' },
@@ -222,6 +237,7 @@
 
     const slideEl = document.getElementById('slide');
     const ytBtn = document.getElementById('ytBtn');
+    const docBtn = document.getElementById('docBtn');
     const countEl = document.getElementById('count');
     const dotsEl = document.getElementById('dots');
     let idx = 0, timer = null;
@@ -241,6 +257,9 @@
       countEl.textContent = (idx + 1) + ' / ' + SLIDES.length;
       if (s.yt) { ytBtn.classList.add('show'); ytBtn.onclick = () => window.open('https://www.youtube.com/watch?v=' + s.yt, '_blank'); }
       else { ytBtn.classList.remove('show'); ytBtn.onclick = null; }
+      // Publication link (only slides whose tool has a paper carry a `doc`).
+      if (s.doc) { docBtn.classList.add('show'); docBtn.href = s.doc; docBtn.textContent = '📄 ' + (s.docLabel || 'Read the publication'); }
+      else { docBtn.classList.remove('show'); docBtn.removeAttribute('href'); }
       [...dotsEl.children].forEach((d, k) => d.classList.toggle('active', k === idx));
     }
     function next() { show(idx + 1); }

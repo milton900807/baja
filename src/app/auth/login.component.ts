@@ -207,6 +207,7 @@ export class LoginComponent {
     'Visualize genes, variants & mutations in context',
     'Design siRNA, ASO & qPCR assays — with djPrimer',
     'Splicing & RNA-binding predictions — BajaSplice, BajaCLIP',
+    'Export oligos to IDT order codes',
     'Bonus book: “The Chemistry of RNA Therapeutics”',
   ]);
 

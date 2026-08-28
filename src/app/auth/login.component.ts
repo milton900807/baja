@@ -75,6 +75,10 @@ import { b2cPolicies, rarePolicies } from '../onedrive/auth-config';
           <button class="su-link" type="button" (click)="signUp()">Create an account</button>
         </div>
       </div>
+
+      <a class="enterprise-btn" href="mailto:contact@baja.bio?subject=Baja.bio%20enterprise%20inquiry">
+        ✉ Contact us for enterprise use
+      </a>
     </div>
   </div>
   `,
@@ -185,6 +189,12 @@ import { b2cPolicies, rarePolicies } from '../onedrive/auth-config';
       font-size:13px; font-weight:700; color:#12c2e0; text-decoration:underline;
     }
     .su-link:hover { color:#16c47f; }
+    .enterprise-btn { display:block; width:100%; box-sizing:border-box; margin-top:16px; padding:10px 14px;
+      text-align:center; text-decoration:none; font-size:13px; font-weight:800; color:#bfeef6;
+      background: rgba(18,194,224,0.10); border:1px solid rgba(18,194,224,0.45); border-radius:11px;
+      transition: transform .1s ease, background .15s ease, box-shadow .15s ease; }
+    .enterprise-btn:hover { transform: translateY(-1px); background: rgba(18,194,224,0.18);
+      box-shadow:0 8px 20px rgba(18,167,232,0.25); }
   `],
 })
 export class LoginComponent {

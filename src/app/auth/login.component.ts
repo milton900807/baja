@@ -40,7 +40,6 @@ import { b2cPolicies, rarePolicies } from '../onedrive/auth-config';
         <h1>Sign in</h1>
       </div>
 
-      <div class="feat-head">What's inside</div>
       <ul class="features">
         <li *ngFor="let f of features">{{ f }}</li>
       </ul>

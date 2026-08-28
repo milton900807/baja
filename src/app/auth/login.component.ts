@@ -45,7 +45,6 @@ import { b2cPolicies, rarePolicies } from '../onedrive/auth-config';
         <li *ngFor="let f of features">{{ f }}</li>
       </ul>
 
-      <div class="tour-label">Feature tour</div>
       <div class="demo-row">
         <a class="demo-link" href="assets/demo/index.html" target="baja-demo"
            (click)="openDemo($event, 'index.html')">Scientists</a>

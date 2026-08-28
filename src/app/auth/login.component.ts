@@ -40,6 +40,11 @@ import { b2cPolicies, rarePolicies } from '../onedrive/auth-config';
         <h1>Sign in</h1>
       </div>
 
+      <div class="feat-head">What's inside</div>
+      <ul class="features">
+        <li *ngFor="let f of features">{{ f }}</li>
+      </ul>
+
       <div class="providers" *ngIf="hasConfigured">
         <button *ngFor="let p of providers"
                 class="pbtn" [class.dark]="isDark(p)"
@@ -122,6 +127,13 @@ import { b2cPolicies, rarePolicies } from '../onedrive/auth-config';
     .logo img { width:100%; height:100%; object-fit:contain; padding:7px; box-sizing:border-box; }
     h1 { margin:0; font-size:22px; font-weight:700; color:#eaf6f9; letter-spacing:.2px; }
     .sub { margin:6px 0 0; font-size:13px; color:#9db6c4; }
+    .feat-head { text-align:center; font-size:10.5px; font-weight:800; letter-spacing:.6px;
+      text-transform:uppercase; color:#19d0d0; margin: 0 0 9px; }
+    .features { list-style:none; margin:0 0 18px; padding:0 4px; }
+    .features li { font-size:12.5px; line-height:1.4; color:#cfe3ea; margin:0 0 7px;
+      padding-left:20px; position:relative; }
+    .features li::before { content:"✓"; position:absolute; left:2px; top:0; color:#16c47f;
+      font-weight:900; font-size:12px; }
     .providers { display:flex; flex-direction:column; gap:11px; }
     .pbtn {
       display:flex; align-items:center; gap:12px; width:100%;
@@ -164,6 +176,15 @@ export class LoginComponent {
   providers: OidcProvider[] = [];
   busy = false;
   error = '';
+
+  // Product highlights shown on the login card. Overridable via window.env['loginFeatures'].
+  features: string[] = ((typeof window !== 'undefined' && (window as any)['env']?.['loginFeatures']) || [
+    'Visualize genes, variants & mutations in context',
+    'Design siRNA, ASO & qPCR assays — with djPrimer',
+    'Splicing & RNA-binding predictions — BajaSplice, BajaCLIP',
+    'Upload a paper or report → see it on the gene',
+    'Bonus book: “The Chemistry of RNA Therapeutics”',
+  ]);
 
   constructor(
     private auth: OidcAuthService,

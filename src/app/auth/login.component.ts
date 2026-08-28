@@ -37,7 +37,6 @@ import { b2cPolicies, rarePolicies } from '../onedrive/auth-config';
 
       <div class="head">
         <div class="logo"><img src="assets/img/icons/yak.png" alt="Sign in" /></div>
-        <h1>Sign in</h1>
       </div>
 
       <ul class="features">

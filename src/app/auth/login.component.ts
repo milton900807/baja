@@ -45,6 +45,14 @@ import { b2cPolicies, rarePolicies } from '../onedrive/auth-config';
         <li *ngFor="let f of features">{{ f }}</li>
       </ul>
 
+      <div class="tour-label">Feature tour</div>
+      <div class="demo-row">
+        <a class="demo-link" href="assets/demo/index.html" target="baja-demo"
+           (click)="openDemo($event, 'index.html')">Scientists</a>
+        <a class="demo-link demo-link--alt" href="assets/demo/for-you.html" target="baja-demo-curious"
+           (click)="openDemo($event, 'for-you.html')">Non-scientists</a>
+      </div>
+
       <div class="providers" *ngIf="hasConfigured">
         <button *ngFor="let p of providers"
                 class="pbtn" [class.dark]="isDark(p)"
@@ -134,6 +142,16 @@ import { b2cPolicies, rarePolicies } from '../onedrive/auth-config';
       padding-left:20px; position:relative; }
     .features li::before { content:"✓"; position:absolute; left:2px; top:0; color:#16c47f;
       font-weight:900; font-size:12px; }
+    .tour-label { text-align:center; font-size:10.5px; font-weight:800; letter-spacing:.6px;
+      text-transform:uppercase; color:#19d0d0; margin: 0 0 8px; }
+    /* sunset beach: warm gold -> orange -> coral (match the subscription page) */
+    .demo-row { display:flex; flex-wrap:nowrap; gap:10px; margin: 0 0 18px; }
+    .demo-link { display:inline-block; font-size:13px; font-weight:800; cursor:pointer;
+      color:#3a1500; text-decoration:none; background: linear-gradient(135deg,#ffd166,#ff9a3c,#ff6b81);
+      border-radius:10px; padding:10px 14px; box-shadow:0 6px 16px rgba(255,120,80,0.38);
+      transition: transform .1s ease, filter .15s ease; flex:1 1 0; text-align:center; }
+    .demo-link--alt { color:#4a1224; background: linear-gradient(135deg,#ffb15a,#ff7a8a,#ff5e8a); }
+    .demo-link:hover { filter:brightness(1.06); transform: translateY(-1px); }
     .providers { display:flex; flex-direction:column; gap:11px; }
     .pbtn {
       display:flex; align-items:center; gap:12px; width:100%;
@@ -182,7 +200,6 @@ export class LoginComponent {
     'Visualize genes, variants & mutations in context',
     'Design siRNA, ASO & qPCR assays — with djPrimer',
     'Splicing & RNA-binding predictions — BajaSplice, BajaCLIP',
-    'Upload a paper or report → see it on the gene',
     'Bonus book: “The Chemistry of RNA Therapeutics”',
   ]);
 
@@ -198,6 +215,16 @@ export class LoginComponent {
   }
 
   get hasConfigured(): boolean { return this.providers.length > 0; }
+
+  // Open a public, no-login feature tour: scientist carousel (index.html) or the
+  // plain-language "for the curious" tour (for-you.html), in its own window.
+  openDemo(ev?: Event, page: string = 'index.html') {
+    if (ev) ev.preventDefault();
+    const safe = page === 'for-you.html' ? 'for-you.html' : 'index.html';
+    const win = safe === 'for-you.html' ? 'baja-demo-curious' : 'baja-demo';
+    window.open('assets/demo/' + safe, win,
+      'width=860,height=820,menubar=no,toolbar=no,location=no,status=no');
+  }
 
   /**
    * "Create an account" → the Oligodesigner (Microsoft Entra External ID / CIAM) sign-up /

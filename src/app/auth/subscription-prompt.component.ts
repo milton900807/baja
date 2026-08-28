@@ -48,6 +48,10 @@ import { SubscriptionService } from './subscription.service';
       </button>
       <div class="pay-note">Card, Apple&nbsp;Pay, Google&nbsp;Pay &amp; Link · secured by Stripe</div>
 
+      <a class="enterprise-btn" href="mailto:contact@baja.bio?subject=Baja.bio%20enterprise%20inquiry">
+        ✉ Contact us for enterprise use
+      </a>
+
       <button class="ghost" type="button" (click)="signOut()">Sign out</button>
     </div>
   </div>
@@ -107,6 +111,12 @@ import { SubscriptionService } from './subscription.service';
     .cta:hover:not(:disabled) { transform: translateY(-1px); box-shadow:0 10px 26px rgba(255,120,80,0.6); }
     .cta:disabled { opacity:.6; cursor:default; }
     .pay-note { margin-top:10px; text-align:center; font-size:11.5px; color:#7e97a6; }
+    .enterprise-btn { display:block; width:100%; box-sizing:border-box; margin-top:12px; padding:10px 14px;
+      text-align:center; text-decoration:none; font-size:13px; font-weight:800; color:#bfeef6;
+      background: rgba(18,194,224,0.10); border:1px solid rgba(18,194,224,0.45); border-radius:11px;
+      transition: transform .1s ease, background .15s ease, box-shadow .15s ease; }
+    .enterprise-btn:hover { transform: translateY(-1px); background: rgba(18,194,224,0.18);
+      box-shadow:0 8px 20px rgba(18,167,232,0.25); }
     .notice { margin:2px 0 14px; padding:9px 12px; border-radius:9px; font-size:13px; color:#bcd3df;
       background: rgba(18,194,224,0.1); border:1px solid rgba(18,194,224,0.25); }
     .notice.ok { color:#c8f7e2; background: rgba(22,196,127,0.14); border-color: rgba(22,196,127,0.4); }

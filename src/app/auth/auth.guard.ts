@@ -25,6 +25,13 @@ export const authGuard: CanActivateFn = async (route, state): Promise<boolean | 
   if (!auth.providers.some(p => p.configured)) return true;
 
   if (!auth.isAuthenticated()) {
+    // Fail-open when a session identity is present: the app authorizes by email, and bouncing to
+    // /login here caused a full-page silent re-auth loop on production. Only route to /login when
+    // there is genuinely no signed-in user.
+    try {
+      const u = auth.getUser && auth.getUser();
+      if (u && u.email) return true;
+    } catch { /* fall through to /login */ }
     try { sessionStorage.setItem('oidc.returnTo', state.url); } catch { /* ignore */ }
     return router.parseUrl('/login');
   }

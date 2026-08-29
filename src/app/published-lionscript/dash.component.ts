@@ -305,6 +305,29 @@ export class LionAppComponent
     this.renderer = this.renderererFactory.createRenderer(null, null);
 
     let temp: string = parentRouter.url;
+
+    // Deep-link recovery for production reloads. Reloading /app/manchester/editor?path=… on prod
+    // can trigger a full-page OIDC/Google token-refresh redirect mid-boot; when the browser
+    // returns, routing bounces to the default home (/app/baja/init) and the ?path= is lost, so the
+    // file never loads. (Locally the token is always fresh — no redirect — which is why reload
+    // works under `ng serve` but not on AWS.) main.ts stashes the intended editor link at the
+    // earliest boot moment; if we've landed anywhere other than that editor link and the stash is
+    // still fresh, restore it. One-shot (the stash is always consumed here), so a later
+    // user-initiated Home navigation is never hijacked.
+    try {
+      const raw = sessionStorage.getItem('deep.editor');
+      if (raw) {
+        const dl = JSON.parse(raw);
+        const hasDeep = temp.indexOf('manchester/editor') >= 0 && temp.indexOf('path=') >= 0;
+        const fresh = dl && dl.url && (Date.now() - dl.t) < 20000;
+        sessionStorage.removeItem('deep.editor');
+        if (fresh && !hasDeep) {
+          try { window.history.replaceState({}, document.title, dl.url); } catch (e) { }
+          temp = dl.url;
+        }
+      }
+    } catch (e) { /* sessionStorage unavailable; ignore */ }
+
     this.http = new HttpClient(httpb);
 
     const loadAndApplyRule = (path: string) => {
@@ -394,9 +417,6 @@ export class LionAppComponent
             let argmap = this.parseArguments(temp);
             this.argument_map = argmap;
 
-
-
-            debugger;
             let i = temp.indexOf("?");
             if (i > 0) {
               temp = temp.substring(0, i);
@@ -1635,14 +1655,20 @@ export interface DialogData {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 8px 12px;
+      padding: 2px 8px;
+      min-height: 0;
+      line-height: 1.3;
       background: var(--title-bar-bg, #011c3c);
       color: var(--title-bar-fg, #fff);
       font-weight: 600;
+      font-size: 11.5px;
     }
+    .menubar .title { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .close-btn {
-      border: none; background: transparent; color: #fff; font-size: 16px; cursor: pointer;
+      border: none; background: transparent; color: #fff; font-size: 13px; line-height: 1;
+      padding: 0 2px; cursor: pointer; opacity: .85;
     }
+    .close-btn:hover { opacity: 1; }
     .modal-body { padding: 12px; background: var(--panel-bg, #ffffff); color: var(--panel-fg, #011c3c); }
     .modal-footer { padding: 8px 12px 12px; display: flex; justify-content: flex-end; }
   `]

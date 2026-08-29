@@ -109,6 +109,10 @@ export class CanvasButtonsComponent implements PubComponent, AfterViewInit {
     }
     // Theme (orange outline you requested)
     private readonly BTN_ORANGE = 'rgba(83, 83, 83, 0.05)';
+    // Flat navy button background (solid — no gradient) with white text.
+    private readonly BTN_NAVY = '#0b2545';
+    private readonly BTN_NAVY_TEXT = '#ffffff';
+    private readonly BTN_NAVY_STROKE = 'rgba(255,255,255,0.14)';
 
     private resetEffects(ctx: CanvasRenderingContext2D) {
         ctx.shadowColor = 'lightGray';
@@ -148,10 +152,10 @@ export class CanvasButtonsComponent implements PubComponent, AfterViewInit {
         const hover = !!state.hover;
         const pressed = !!state.pressed;
 
-        const stroke = opts.stroke ?? this.BTN_ORANGE;
-        const fillTop = opts.fillTop ?? 'rgba(255,255,255,0.98)';
-        const fillBottom = opts.fillBottom ?? 'rgba(245,245,245,0.98)';
-        const textColor = opts.textColor ?? 'rgba(25,25,25,0.95)';
+        const stroke = opts.stroke ?? this.BTN_NAVY_STROKE;
+        const fillTop = opts.fillTop ?? this.BTN_NAVY;
+        const fillBottom = opts.fillBottom ?? this.BTN_NAVY;
+        const textColor = opts.textColor ?? this.BTN_NAVY_TEXT;
         const font = opts.font ?? '600 10px Arial';
         const radius = opts.radius ?? 8;
 
@@ -193,11 +197,11 @@ export class CanvasButtonsComponent implements PubComponent, AfterViewInit {
         ctx.strokeStyle = stroke;
         ctx.stroke();
 
-        // Inner highlight stroke (no shadow)
+        // Inner edge stroke (kept very subtle so the navy reads FLAT, not glossy).
         this.resetEffects(ctx);
-        ctx.globalAlpha = 0.6;
+        ctx.globalAlpha = 0.5;
         ctx.lineWidth = 1;
-        ctx.strokeStyle = 'rgba(255,255,255,0.85)';
+        ctx.strokeStyle = 'rgba(255,255,255,0.10)';
         this.roundRectPath(ctx, bx + 1, by + 1, bw - 2, bh - 2, Math.max(0, radius - 1));
         ctx.stroke();
         ctx.globalAlpha = 1;
@@ -534,10 +538,10 @@ export class CanvasButtonsComponent implements PubComponent, AfterViewInit {
                 const isDown = i === this.mousedown;
 
                 // Resolve theme/custom overrides
-                const stroke = i.stroke ?? this.BTN_ORANGE;
-                const fillTop = i.backgroundTop ?? 'rgba(255,255,255,0.98)';
-                const fillBottom = i.backgroundBottom ?? 'rgba(245,245,245,0.98)';
-                const textColor = i.textColor ?? 'rgba(20,20,20,0.95)';
+                const stroke = i.stroke ?? this.BTN_NAVY_STROKE;
+                const fillTop = i.backgroundTop ?? this.BTN_NAVY;
+                const fillBottom = i.backgroundBottom ?? this.BTN_NAVY;
+                const textColor = i.textColor ?? this.BTN_NAVY_TEXT;
                 const font = i.font ?? '600 10px Arial';
                 const radius = i.radius ?? 8;
 

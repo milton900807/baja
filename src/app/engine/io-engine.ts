@@ -54,27 +54,13 @@ function __bajaWorkIndicator(): HTMLElement {
 }
 let __bajaWorkTimer: any = null;
 function __bajaWorkShow(show: boolean): void {
+    // The top-center "working" spinner is disabled by request — never display it, and keep any
+    // existing element hidden / its refresh timer cleared regardless of the requested state.
     try {
-        const el = __bajaWorkIndicator();
-        const txt = document.getElementById('baja-working-txt');
-        if (show) {
-            if ((window as any).__bajaBlurActive) { el.style.display = 'none'; return; }
-            el.style.display = 'flex';
-            if (!__bajaWorkTimer) {
-                __bajaWorkTimer = setInterval(() => {
-                    try {
-                        if ((window as any).__bajaBlurActive) { el.style.display = 'none'; return; }
-                        el.style.display = 'flex';
-                        const s = (window as any).__workStatus;
-                        if (txt) txt.textContent = (s && ('' + s).trim()) || 'Working…';
-                    } catch (e) { }
-                }, 250);
-            }
-        } else {
-            el.style.display = 'none';
-            if (__bajaWorkTimer) { clearInterval(__bajaWorkTimer); __bajaWorkTimer = null; }
-            try { (window as any).__workStatus = ''; } catch (e) { }
-        }
+        const el = document.getElementById('baja-working') as HTMLElement;
+        if (el) el.style.display = 'none';
+        if (__bajaWorkTimer) { clearInterval(__bajaWorkTimer); __bajaWorkTimer = null; }
+        try { (window as any).__workStatus = ''; } catch (e) { }
     } catch (e) { }
 }
 
@@ -155,7 +141,6 @@ export class IoniScriptEngine {
             " if ( arguments.length > 3 ) {\n" +
             "       let narguments = [];\n " +
             "       for ( let i = 0; i < arguments[3].length; i++){\n" +
-            "           console.log ( ' args ' + arguments[3][i] ); \n" +
             "           if ( arguments[3][i] != null ){narguments.push ( arguments[3][i] );} \n" +
             "         }\n" +
             "       arguments = narguments;\n" +
@@ -320,26 +305,21 @@ export class IoniScriptEngine {
         }
         if (ruleType === 'lionscript' || ruleType === 'ionscript' || ruleType === 'javascript' || ruleType === 'js') {
             if (lionScriptManager != null) {
-                let hs = IoniScriptEngine.getLionEngineScript(rule);
-                let arg_sequence = [];
-                let function_arguments = FunctionUtil.getArguments(rule);
-                for (let fun of function_arguments) {
-                    let keys = Object.keys(argument_map);
-                    for (let k of keys) {
-                        if (fun === k) {
-                            arg_sequence.push(argument_map[k]);
-                        } else {
-                            arg_sequence.push("undefined")
-                        }
-                    }
-                }
-
-
-
-
-                // console.log(" args " + arg_sequence);
-                let fn = Function('lion_engine', 'map', 'resolveScript', ...function_arguments, hs);
-                return fn(new LionEngine(this.ruledb, this.http, this.function_util, lionScriptManager, this, this.renderer, this.componentFactoryResolver, this.zone), {}, {}, arg_sequence);
+                // Bind parameters POSITIONALLY (mirroring exec()), NOT by name. The default
+                // getLionEngineScript path wraps the body so parameters are read by NAME from
+                // argument_map (showInputParamItem → res["path"]). But on production the lionscript is
+                // minified (--minify-apps), so `function (path, config)` becomes `function (t, a)`:
+                // the names no longer match the argument_map keys, and every parameter resolves to
+                // undefined. That silently broke every browser-reload deep link on prod while working
+                // in `ng serve` (unminified, names still match). URL query order preserves argument
+                // order (?path=… is first), so pass the values positionally and let the script's own
+                // (minified) parameters receive them.
+                let input: any[] = [];
+                try { input = Object.values(argument_map || {}); } catch (e) { input = []; }
+                let function_value = IoniScriptEngine.getLionEngineScriptWithArgs(rule, input);
+                let function_params = IoniScriptEngine.parseArguments(rule);
+                let fn = Function('lion_engine', 'resolveScript', ...function_params, function_value);
+                return fn(new LionEngine(this.ruledb, this.http, this.function_util, lionScriptManager, this, this.renderer, this.componentFactoryResolver, this.zone), {}, ...input);
             }
         }
         else if (ruleType === 'ionmap') {

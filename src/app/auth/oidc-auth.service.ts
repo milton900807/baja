@@ -234,8 +234,17 @@ export class OidcAuthService {
 
   isAuthenticated(): boolean {
     const s = this.getSession();
-    if (!s || !s.accessToken && !s.idToken) return false;
-    if (s.expiresAt && Date.now() > s.expiresAt) return false;
+    if (!s || (!s.accessToken && !s.idToken)) return false;
+    // NOTE: token expiry is intentionally NOT treated as "unauthenticated". This app authorizes
+    // API access by the signed-in email (not the OIDC bearer token), so an expired token does not
+    // block data access. Bouncing to /login on expiry triggered a full-page silent (prompt=none)
+    // re-auth that looped on production — reloading the page every ~15s and discarding the open
+    // file. As long as a session with a user is present, treat the user as signed in. (A silent,
+    // non-disruptive refresh can be added later if a fresh token is ever actually needed.)
+    if (!s.user || !s.user.email) {
+      // Only when we truly have no identity do we consider expiry a reason to re-auth.
+      if (s.expiresAt && Date.now() > s.expiresAt) return false;
+    }
     return true;
   }
 

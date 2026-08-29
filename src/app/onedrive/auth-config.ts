@@ -122,8 +122,20 @@ let authConfig = () => {
 
 
 export const msalConfig: Configuration = {
-    auth: authConfig()
-    
+    auth: authConfig(),
+    system: {
+        // No-op NavigationClient: MSAL must NEVER navigate the top-level page. A parallel legacy MSAL
+        // b2c stack has been redirecting to the IdP (Google-federated) on production and looping —
+        // reloading the page and discarding the open file — via a path invisible to app-level hooks.
+        // The app authenticates via OIDC, so MSAL is neutralized here: returning false from both
+        // navigate methods tells MSAL "navigation handled" so it never leaves/redirects the page,
+        // regardless of what invokes it (silent renewal, guard, interceptor, etc.).
+        navigationClient: {
+            navigateExternal: async (url: string) => { try { console.warn('[MSAL navigation suppressed] ' + url); } catch (e) { } return false; },
+            navigateInternal: async (_url: string) => { return false; },
+        } as any,
+        allowRedirectInIframe: false,
+    }
 }
 
 

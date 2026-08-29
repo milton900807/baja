@@ -35,7 +35,10 @@
       'label': 'Home', "path": 'baja/init.js'
     },
     {
-      'label': 'Report bug', "path": 'baja/report-bug.js'
+      'label': 'My Files', "path": 'manchester/fb.js'
+    },
+    {
+      'label': 'Library', "path": 'manchester/library'
     }
   ];
   window["env"]["redirectURL"] = "https://localhost:4200";
@@ -55,7 +58,7 @@
   // Microsoft — BajaBio SPA app (registered as Single-page application → browser PKCE, no
   // secret, no proxy). "All Microsoft account users" => the `common` authority.
   window['env']['oidc.microsoft.clientId'] = 'ed0a4ac0-1444-4834-9bbe-19e1ea0acb4b';
-  window['env']['oidc.microsoft.tenant']   = 'common';
+  window['env']['oidc.microsoft.tenant'] = 'common';
 
   // Google (baja-506413). Only the CLIENT ID goes here — the client secret must NOT live in
   // browser JS. This is a "Web application" client, so the token exchange needs the secret:

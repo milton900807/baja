@@ -108,3 +108,63 @@
 	width: 100%;
 	margin-right: 0;
 }
+
+/* ---------------------------------------------------------------------------
+ * Tropical look: rounded corners, soft aqua gradients, coral/turquoise accents.
+ * Visual only — layout rules above are untouched.
+ * ------------------------------------------------------------------------- */
+.card-item {
+	border-radius: 18px;
+	background: #ffffff;
+	border: none;
+	box-shadow:
+		0 8px 22px rgba(13, 148, 136, 0.12),
+		0 1px 3px rgba(2, 44, 54, 0.06),
+		inset 0 1px 0 rgba(255, 255, 255, 0.7);
+	transition: box-shadow .22s ease;
+	overflow: hidden;
+	position: relative;
+}
+
+.card-item:hover {
+	box-shadow:
+		0 12px 28px rgba(13, 148, 136, 0.2),
+		0 2px 6px rgba(2, 44, 54, 0.08),
+		inset 0 1px 0 rgba(255, 255, 255, 0.75);
+}
+
+.card-title {
+	color: #0f766e;
+	font-weight: 700;
+	letter-spacing: .2px;
+	margin: 4px 0 8px;
+	padding-bottom: 7px;
+	border-bottom: 2px solid transparent;
+	border-image: linear-gradient(90deg, #14b8a6, #ff7e5f) 1;
+}
+
+.card-subtitle {
+	color: #3f8f88;
+	font-weight: 500;
+}
+
+/* Tropical pill button. */
+.card-item .btn-primary {
+	align-self: flex-start;
+	border: none;
+	border-radius: 999px;
+	padding: 8px 20px;
+	color: #06302f;
+	font-weight: 700;
+	letter-spacing: .2px;
+	text-decoration: none;
+	background: linear-gradient(135deg, #2dd4bf 0%, #22d3ee 52%, #ffb37e 100%);
+	box-shadow: 0 4px 12px rgba(20, 184, 166, 0.35);
+	transition: filter .15s ease, box-shadow .15s ease, transform .15s ease;
+}
+
+.card-item .btn-primary:hover {
+	filter: brightness(1.05);
+	box-shadow: 0 6px 18px rgba(20, 184, 166, 0.45);
+	transform: translateY(-1px);
+}

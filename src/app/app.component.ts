@@ -300,29 +300,40 @@ export class AppComponent implements OnInit {
       this.zone.run(() => { })
     });
 
+    // Identity from OIDC (the app's real auth). This sets OAuthSettings.access_token — the email
+    // that getUser() returns and that /load-file, /save-user-data, etc. key on. Previously this was
+    // populated only from MSAL (setLoginDisplay / msalSubject$), so MSAL couldn't simply be turned
+    // off. Read it from the OIDC session instead, so the whole MSAL boot path can stay inert.
+    try {
+      const ou = this.oidc.getUser();
+      if (ou && ou.email) {
+        OAuthSettings.access_token = ou.email;
+        this.user = ou.email;
+        this.name = ou.name || ou.email;
+        this.lg = true;
+      }
+    } catch (e) { /* no OIDC session yet; guard will route to /login */ }
+
     this.setLoginDisplay();
 
     this.isIframe = window !== window.parent && !window.opener;
-    this.authService.instance.enableAccountStorageEvents(); // Optional - This will enable ACCOUNT_ADDED and ACCOUNT_REMOVED events emitted when a user logs in or out of another tab or window
 
-    /**
-     * You can subscribe to MSAL events as shown below. For more info,
-     * visit: https://github.com/AzureAD/microsoft-authentication-library-for-js/blob/dev/lib/msal-angular/docs/v2-docs/events.md
-     */
-    this.msalBroadcastService.inProgress$
-      .pipe(
-        filter(
-
-          (status: InteractionStatus) => status === InteractionStatus.None),
-
-        takeUntil(this._destroying$)
-      )
-      .subscribe(() => {
-
-
-        this.setLoginDisplay();
-        this.checkAndSetActiveAccount();
-      });
+    // --- MSAL boot path DISABLED (app uses OIDC) --------------------------------------------
+    // enableAccountStorageEvents + the inProgress$/msalSubject$ subscriptions below activated the
+    // legacy MSAL b2c stack on boot. On production that stack federated through Google and, via
+    // navigateToLoginRequestUrl, kept redirecting the page back to itself — re-booting mid-load and
+    // discarding the opened file. Left inert; OIDC handles auth. (MsalRedirectComponent is also no
+    // longer bootstrapped — see app.module.)
+    // this.authService.instance.enableAccountStorageEvents();
+    // this.msalBroadcastService.inProgress$
+    //   .pipe(
+    //     filter((status: InteractionStatus) => status === InteractionStatus.None),
+    //     takeUntil(this._destroying$)
+    //   )
+    //   .subscribe(() => {
+    //     this.setLoginDisplay();
+    //     this.checkAndSetActiveAccount();
+    //   });
 
     // this.msalBroadcastService.msalSubject$
     //   .pipe(
@@ -347,43 +358,39 @@ export class AppComponent implements OnInit {
 
 
 
-    this.msalBroadcastService.msalSubject$
-      .pipe(
-        filter((msg: EventMessage) => msg.eventType === EventType.LOGIN_FAILURE || msg.eventType === EventType.ACQUIRE_TOKEN_FAILURE),
-        takeUntil(this._destroying$)
-      )
-      .subscribe((result: EventMessage) => {
-        // Checking for the forgot password error. Learn more about B2C error codes at
-        // https://learn.microsoft.com/azure/active-directory-b2c/error-codes
-        if (result.error && result.error.message.indexOf('AADB2C90118') > -1) {
-
-          let resetPasswordFlowRequest: RedirectRequest | PopupRequest = {
-            authority: b2cPolicies.authorities.ResetPWDPolicy.authority,
-            scopes: [],
-          };
-
-          this.login(resetPasswordFlowRequest);
-        } else {
-
-          if (result.error.message.indexOf('AADB2C90083') >= 0) {
-            console.log(" error " + result.error.message)
-            return;
-          }
-
-
-          const payload = result.payload as AuthenticationResult;
-          this.authService.instance.setActiveAccount(payload.account);
-          this.name = payload.account.username;
-          if (this.name === null || this.name.trim().length <= 0) {
-            this.lg = false;
-          } else {
-            debugger
-            this.lg = true;
-            this.user = this.name;
-            OAuthSettings.access_token = this.name;
-          }
-        }
-      });
+    // MSAL LOGIN_FAILURE/ACQUIRE_TOKEN_FAILURE subscription DISABLED. Its handler called
+    // this.login(resetPasswordFlowRequest) → loginRedirect() on failure — so a failing/looping MSAL
+    // interaction on boot could itself trigger a full-page redirect, feeding the production loop.
+    // OIDC handles auth; MSAL is inert.
+    // this.msalBroadcastService.msalSubject$
+    //   .pipe(
+    //     filter((msg: EventMessage) => msg.eventType === EventType.LOGIN_FAILURE || msg.eventType === EventType.ACQUIRE_TOKEN_FAILURE),
+    //     takeUntil(this._destroying$)
+    //   )
+    //   .subscribe((result: EventMessage) => {
+    //     if (result.error && result.error.message.indexOf('AADB2C90118') > -1) {
+    //       let resetPasswordFlowRequest: RedirectRequest | PopupRequest = {
+    //         authority: b2cPolicies.authorities.ResetPWDPolicy.authority,
+    //         scopes: [],
+    //       };
+    //       this.login(resetPasswordFlowRequest);
+    //     } else {
+    //       if (result.error.message.indexOf('AADB2C90083') >= 0) {
+    //         console.log(" error " + result.error.message)
+    //         return;
+    //       }
+    //       const payload = result.payload as AuthenticationResult;
+    //       this.authService.instance.setActiveAccount(payload.account);
+    //       this.name = payload.account.username;
+    //       if (this.name === null || this.name.trim().length <= 0) {
+    //         this.lg = false;
+    //       } else {
+    //         this.lg = true;
+    //         this.user = this.name;
+    //         OAuthSettings.access_token = this.name;
+    //       }
+    //     }
+    //   });
 
     // monaco.languages.register({ id: 'ljl' });
     // monaco.languages.setMonarchTokensProvider('ljl', {
@@ -563,7 +570,20 @@ export class AppComponent implements OnInit {
     const parts = s.split(/[\s@._-]+/).filter(Boolean);
     return ((parts[0]?.[0] || '') + (parts[1]?.[0] || '')).toUpperCase() || s[0].toUpperCase();
   }
-  oidcSignOut() { this.oidc.logout('/login'); }
+  oidcSignOut() {
+    // Confirm before signing out so a stray click can't drop the user's session.
+    const u = this.oidcUser;
+    const who = (u && (u.email || u.name)) ? ('\n\n' + (u.email || u.name)) : '';
+    if (!window.confirm('Sign out of Oligo Designer?' + who)) return;
+    this.oidc.logout('/login');
+  }
+
+  // Account menu → show today's Claude-search count (runs the self-contained lionscript, which
+  // reads py/usage/claude-usage-report.py for the signed-in user and pops a summary modal).
+  showClaudeUsage() {
+    try { IoniScriptEngine.le.exec('baja/manchester/menu/my-claude-usage.js'); }
+    catch (e) { console.warn('My Claude usage failed', e); }
+  }
 
   logout() {
     OAuthSettings.access_token = null;

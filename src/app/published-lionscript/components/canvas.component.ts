@@ -578,6 +578,16 @@ export class CanvasComponent implements PubComponent, AfterViewInit, OnDestroy {
         }
     }
 
+    // Convert a client (viewport) point into CANVAS backing-store pixel coordinates — the
+    // space everything is drawn in. Scaling by canvas.width/rect.width corrects any CSS
+    // display-vs-backing-store size mismatch so events line up with on-canvas objects.
+    toCanvasXY(canvasEl: HTMLCanvasElement, clientX: number, clientY: number) {
+        const rect = canvasEl.getBoundingClientRect();
+        const sx = rect.width ? (canvasEl.width / rect.width) : 1;
+        const sy = rect.height ? (canvasEl.height / rect.height) : 1;
+        return { x: (clientX - rect.left) * sx, y: (clientY - rect.top) * sy };
+    }
+
     executeCode() {
         if (this.textEditor) {
             // const code = this.textEditor.getContent(); // Assuming text-editor has a getContent method
@@ -647,19 +657,13 @@ export class CanvasComponent implements PubComponent, AfterViewInit, OnDestroy {
 
                 if (this.mouseUpListener && evt && evt.changedTouches && evt.changedTouches.length > 0 && evt.changedTouches[0]) {
                     if (evt && evt.changedTouches && evt.changedTouches[0].clientX) {
-                        const ct = {
-                            x: evt.changedTouches[0].clientX - rect.left,
-                            y: evt.changedTouches[0].clientY - rect.top
-                        };
+                        const ct = this.toCanvasXY(canvasEl, evt.changedTouches[0].clientX, evt.changedTouches[0].clientY);
                         if (ct)
                             this.mouseUpListener(ct.x, ct.y);
                     }
                 } else
                     if (this.mouseUpListener && evt && rect && rect.x && rect.y && evt.touches[0]) {
-                        const ct = {
-                            x: evt.touches[0].clientX - rect.left,
-                            y: evt.touches[0].clientY - rect.top
-                        };
+                        const ct = this.toCanvasXY(canvasEl, evt.touches[0].clientX, evt.touches[0].clientY);
                         if (ct.x && ct.y) {
                             this.mouseUpListener(ct.x, ct.y);
                         }
@@ -680,10 +684,7 @@ export class CanvasComponent implements PubComponent, AfterViewInit, OnDestroy {
             if (this.mouseDownListener && evt.touches && evt.touches.length === 1) {
                 const rect = canvasEl.getBoundingClientRect();
                 canvasEl.focus();
-                const ct = {
-                    x: evt.touches[0].clientX - rect.left,
-                    y: evt.touches[0].clientY - rect.top
-                };
+                const ct = this.toCanvasXY(canvasEl, evt.touches[0].clientX, evt.touches[0].clientY);
                 // Record the start so a later touchmove can tell a drag from a stationary tap;
                 // navigate/pan is only engaged once movement passes the threshold (see below).
                 this._touchStartPt = { x: ct.x, y: ct.y };
@@ -784,11 +785,7 @@ export class CanvasComponent implements PubComponent, AfterViewInit, OnDestroy {
             // Single-finger drag = pan. Do NOT pan while two fingers are down — that is a
             // pinch (handled above); panning at the same time makes the two fight.
             if (this.mouseMoveListener && evt.touches && evt.touches.length === 1) {
-                const rect = canvasEl.getBoundingClientRect();
-                const ct = {
-                    x: evt.touches[0].clientX - rect.left,
-                    y: evt.touches[0].clientY - rect.top
-                };
+                const ct = this.toCanvasXY(canvasEl, evt.touches[0].clientX, evt.touches[0].clientY);
                 // Engage navigate/pan only once actual drag movement is detected (>~8px from
                 // the touch start) — a stationary tap keeps the current mode so it can select.
                 if (!this._touchNavStarted && this._touchStartPt) {
@@ -814,9 +811,15 @@ export class CanvasComponent implements PubComponent, AfterViewInit, OnDestroy {
                 const rect = canvasEl.getBoundingClientRect();
                 if (this.mouseMoveListener && evt && evt.x && evt.y) {
 
+                    // Scale from CSS pixels into CANVAS (backing-store) pixels so the coordinate
+                    // matches what is drawn. When the canvas is displayed at a different CSS size
+                    // than its backing store (canvas.width !== rect.width), an unscaled offset
+                    // drifts — worse toward the right — desyncing clicks from on-canvas objects.
+                    const _sx = rect.width ? (canvasEl.width / rect.width) : 1;
+                    const _sy = rect.height ? (canvasEl.height / rect.height) : 1;
                     const ct = {
-                        x: evt.x - rect.left,
-                        y: evt.y - rect.top
+                        x: (evt.x - rect.left) * _sx,
+                        y: (evt.y - rect.top) * _sy
                     };
                     if (ct.y && ct.x)
                         this.mouseDownListener(ct.x, ct.y);
@@ -828,9 +831,11 @@ export class CanvasComponent implements PubComponent, AfterViewInit, OnDestroy {
         canvasEl.addEventListener('mouseup', (evt) => {
             if (this.mouseUpListener) {
                 const rect = canvasEl.getBoundingClientRect();
+                const _sx = rect.width ? (canvasEl.width / rect.width) : 1;
+                const _sy = rect.height ? (canvasEl.height / rect.height) : 1;
                 const ct = {
-                    x: evt.x - rect.left,
-                    y: evt.y - rect.top
+                    x: (evt.x - rect.left) * _sx,
+                    y: (evt.y - rect.top) * _sy
                 };
 
                 if (ct)
@@ -842,9 +847,11 @@ export class CanvasComponent implements PubComponent, AfterViewInit, OnDestroy {
         canvasEl.addEventListener('mousemove', (evt) => {
             if (this.mouseMoveListener && evt && evt.x && evt.y) {
                 const rect = canvasEl.getBoundingClientRect();
+                const _sx = rect.width ? (canvasEl.width / rect.width) : 1;
+                const _sy = rect.height ? (canvasEl.height / rect.height) : 1;
                 const ct = {
-                    x: evt.x - rect.left,
-                    y: evt.y - rect.top
+                    x: (evt.x - rect.left) * _sx,
+                    y: (evt.y - rect.top) * _sy
                 };
 
                 this.mouseMoveListener(ct.x, ct.y);

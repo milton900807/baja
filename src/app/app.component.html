@@ -30,22 +30,15 @@
           <div class="oidc-menu-email">{{ u.email }}</div>
           <div class="oidc-menu-prov">via {{ u.provider }}</div>
         </div>
+        <button mat-menu-item (click)="showClaudeUsage()">
+          <mat-icon>insights</mat-icon><span>My Claude usage</span>
+        </button>
         <button mat-menu-item (click)="oidcSignOut()">
           <mat-icon>logout</mat-icon><span>Sign out</span>
         </button>
       </mat-menu>
     </ng-container>
 
-    <mat-button *ngIf="lg && user != '' && user != 'ljl'" mat-stroked-button type="button" data-bs-toggle="collapse"
-      style="padding-top: 0px; padding-bottom: 1px" (click)="logout()">
-      Log out ({{ user }})
-    </mat-button>
-
-    <mat-button *ngIf="(!lg) && canSignUp" mat-stroked-button type="button" data-bs-toggle="collapse"
-      style="padding-top: 0px; padding-bottom: 1px" (click)="signUp()">
-      New Account
-      <label>&nbsp;<span> | </span>&nbsp;</label>
-    </mat-button>
   </mat-toolbar>
 
   <div class="app-content">

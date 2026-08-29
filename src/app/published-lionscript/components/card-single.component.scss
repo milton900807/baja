@@ -123,3 +123,16 @@
 	min-height: 0;
 	overflow: hidden;
 }
+/* ---------------------------------------------------------------------------
+ * Tropical look: soft rounded container so single-card content (forms, panels,
+ * canvas) sits on a rounded, aqua-tinted surface. Visual only.
+ * ------------------------------------------------------------------------- */
+.card-single-container {
+	border-radius: 16px;
+	overflow: hidden;
+	background: #ffffff;
+}
+
+:host {
+	border-radius: 16px;
+}

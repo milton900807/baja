@@ -112,10 +112,9 @@ export function MsalGuardConfigurationFactory() {
  * https://github.com/AzureAD/microsoft-authentication-library-for-js/blob/dev/lib/msal-angular/docs/v2-docs/initialization.md#get-tokens-for-web-api-calls
  */
 export function MSALInterceptorConfigFactory(): MsalInterceptorConfiguration {
+  // Empty on purpose: no resources are auto-protected by MSAL. See the disabled MsalInterceptor
+  // note in providers — the app uses OIDC, and MSAL token acquisition here caused a redirect loop.
   const protectedResourceMap = new Map<string, Array<string>>();
-
-  protectedResourceMap.set(protectedResources.graphMe.endpoint, protectedResources.graphMe.scopes);
-  protectedResourceMap.set(protectedResources.graphContacts.endpoint, protectedResources.graphContacts.scopes);
 
   return {
     interactionType: InteractionType.Popup,
@@ -259,11 +258,17 @@ export const protectedResourceMap: [string, string[]][] = [
   ],
   providers: [
     SpeechService,
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: MsalInterceptor,
-      multi: true,
-    },
+    // MsalInterceptor intentionally DISABLED. The app authenticates via OIDC (see authGuard /
+    // OidcAuthService); the legacy MSAL "b2c" stack ran in parallel and its interceptor kept
+    // firing silent (prompt=none) token acquisitions on protected-resource calls, escalating to
+    // full-page redirects that re-booted the page mid-load on production and discarded the loaded
+    // file. Removing the interceptor stops that storm. (Module kept for DI so MsalService /
+    // MSAL_GUARD_CONFIG still resolve where injected.)
+    // {
+    //   provide: HTTP_INTERCEPTORS,
+    //   useClass: MsalInterceptor,
+    //   multi: true,
+    // },
     {
       provide: MSAL_INSTANCE,
       useFactory: MSALInstanceFactory,
@@ -284,7 +289,12 @@ export const protectedResourceMap: [string, string[]][] = [
     GraphService,
     FileService
   ],
-  bootstrap: [MsalRedirectComponent, AppComponent]
+  // MsalRedirectComponent intentionally NOT bootstrapped. It runs handleRedirectObservable() on
+  // boot, which processes/continues MSAL redirect flows — the source of the production redirect
+  // loop (MSAL b2c federates through Google and, with navigateToLoginRequestUrl, keeps bouncing
+  // the page back, discarding in-progress loads). The app authenticates via OIDC; MSAL is left
+  // inert. (Also remove <app-redirect> from index.html.)
+  bootstrap: [AppComponent]
 })
 
 

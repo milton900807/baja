@@ -220,8 +220,20 @@ lion-app #___dashboard>app-canvas {
 /* Angular Material dialog customization */
 
 .draggable-dialog .mat-mdc-dialog-surface {
-  border-radius: 8px;
+  border-radius: 12px;
   overflow: hidden;
+  /* Transparent container window: drop the Material panel background + shadow + padding so the
+     modal is just its (slim) title bar and content, with no extra white frame. */
+  background: transparent !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.22) !important;
+  padding: 0 !important;
+}
+
+.draggable-dialog .mat-mdc-dialog-container,
+.draggable-dialog .mdc-dialog__container,
+.draggable-dialog .mat-mdc-dialog-content {
+  padding: 0 !important;
+  background: transparent !important;
 }
 
 /* ============================================================

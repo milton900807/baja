@@ -9,444 +9,483 @@
 -->
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <script
-      type="text/javascript"
-      src="//ajax.googleapis.com/ajax/libs/dojo/1.10.4/dojo/dojo.js"
-    ></script>
-    <script
-      type="text/javascript"
-      src="./JSDraw/sc900807._drawnm2.Lite.js"
-    ></script>
-    <script
-      type="text/javascript"
-      src="./JSDraw/sc900807._drawnm2.Resources.js"
-    ></script>
 
-    <script
-      type="text/javascript"
-      src="./JSDraw/Pistoia.HELM-uncompressed.js"
-    ></script>
+<head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/dojo/1.10.4/dojo/dojo.js"></script>
+  <script type="text/javascript" src="./JSDraw/sc900807._drawnm2.Lite.js"></script>
+  <script type="text/javascript" src="./JSDraw/sc900807._drawnm2.Resources.js"></script>
 
-    <!-- ===== Baja tropical look-and-feel for the HELM / JSDraw editor =====
+  <script type="text/javascript" src="./JSDraw/Pistoia.HELM-uncompressed.js"></script>
+
+  <!-- ===== Baja tropical look-and-feel for the HELM / JSDraw editor =====
          JSDraw paints its chrome with inline styles, so these overrides use
          !important (a stylesheet !important beats an inline style) and target
          the editor's hardcoded greys / skin-blue in BOTH #hex and rgb() forms
          (a colour set via el.style.x serialises to rgb(), one set via a style
          string stays #hex). The monomer-explorer's semantic category colours
          (green/blue/pink for RNA/CHEM/PEPTIDE) are intentionally NOT touched. -->
-    <style>
-      :root {
-        --trop-navy: #0a2540;
-        --trop-cyan: #1aa3bd;
-        --trop-cyan-bright: #4fd0e6;
-        --trop-light: #eaf6f9;
-        --trop-light-2: #f2fafc;
-        --trop-white: #ffffff;
-        --trop-orange: #ff8c42;
-        --trop-border: #bfe4ec;
-      }
+  <style>
+    :root {
+      --trop-navy: #0a2540;
+      --trop-cyan: #1aa3bd;
+      --trop-cyan-bright: #4fd0e6;
+      --trop-light: #eaf6f9;
+      --trop-light-2: #f2fafc;
+      --trop-white: #ffffff;
+      --trop-orange: #ff8c42;
+      --trop-border: #bfe4ec;
+    }
 
-      html, body {
-        font-family: "Inter", "Segoe UI", Arial, sans-serif !important;
-        background: linear-gradient(160deg, #f2fafc 0%, #eaf6f9 55%, #ddeff4 100%) !important;
-        color: var(--trop-navy) !important;
-        /* Hide the editor page's own scrollbars (container is hidden, not auto). */
-        overflow: hidden !important;
-      }
+    html,
+    body {
+      font-family: "Inter", "Segoe UI", Arial, sans-serif !important;
+      background: linear-gradient(160deg, #f2fafc 0%, #eaf6f9 55%, #ddeff4 100%) !important;
+      color: var(--trop-navy) !important;
+      /* Hide the editor page's own scrollbars (container is hidden, not auto). */
+      overflow: hidden !important;
+    }
 
-      /* App shell containers */
-      #toolbar, #div1 {
-        background: var(--trop-white) !important;
-        border: none !important;
-        border-radius: 14px !important;
-        box-shadow: 0 2px 10px rgba(10, 37, 64, 0.06) !important;
-      }
-      /* Inset the canvas from all edges so the structure never runs off the page. */
-      #div1 { padding: 16px !important; }
+    /* App shell containers */
+    #toolbar,
+    #div1 {
+      background: var(--trop-white) !important;
+      border: none !important;
+      border-radius: 14px !important;
+      box-shadow: 0 2px 10px rgba(10, 37, 64, 0.06) !important;
+    }
 
-      /* No outlines anywhere in the editor; round the drawing surface. */
-      #div1 *:focus { outline: none !important; }
-      #div1 svg, #div1 canvas {
-        border: none !important;
-        outline: none !important;
-        border-radius: 14px !important;
-      }
+    /* Inset the canvas from all edges so the structure never runs off the page. */
+    #div1 {
+      padding: 16px !important;
+    }
 
-      /* Recolour JSDraw's hardcoded chrome greys (panels, toolbars, tab strips) */
-      [style*="#eee"], [style*="rgb(238, 238, 238)"],
-      [style*="#f5f5f5"], [style*="rgb(245, 245, 245)"],
-      [style*="#fcfcfc"], [style*="rgb(252, 252, 252)"],
-      [style*="#e1e1e1"], [style*="rgb(225, 225, 225)"],
-      [style*="#eef"], [style*="rgb(238, 238, 255)"] {
-        background-color: var(--trop-light) !important;
-        background-image: none !important;
-      }
-      [style*="#ddd"], [style*="rgb(221, 221, 221)"],
-      [style*="#ccc"], [style*="rgb(204, 204, 204)"],
-      [style*="#aaa"], [style*="rgb(170, 170, 170)"] {
-        background-color: var(--trop-light-2) !important;
-        border: none !important;
-      }
+    /* No outlines anywhere in the editor; round the drawing surface. */
+    #div1 *:focus {
+      outline: none !important;
+    }
 
-      /* Remove ALL borders on panels/containers throughout the editor (border
+    #div1 svg,
+    #div1 canvas {
+      border: none !important;
+      outline: none !important;
+      border-radius: 14px !important;
+    }
+
+    /* Recolour JSDraw's hardcoded chrome greys (panels, toolbars, tab strips) */
+    [style*="#eee"],
+    [style*="rgb(238, 238, 238)"],
+    [style*="#f5f5f5"],
+    [style*="rgb(245, 245, 245)"],
+    [style*="#fcfcfc"],
+    [style*="rgb(252, 252, 252)"],
+    [style*="#e1e1e1"],
+    [style*="rgb(225, 225, 225)"],
+    [style*="#eef"],
+    [style*="rgb(238, 238, 255)"] {
+      background-color: var(--trop-light) !important;
+      background-image: none !important;
+    }
+
+    [style*="#ddd"],
+    [style*="rgb(221, 221, 221)"],
+    [style*="#ccc"],
+    [style*="rgb(204, 204, 204)"],
+    [style*="#aaa"],
+    [style*="rgb(170, 170, 170)"] {
+      background-color: var(--trop-light-2) !important;
+      border: none !important;
+    }
+
+    /* Remove ALL borders on panels/containers throughout the editor (border
          only — border-radius is untouched, so rounded corners stay). */
-      body *:focus { outline: none !important; }
-      [style*="border"] { border: none !important; }
-      #div1, #toolbar, table, td, tr, div { border: none !important; }
-      /* Active/selected tab (JSDraw skin blue #6badf6) -> tropical cyan */
-      [style*="#6badf6"], [style*="rgb(107, 173, 246)"] {
-        background-color: var(--trop-cyan) !important;
-        background-image: none !important;
-        color: #ffffff !important;
-      }
+    body *:focus {
+      outline: none !important;
+    }
 
-      /* Selected editor tab (scil.Tabs highlight #88f): maroon foreground on a
+    [style*="border"] {
+      border: none !important;
+    }
+
+    #div1,
+    #toolbar,
+    table,
+    td,
+    tr,
+    div {
+      border: none !important;
+    }
+
+    /* Active/selected tab (JSDraw skin blue #6badf6) -> tropical cyan */
+    [style*="#6badf6"],
+    [style*="rgb(107, 173, 246)"] {
+      background-color: var(--trop-cyan) !important;
+      background-image: none !important;
+      color: #ffffff !important;
+    }
+
+    /* Selected editor tab (scil.Tabs highlight #88f): maroon foreground on a
          light background so the maroon text stays legible. */
-      [style*="#88f"], [style*="rgb(136, 136, 255)"] {
-        background-color: var(--trop-light) !important;
-        background-image: none !important;
-        color: #800000 !important;
-        font-weight: 700 !important;
-      }
+    [style*="#88f"],
+    [style*="rgb(136, 136, 255)"] {
+      background-color: var(--trop-light) !important;
+      background-image: none !important;
+      color: #800000 !important;
+      font-weight: 700 !important;
+    }
 
-      /* Toolbar / dialog buttons (no padding override — JSDraw's icon buttons
+    /* Toolbar / dialog buttons (no padding override — JSDraw's icon buttons
          size themselves; forcing padding would shift their glyphs). */
-      button {
-        font-family: "Inter", Arial, sans-serif !important;
-        background: linear-gradient(180deg, #ffffff 0%, var(--trop-light) 100%) !important;
-        color: var(--trop-navy) !important;
-        border: 1px solid var(--trop-cyan) !important;
-        border-radius: 7px !important;
-      }
-      button:hover {
-        background: linear-gradient(180deg, var(--trop-cyan-bright) 0%, var(--trop-cyan) 100%) !important;
-        color: #ffffff !important;
-        border-color: var(--trop-cyan) !important;
-      }
+    button {
+      font-family: "Inter", Arial, sans-serif !important;
+      background: linear-gradient(180deg, #ffffff 0%, var(--trop-light) 100%) !important;
+      color: var(--trop-navy) !important;
+      border: 1px solid var(--trop-cyan) !important;
+      border-radius: 7px !important;
+    }
 
-      /* Text inputs / selects */
-      #div1 input[type="text"], #div1 select, #div1 textarea {
-        border: 1px solid var(--trop-border) !important;
-        border-radius: 6px !important;
-        color: var(--trop-navy) !important;
-        background: #ffffff !important;
-      }
+    button:hover {
+      background: linear-gradient(180deg, var(--trop-cyan-bright) 0%, var(--trop-cyan) 100%) !important;
+      color: #ffffff !important;
+      border-color: var(--trop-cyan) !important;
+    }
 
-      /* Links / tab labels */
-      #div1 a, #toolbar a { color: var(--trop-cyan) !important; }
+    /* Text inputs / selects */
+    #div1 input[type="text"],
+    #div1 select,
+    #div1 textarea {
+      border: 1px solid var(--trop-border) !important;
+      border-radius: 6px !important;
+      color: var(--trop-navy) !important;
+      background: #ffffff !important;
+    }
 
-      /* Tropical scrollbars */
-      *::-webkit-scrollbar { width: 10px; height: 10px; }
-      *::-webkit-scrollbar-track { background: var(--trop-light); }
-      *::-webkit-scrollbar-thumb { background: var(--trop-cyan); border-radius: 6px; }
-      *::-webkit-scrollbar-thumb:hover { background: var(--trop-navy); }
-    </style>
-  </head>
+    /* Links / tab labels */
+    #div1 a,
+    #toolbar a {
+      color: var(--trop-cyan) !important;
+    }
 
-  <body style="font-family: Arial; margin: 0">
-    <div id="toolbar"></div>
+    /* Tropical scrollbars */
+    *::-webkit-scrollbar {
+      width: 10px;
+      height: 10px;
+    }
 
-    <!-- HELM App -->
-    <div
-      id="div1"
-      style="margin: 2px; margin-top: 15px; overflow: visible"
-    ></div>
-    <script type="text/javascript">
-      scil.ready(function () {
-        org.helm.webeditor.MolViewer.molscale = 0.8;
-        const app__ = new scil.helm.App("div1", {
-          showabout: false,
-          mexfontsize: "90%",
-          mexrnapinontab: true,
-          topmargin: 10,
-          // Hide the built-in JSDraw icon toolbar inside the canvas — the custom
-          // HELM menu bar (#toolbar, above the structure) replaces it.
-          canvastoolbar: false,
-          // Show the monomer categories (Chem / Peptide / RNA) directly instead of
-          // nesting them under a single redundant "Monomers" tab.
-          mexmonomerstab: false,
-          sequenceviewonly: false,
-          mexfavoritefirst: true,
-          mexfilter: true,
-          // monomersurl: 'https://localhost:4200/assets/medchem/helm/lib.json'
-          // monomersurl:'https://app.hts.bio/assets/medchem/helm/lib.json'
-        });
-        setMonomers = (monomers) => {
-          // Keep the raw monomer list so the "Design" button can send it to the AI.
-          try { window.__medchemMonomers = monomers; } catch (e) { }
-          org.helm.webeditor.Monomers.loadDB(monomers, (x) => {
-            let t = {
-              id: x.symbol,
-              n: x.name,
-              na: x.naturalAnalog,
-              type: x.polymerType,
-              mt: x.monomerType,
-              m: x.molfile,
-            };
-            t.at = {};
-            for (let r of x.rgroups) {
-              t.at[r.label] = r.alternateId;
-            }
-            let rgroups=[]
-            for (let r of x.rgroups) {
-              var cap = r.capGroupName;
-              var smiles = r.capGroupSMILES;
-              rgroups.push({
-                alternateId: r.alternateId,
-                label: r.label,
-                capGroupName: cap,
-                capGroupSMILES: smiles,
-              });
-            }
-            t.rgroups = rgroups;
-            t.rs = rgroups;
-            return t;
-          });
+    *::-webkit-scrollbar-track {
+      background: var(--trop-light);
+    }
 
-          // org.helm.webeditor.monomers = org.helm.webeditor.Monomers;
-          // app.init(parent);
-        };
+    *::-webkit-scrollbar-thumb {
+      background: var(--trop-cyan);
+      border-radius: 6px;
+    }
 
-        setHELM = function setHELM(helm) {
-          app__.canvas.setHelm(helm);
-        };
-        getHELM = function getHELM(helm) {
-          return app__.canvas.getHelm();
-        };
+    *::-webkit-scrollbar-thumb:hover {
+      background: var(--trop-navy);
+    }
+  </style>
+</head>
 
-        // ===== Custom HELM menu bar (all the necessary tools) above the structure.
-        // Buttons dispatch the editor's own commands via app__.canvas.doCmd(...),
-        // each guarded so a missing command never breaks the page.
-        // ===== Maximize the structure canvas; move the monomer palette (left) and
-        // the bottom panel (Sequence/HELM/Properties/Structure View) out into
-        // floating popups toggled from the top toolbar.
-        (function popoutPanels() {
-          try {
-            if (!app__ || !app__.page) return;
-            var monEl = (app__.page.explorer && app__.page.explorer.left) ? app__.page.explorer.left : null;
-            var botEl = (app__.tabs && app__.tabs.tabs) ? app__.tabs.tabs.dom : null;
+<body style="font-family: Arial; margin: 0">
+  <div id="toolbar"></div>
 
-            // Detach the panels from the in-page layout so the canvas fills the area.
-            if (monEl) document.body.appendChild(monEl);
-            if (botEl) document.body.appendChild(botEl);
-            try { if (app__.handle && app__.handle.dom) app__.handle.dom.style.display = "none"; } catch (e) {}
-
-            var asPopup = function (el, css) {
-              if (!el) return;
-              el.style.position = "fixed";
-              el.style.zIndex = "1000";
-              el.style.background = "#ffffff";
-              el.style.border = "none";
-              el.style.outline = "none";
-              el.style.borderRadius = "12px";
-              el.style.boxShadow = "0 8px 30px rgba(10,37,64,0.25)";
-              el.style.overflow = "auto";
-              el.style.display = "none";
-              el.style.padding = "6px";
-              for (var k in css) el.style[k] = css[k];
-            };
-            asPopup(monEl, { left: "8px", top: "50px", width: "312px", maxHeight: "80vh" });
-            asPopup(botEl, { left: "8px", right: "8px", bottom: "8px", maxHeight: "42vh" });
-
-            // Full-area canvas: no reserved left column, no bottom split.
-            app__.calculateSizes = function () {
-              var d = (window.dojo && dojo.window) ? dojo.window.getBox() : { w: window.innerWidth, h: window.innerHeight };
-              if (this.options.topmargin > 0) d.h -= this.options.topmargin;
-              return {
-                height: Math.max(200, d.h - 80),   // monomer popup content height
-                topheight: d.h - 44,               // canvas height, inset for padding
-                bottomheight: 300,                 // bottom popup content height
-                leftwidth: 0,
-                rightwidth: d.w - 44               // canvas width, inset for padding
-              };
-            };
-
-            app__.__togglePanel = function (which, btn) {
-              var el = which === "mon" ? monEl : botEl;
-              if (!el) return;
-              var show = (el.style.display === "none" || !el.style.display);
-              el.style.display = show ? "block" : "none";
-              if (btn) btn.style.background = show ? "linear-gradient(180deg,#4fd0e6,#1aa3bd)" : "";
-              if (btn) btn.style.color = show ? "#fff" : "";
-              try { if (app__.resizeWindow) app__.resizeWindow(); } catch (e) {}
-            };
-
-            try { if (app__.resizeWindow) app__.resizeWindow(); } catch (e) {}
-          } catch (e) { console.log("popoutPanels failed:", e); }
-        })();
-
-        // Keyboard shortcuts on the editor: Ctrl+Z = undo, Ctrl+R = redo.
-        (function bindShortcuts() {
-          document.addEventListener("keydown", function (e) {
-            if (!(e.ctrlKey || e.metaKey) || e.altKey) return;
-            var k = (e.key || "").toLowerCase();
-            // Don't hijack typing in text fields.
-            var t = e.target, tag = t && t.tagName ? t.tagName.toUpperCase() : "";
-            if (tag === "INPUT" || tag === "TEXTAREA" || (t && t.isContentEditable)) return;
-            if (k === "z" && !e.shiftKey) {
-              e.preventDefault();
-              try { app__.canvas.doCmd("undo"); } catch (err) { console.log("undo failed:", err); }
-            } else if (k === "r" || (k === "z" && e.shiftKey) || k === "y") {
-              e.preventDefault();   // Ctrl+R would otherwise reload the page
-              try { app__.canvas.doCmd("redo"); } catch (err) { console.log("redo failed:", err); }
-            }
-          }, true);
-        })();
-
-        (function buildToolbar() {
-          var bar = document.getElementById("toolbar");
-          if (!bar) return;
-          var run = function (c) {
-            try { app__.canvas.doCmd(c); } catch (e) { console.log("toolbar cmd failed:", c, e); }
+  <!-- HELM App -->
+  <div id="div1" style="margin: 2px; margin-top: 15px; overflow: visible"></div>
+  <script type="text/javascript">
+    scil.ready(function () {
+      org.helm.webeditor.MolViewer.molscale = 0.8;
+      const app__ = new scil.helm.App("div1", {
+        showabout: false,
+        mexfontsize: "90%",
+        mexrnapinontab: true,
+        topmargin: 10,
+        // Hide the built-in JSDraw icon toolbar inside the canvas — the custom
+        // HELM menu bar (#toolbar, above the structure) replaces it.
+        canvastoolbar: false,
+        // Show the monomer categories (Chem / Peptide / RNA) directly instead of
+        // nesting them under a single redundant "Monomers" tab.
+        mexmonomerstab: false,
+        sequenceviewonly: false,
+        mexfavoritefirst: true,
+        mexfilter: true,
+        // monomersurl: 'https://localhost:4200/assets/medchem/helm/lib.json'
+        // monomersurl:'https://app.hts.bio/assets/medchem/helm/lib.json'
+      });
+      setMonomers = (monomers) => {
+        // Keep the raw monomer list so the "Design" button can send it to the AI.
+        try { window.__medchemMonomers = monomers; } catch (e) { }
+        org.helm.webeditor.Monomers.loadDB(monomers, (x) => {
+          let t = {
+            id: x.symbol,
+            n: x.name,
+            na: x.naturalAnalog,
+            type: x.polymerType,
+            mt: x.monomerType,
+            m: x.molfile,
           };
-          var actions = [
-            { label: "Clean", cmd: "helm_layout", title: "Clean / layout the structure" },
-            { label: "Select", cmd: "select", title: "Box selection" },
-            { label: "Move", cmd: "moveview", title: "Move / view" },
-            { label: "Eraser", cmd: "eraser", title: "Eraser" },
-            { sep: true },
-            { label: "Zoom +", cmd: "zoomin", title: "Zoom in" },
-            { label: "Zoom −", cmd: "zoomout", title: "Zoom out" },
-            { label: "Center", cmd: "center", title: "Move to center" },
-            { sep: true },
-            { label: "Compl. Strand", cmd: "helm_complementary_strand", title: "Create complementary strand" }
-          ];
-          bar.style.display = "flex";
-          bar.style.flexWrap = "wrap";
-          bar.style.alignItems = "center";
-          bar.style.gap = "4px";
-          bar.style.padding = "6px 8px";
-          var title = document.createElement("span");
-          title.textContent = "Tools:";
-          title.style.fontWeight = "700";
-          title.style.marginRight = "4px";
-          bar.appendChild(title);
-          actions.forEach(function (a) {
-            if (a.sep) {
-              var s = document.createElement("span");
-              s.textContent = "";
-              s.style.borderLeft = "1px solid #bfe4ec";
-              s.style.height = "18px";
-              s.style.margin = "0 2px";
-              bar.appendChild(s);
-              return;
-            }
-            var b = document.createElement("button");
-            b.type = "button";
-            b.textContent = a.label;
-            b.title = a.title;
-            b.onclick = function () { run(a.cmd); };
-            bar.appendChild(b);
-          });
-          // Panel popups: monomer palette + bottom (Sequence/HELM/Properties) panel.
-          var sepMon = document.createElement("span");
-          sepMon.style.borderLeft = "1px solid #bfe4ec";
-          sepMon.style.height = "18px";
-          sepMon.style.margin = "0 2px";
-          bar.appendChild(sepMon);
-          var panelBtns = [
-            { label: "Monomers", which: "mon", title: "Show / hide the monomer palette" },
-            { label: "Sequence / HELM", which: "bot", title: "Show / hide the sequence / HELM / properties panel" }
-          ];
-          panelBtns.forEach(function (p) {
-            var b = document.createElement("button");
-            b.type = "button";
-            b.textContent = p.label;
-            b.title = p.title;
-            b.onclick = function () { try { app__.__togglePanel(p.which, b); } catch (e) { console.log("toggle panel failed:", e); } };
-            bar.appendChild(b);
-          });
-
-          // AI Design: prompt the user, then send the HELM + monomers + prompt to
-          // Claude (via the parent app's exec) and apply the returned HELM.
-          var sepD = document.createElement("span");
-          sepD.style.borderLeft = "1px solid #bfe4ec";
-          sepD.style.height = "18px";
-          sepD.style.margin = "0 2px";
-          bar.appendChild(sepD);
-
-          // In-page prompt box (instead of window.prompt). Resolves to the entered
-          // text, or null on cancel / empty.
-          function askDesignPrompt() {
-            return new Promise(function (resolve) {
-              var overlay = document.createElement("div");
-              overlay.style.cssText = "position:fixed;inset:0;z-index:2000;background:rgba(10,37,64,0.35);display:flex;align-items:center;justify-content:center;";
-              var box = document.createElement("div");
-              box.style.cssText = "background:#fff;border-radius:14px;box-shadow:0 12px 40px rgba(10,37,64,0.3);padding:18px;width:min(90vw,520px);font-family:Inter,Arial,sans-serif;color:#0a2540;";
-              var title = document.createElement("div");
-              title.textContent = "Design chemistry with AI";
-              title.style.cssText = "font-weight:700;font-size:16px;margin-bottom:6px;";
-              var sub = document.createElement("div");
-              sub.textContent = "Describe the chemistry change. The current HELM string and the monomer library are sent along with your request.";
-              sub.style.cssText = "font-size:12px;color:#14395c;margin-bottom:10px;";
-              var ta = document.createElement("textarea");
-              ta.placeholder = "e.g. make it a 5-10-5 MOE gapmer with a full PS backbone";
-              ta.style.cssText = "width:100%;height:92px;box-sizing:border-box;border:1px solid #bfe4ec;border-radius:8px;padding:8px;font-family:inherit;font-size:13px;color:#0a2540;resize:vertical;";
-              var row = document.createElement("div");
-              row.style.cssText = "display:flex;justify-content:flex-end;gap:8px;margin-top:12px;";
-              var cancelBtn = document.createElement("button");
-              cancelBtn.type = "button"; cancelBtn.textContent = "Cancel";
-              var okBtn = document.createElement("button");
-              okBtn.type = "button"; okBtn.textContent = "Design";
-              row.appendChild(cancelBtn); row.appendChild(okBtn);
-              box.appendChild(title); box.appendChild(sub); box.appendChild(ta); box.appendChild(row);
-              overlay.appendChild(box);
-              document.body.appendChild(overlay);
-              setTimeout(function () { try { ta.focus(); } catch (e) { } }, 0);
-              function done(v) { try { document.body.removeChild(overlay); } catch (e) { } resolve(v); }
-              cancelBtn.onclick = function () { done(null); };
-              okBtn.onclick = function () { var v = ta.value; done(v && v.trim() ? v : null); };
-              overlay.onclick = function (e) { if (e.target === overlay) done(null); };
-              ta.addEventListener("keydown", function (e) {
-                if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) { e.preventDefault(); okBtn.onclick(); }
-                else if (e.key === "Escape") { e.preventDefault(); done(null); }
-              });
+          t.at = {};
+          for (let r of x.rgroups) {
+            t.at[r.label] = r.alternateId;
+          }
+          let rgroups = []
+          for (let r of x.rgroups) {
+            var cap = r.capGroupName;
+            var smiles = r.capGroupSMILES;
+            rgroups.push({
+              alternateId: r.alternateId,
+              label: r.label,
+              capGroupName: cap,
+              capGroupSMILES: smiles,
             });
           }
+          t.rgroups = rgroups;
+          t.rs = rgroups;
+          return t;
+        });
 
-          var design = document.createElement("button");
-          design.type = "button";
-          design.textContent = "Design ✦";
-          design.title = "Ask AI to modify the chemistry — sends the HELM, the monomer library and your prompt";
-          design.onclick = async function () {
+        // org.helm.webeditor.monomers = org.helm.webeditor.Monomers;
+        // app.init(parent);
+      };
+
+      setHELM = function setHELM(helm) {
+        app__.canvas.setHelm(helm);
+      };
+      getHELM = function getHELM(helm) {
+        return app__.canvas.getHelm();
+      };
+
+      // ===== Custom HELM menu bar (all the necessary tools) above the structure.
+      // Buttons dispatch the editor's own commands via app__.canvas.doCmd(...),
+      // each guarded so a missing command never breaks the page.
+      // ===== Maximize the structure canvas; move the monomer palette (left) and
+      // the bottom panel (Sequence/HELM/Properties/Structure View) out into
+      // floating popups toggled from the top toolbar.
+      (function popoutPanels() {
+        try {
+          if (!app__ || !app__.page) return;
+          var monEl = (app__.page.explorer && app__.page.explorer.left) ? app__.page.explorer.left : null;
+          var botEl = (app__.tabs && app__.tabs.tabs) ? app__.tabs.tabs.dom : null;
+
+          // Detach the panels from the in-page layout so the canvas fills the area.
+          if (monEl) document.body.appendChild(monEl);
+          if (botEl) document.body.appendChild(botEl);
+          try { if (app__.handle && app__.handle.dom) app__.handle.dom.style.display = "none"; } catch (e) { }
+
+          var asPopup = function (el, css) {
+            if (!el) return;
+            el.style.position = "fixed";
+            el.style.zIndex = "1000";
+            el.style.background = "#ffffff";
+            el.style.border = "none";
+            el.style.outline = "none";
+            el.style.borderRadius = "12px";
+            el.style.boxShadow = "0 8px 30px rgba(10,37,64,0.25)";
+            el.style.overflow = "auto";
+            el.style.display = "none";
+            el.style.padding = "6px";
+            for (var k in css) el.style[k] = css[k];
+          };
+          asPopup(monEl, { left: "8px", top: "50px", width: "312px", maxHeight: "80vh" });
+          asPopup(botEl, { left: "8px", right: "8px", bottom: "8px", maxHeight: "42vh" });
+
+          // Full-area canvas: no reserved left column, no bottom split.
+          app__.calculateSizes = function () {
+            var d = (window.dojo && dojo.window) ? dojo.window.getBox() : { w: window.innerWidth, h: window.innerHeight };
+            if (this.options.topmargin > 0) d.h -= this.options.topmargin;
+            return {
+              height: Math.max(200, d.h - 80),   // monomer popup content height
+              topheight: d.h - 44,               // canvas height, inset for padding
+              bottomheight: 300,                 // bottom popup content height
+              leftwidth: 0,
+              rightwidth: d.w - 44               // canvas width, inset for padding
+            };
+          };
+
+          app__.__togglePanel = function (which, btn) {
+            var el = which === "mon" ? monEl : botEl;
+            if (!el) return;
+            var show = (el.style.display === "none" || !el.style.display);
+            el.style.display = show ? "block" : "none";
+            if (btn) btn.style.background = show ? "linear-gradient(180deg,#4fd0e6,#1aa3bd)" : "";
+            if (btn) btn.style.color = show ? "#fff" : "";
+            try { if (app__.resizeWindow) app__.resizeWindow(); } catch (e) { }
+          };
+
+          try { if (app__.resizeWindow) app__.resizeWindow(); } catch (e) { }
+        } catch (e) { console.log("popoutPanels failed:", e); }
+      })();
+
+      // Keyboard shortcuts on the editor: Ctrl+Z = undo, Ctrl+R = redo.
+      (function bindShortcuts() {
+        document.addEventListener("keydown", function (e) {
+          if (!(e.ctrlKey || e.metaKey) || e.altKey) return;
+          var k = (e.key || "").toLowerCase();
+          // Don't hijack typing in text fields.
+          var t = e.target, tag = t && t.tagName ? t.tagName.toUpperCase() : "";
+          if (tag === "INPUT" || tag === "TEXTAREA" || (t && t.isContentEditable)) return;
+          if (k === "z" && !e.shiftKey) {
+            e.preventDefault();
+            try { app__.canvas.doCmd("undo"); } catch (err) { console.log("undo failed:", err); }
+          } else if (k === "r" || (k === "z" && e.shiftKey) || k === "y") {
+            e.preventDefault();   // Ctrl+R would otherwise reload the page
+            try { app__.canvas.doCmd("redo"); } catch (err) { console.log("redo failed:", err); }
+          }
+        }, true);
+      })();
+
+      (function buildToolbar() {
+        var bar = document.getElementById("toolbar");
+        if (!bar) return;
+        var run = function (c) {
+          try { app__.canvas.doCmd(c); } catch (e) { console.log("toolbar cmd failed:", c, e); }
+        };
+        var actions = [
+          // { label: "Clean", cmd: "helm_layout", title: "Clean / layout the structure" },
+          // { label: "Select", cmd: "select", title: "Box selection" },
+          // { label: "Move", cmd: "moveview", title: "Move / view" },
+          // { label: "Eraser", cmd: "eraser", title: "Eraser" },
+          // { sep: true },
+          // { label: "Zoom +", cmd: "zoomin", title: "Zoom in" },
+          // { label: "Zoom −", cmd: "zoomout", title: "Zoom out" },
+          { label: "Center", cmd: "center", title: "Move to center" },
+          // { sep: true },
+          // { label: "Compl. Strand", cmd: "helm_complementary_strand", title: "Create complementary strand" }
+        ];
+        bar.style.display = "flex";
+        bar.style.flexWrap = "wrap";
+        bar.style.alignItems = "center";
+        bar.style.gap = "4px";
+        bar.style.padding = "6px 8px";
+        var title = document.createElement("span");
+        title.textContent = "Tools:";
+        title.style.fontWeight = "700";
+        title.style.marginRight = "4px";
+        bar.appendChild(title);
+        actions.forEach(function (a) {
+          if (a.sep) {
+            var s = document.createElement("span");
+            s.textContent = "";
+            s.style.borderLeft = "1px solid #bfe4ec";
+            s.style.height = "18px";
+            s.style.margin = "0 2px";
+            bar.appendChild(s);
+            return;
+          }
+          var b = document.createElement("button");
+          b.type = "button";
+          b.textContent = a.label;
+          b.title = a.title;
+          b.onclick = function () { run(a.cmd); };
+          bar.appendChild(b);
+        });
+        // Panel popups: monomer palette + bottom (Sequence/HELM/Properties) panel.
+        var sepMon = document.createElement("span");
+        sepMon.style.borderLeft = "1px solid #bfe4ec";
+        sepMon.style.height = "18px";
+        sepMon.style.margin = "0 2px";
+        bar.appendChild(sepMon);
+        var panelBtns = [
+          { label: "Monomers", which: "mon", title: "Show / hide the monomer palette" },
+          { label: "Sequence / HELM", which: "bot", title: "Show / hide the sequence / HELM / properties panel" }
+        ];
+        panelBtns.forEach(function (p) {
+          var b = document.createElement("button");
+          b.type = "button";
+          b.textContent = p.label;
+          b.title = p.title;
+          b.onclick = function () { try { app__.__togglePanel(p.which, b); } catch (e) { console.log("toggle panel failed:", e); } };
+          bar.appendChild(b);
+        });
+
+        // AI Design: prompt the user, then send the HELM + monomers + prompt to
+        // Claude (via the parent app's exec) and apply the returned HELM.
+        var sepD = document.createElement("span");
+        sepD.style.borderLeft = "1px solid #bfe4ec";
+        sepD.style.height = "18px";
+        sepD.style.margin = "0 2px";
+        bar.appendChild(sepD);
+
+        // In-page prompt box (instead of window.prompt). Resolves to the entered
+        // text, or null on cancel / empty.
+        function askDesignPrompt() {
+          return new Promise(function (resolve) {
+            var overlay = document.createElement("div");
+            overlay.style.cssText = "position:fixed;inset:0;z-index:2000;background:rgba(10,37,64,0.35);display:flex;align-items:center;justify-content:center;";
+            var box = document.createElement("div");
+            box.style.cssText = "background:#fff;border-radius:14px;box-shadow:0 12px 40px rgba(10,37,64,0.3);padding:18px;width:min(90vw,520px);font-family:Inter,Arial,sans-serif;color:#0a2540;";
+            var title = document.createElement("div");
+            title.textContent = "Design chemistry with AI";
+            title.style.cssText = "font-weight:700;font-size:16px;margin-bottom:6px;";
+            var sub = document.createElement("div");
+            sub.textContent = "Describe the chemistry change. The current HELM string and the monomer library are sent along with your request.";
+            sub.style.cssText = "font-size:12px;color:#14395c;margin-bottom:10px;";
+            var ta = document.createElement("textarea");
+            ta.placeholder = "e.g. make it a 5-10-5 MOE gapmer with a full PS backbone";
+            ta.style.cssText = "width:100%;height:92px;box-sizing:border-box;border:1px solid #bfe4ec;border-radius:8px;padding:8px;font-family:inherit;font-size:13px;color:#0a2540;resize:vertical;";
+            var row = document.createElement("div");
+            row.style.cssText = "display:flex;justify-content:flex-end;gap:8px;margin-top:12px;";
+            var cancelBtn = document.createElement("button");
+            cancelBtn.type = "button"; cancelBtn.textContent = "Cancel";
+            var okBtn = document.createElement("button");
+            okBtn.type = "button"; okBtn.textContent = "Design";
+            row.appendChild(cancelBtn); row.appendChild(okBtn);
+            box.appendChild(title); box.appendChild(sub); box.appendChild(ta); box.appendChild(row);
+            overlay.appendChild(box);
+            document.body.appendChild(overlay);
+            setTimeout(function () { try { ta.focus(); } catch (e) { } }, 0);
+            function done(v) { try { document.body.removeChild(overlay); } catch (e) { } resolve(v); }
+            cancelBtn.onclick = function () { done(null); };
+            okBtn.onclick = function () { var v = ta.value; done(v && v.trim() ? v : null); };
+            overlay.onclick = function (e) { if (e.target === overlay) done(null); };
+            ta.addEventListener("keydown", function (e) {
+              if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) { e.preventDefault(); okBtn.onclick(); }
+              else if (e.key === "Escape") { e.preventDefault(); done(null); }
+            });
+          });
+        }
+
+        var design = document.createElement("button");
+        design.type = "button";
+        design.textContent = "Design ✦";
+        design.title = "Ask AI to modify the chemistry — sends the HELM, the monomer library and your prompt";
+        design.onclick = async function () {
+          try {
+            var helm = (app__.canvas && app__.canvas.getHelm) ? app__.canvas.getHelm() : (typeof getHELM === "function" ? getHELM() : "");
+            if (!helm) { alert("Draw or load a structure first."); return; }
+            var ask = await askDesignPrompt();
+            if (ask == null || !("" + ask).trim()) return;
+            var mons = window.__medchemMonomers || [];
+            var P = window.parent;
+            if (!P || typeof P.exec !== "function") { alert("AI design is not available in this context."); return; }
+            design.disabled = true;
+            var label0 = design.textContent;
+            design.textContent = "Designing…";
             try {
-              var helm = (app__.canvas && app__.canvas.getHelm) ? app__.canvas.getHelm() : (typeof getHELM === "function" ? getHELM() : "");
-              if (!helm) { alert("Draw or load a structure first."); return; }
-              var ask = await askDesignPrompt();
-              if (ask == null || !("" + ask).trim()) return;
-              var mons = window.__medchemMonomers || [];
-              var P = window.parent;
-              if (!P || typeof P.exec !== "function") { alert("AI design is not available in this context."); return; }
-              design.disabled = true;
-              var label0 = design.textContent;
-              design.textContent = "Designing…";
-              try {
-                var res = await P.exec("baja/manchester/menu/design-helm-from-prompt.js", helm, "" + ask, JSON.stringify(mons));
-                if (res && res.helm) {
-                  if (typeof setHELM === "function") setHELM(res.helm);
-                  else app__.canvas.setHelm(res.helm);
-                  if (res.notes) console.log("Design:", res.notes);
-                } else {
-                  alert("Design failed: " + ((res && res.error) || "no result returned"));
-                }
-              } finally {
-                design.textContent = label0;
-                design.disabled = false;
+              var res = await P.exec("baja/manchester/menu/design-helm-from-prompt.js", helm, "" + ask, JSON.stringify(mons));
+              if (res && res.helm) {
+                if (typeof setHELM === "function") setHELM(res.helm);
+                else app__.canvas.setHelm(res.helm);
+                if (res.notes) console.log("Design:", res.notes);
+              } else {
+                alert("Design failed: " + ((res && res.error) || "no result returned"));
               }
-            } catch (e) {
-              alert("Design error: " + e);
+            } finally {
+              design.textContent = label0;
               design.disabled = false;
             }
-          };
-          bar.appendChild(design);
-        })();
-      });
-    </script>
+          } catch (e) {
+            alert("Design error: " + e);
+            design.disabled = false;
+          }
+        };
+        bar.appendChild(design);
+      })();
+    });
+  </script>
 
-    <!-- Rule App -->
-    <!--
+  <!-- Rule App -->
+  <!--
         <script type='text/javascript' src='../JSDraw/Service.aspx?cmd=helm.monomer.downloadjson'></script>
         <div id="div1"></div>
         <script type="text/javascript">
@@ -456,13 +495,15 @@
         </script>
  -->
 
-    <!-- Monomer Lib App -->
-    <!--
+  <!-- Monomer Lib App -->
+  <!--
     <div id="div1"></div>
     <script type="text/javascript">
         scil.ready(function () {
             new scil.helm.MonomerLibApp("div1", { ajaxurl: "Service.aspx?cmd=" });
         });
     </script>
-  --></body>
+  -->
+</body>
+
 </html>

@@ -164,14 +164,13 @@ class MsalAuthenticationProvider implements AuthenticationProvider {
 
                         case InteractionType.Redirect:
                             /**
-                             * This will cause the app to leave the current page and redirect to the consent screen.
-                             * Once consent is provided, the app will return back to the current page and then the
-                             * silent token acquisition will succeed.
+                             * Previously this called acquireTokenRedirect(), leaving the current page for the
+                             * MSAL consent screen. But the app authenticates via OIDC, not MSAL — so on prod this
+                             * fired a full-page redirect on boot that re-loaded the page mid-work and discarded the
+                             * loaded file. Fail gracefully instead: OneDrive/Graph features are simply unavailable
+                             * without an MSAL token; the rest of the app (OIDC) is unaffected.
                              */
-                            this.authService.instance.acquireTokenRedirect({
-                                scopes: this.scopes,
-                                claims: claim,
-                            });
+                            reject(Error('OneDrive sign-in required (MSAL); skipping to avoid an auth redirect.'));
                             break;
 
                         default:

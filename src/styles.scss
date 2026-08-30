@@ -222,10 +222,11 @@ lion-app #___dashboard>app-canvas {
 .draggable-dialog .mat-mdc-dialog-surface {
   border-radius: 12px;
   overflow: hidden;
-  /* Transparent container window: drop the Material panel background + shadow + padding so the
-     modal is just its (slim) title bar and content, with no extra white frame. */
-  background: transparent !important;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.22) !important;
+  /* "Demo panel" look: navy container, faint light border, soft shadow, white text. */
+  background: #0b2545 !important;
+  color: #fff !important;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45) !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
   padding: 0 !important;
 }
 
@@ -234,6 +235,7 @@ lion-app #___dashboard>app-canvas {
 .draggable-dialog .mat-mdc-dialog-content {
   padding: 0 !important;
   background: transparent !important;
+  color: #fff !important;
 }
 
 /* ============================================================

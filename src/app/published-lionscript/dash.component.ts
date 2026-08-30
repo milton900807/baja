@@ -1669,8 +1669,10 @@ export interface DialogData {
       padding: 0 2px; cursor: pointer; opacity: .85;
     }
     .close-btn:hover { opacity: 1; }
-    .modal-body { padding: 12px; background: var(--panel-bg, #ffffff); color: var(--panel-fg, #011c3c); }
-    .modal-footer { padding: 8px 12px 12px; display: flex; justify-content: flex-end; }
+    /* "Demo panel" look: navy body with white text, matching the modal surface. */
+    .modal-body { padding: 14px; background: #0b2545; color: #fff; }
+    .modal-body a { color: #7cc4ff; }
+    .modal-footer { padding: 8px 12px 12px; display: flex; justify-content: flex-end; background: #0b2545; }
   `]
 })
 export class ModalContentComponent implements OnInit {

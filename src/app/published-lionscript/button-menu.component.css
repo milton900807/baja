@@ -68,3 +68,41 @@
   outline: 2px solid var(--accent, #2f6feb);
   outline-offset: 2px;
 }
+
+/* Icons only render on mobile (desktop keeps the labelled circular buttons). */
+.circle-btn__icon {
+  display: none;
+}
+
+/* Mobile (body.baja-mobile set in the editor): use icons + smaller buttons on the
+   top button panel, and keep the row on a SINGLE line (no wrap; scroll if needed). */
+:host-context(.baja-mobile) .button-menu {
+  padding: 4px;
+  gap: 4px;
+}
+:host-context(.baja-mobile) .button-menu__grid {
+  flex-wrap: nowrap;
+  gap: 5px;
+  overflow-x: auto;
+  max-width: 100%;
+  justify-content: flex-start;
+}
+:host-context(.baja-mobile) .circle-btn {
+  width: 44px;
+  height: 44px;
+  padding: 2px;
+  flex: 0 0 auto;
+  flex-direction: column;
+  font-size: 0.46rem;
+}
+:host-context(.baja-mobile) .circle-btn__icon {
+  display: block;
+  font-size: 20px;
+  line-height: 1;
+}
+:host-context(.baja-mobile) .circle-btn__label {
+  max-width: 42px;
+  font-size: 0.44rem;
+  line-height: 1;
+  margin-top: 1px;
+}

@@ -1,16 +1,27 @@
+/* Top button row — navy panel matching the design-dialog look & feel (#0b2545 card,
+   light hairline border, soft shadow), so the icon buttons sit in a cohesive navy bar
+   instead of on bare white. */
 .button-menu {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 10px;
-  padding: 8px;
+  justify-content: flex-start;
+  gap: 8px;
+  padding: 6px 10px;
+  background: #0b2545;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 12px;
+  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.35);
+  box-sizing: border-box;
 }
 
 .button-menu__title {
   font-weight: 700;
-  font-size: 0.9rem;
+  font-size: 0.82rem;
   letter-spacing: 0.2px;
-  color: var(--app-fg, #011c3c);
+  color: #9fb3c8;
+  margin-right: 4px;
 }
 
 .button-menu__grid {
@@ -35,16 +46,21 @@
   padding: 0;
   box-sizing: border-box;
 
-  color: var(--metal-text, #ffffff);
-  background: var(--metal-top, #011c3c);
-  border: 1px solid var(--metal-border, #011c3c);
-  box-shadow: var(--btn-shadow, 0 2px 6px rgba(16, 24, 40, 0.30));
+  color: #e8f0fb;
+  background: #0a1e3a;                      /* dialog input fill — reads against the navy bar */
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.30);
 
   cursor: pointer;
   font-weight: 600;
   font-size: 0.5rem;
   line-height: 1.02;
-  transition: box-shadow 0.12s ease, transform 0.05s ease;
+  transition: box-shadow 0.12s ease, transform 0.05s ease, border-color 0.12s ease;
+}
+
+/* Hover: green accent ring like the dialog's primary action. */
+.circle-btn:hover {
+  border-color: #22c55e;
 }
 
 .circle-btn__icon {

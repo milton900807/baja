@@ -7,7 +7,7 @@
       [attr.title]="b.tooltip || b.label || ''"
       (click)="click(b)" (mouseenter)="hover(b)">
       <span *ngIf="b.icon" class="material-icons circle-btn__icon">{{ b.icon }}</span>
-      <span class="circle-btn__label">{{ b.label }}</span>
+      <span *ngIf="!b.icon" class="circle-btn__label">{{ b.label }}</span>
     </button>
   </div>
 </div>

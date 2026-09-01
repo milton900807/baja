@@ -384,7 +384,16 @@ export class AppComponent implements OnInit {
   private async checkFreePlan(): Promise<void> {
     try {
       // Only inside the app itself; the marketing and auth pages are not "the editor".
-      if (('' + window.location.pathname).indexOf('/app/') < 0) return;
+      //
+      // This was an allow-list of '/app/', but nginx routes SIX prefixes to this shell
+      // (app, edit, lft, books, doc, _app -- see conf.d/oligodesigner.conf) plus the root.
+      // A subscriber opening the editor on any of the others got no badge at all, because
+      // the check returned before it ever asked /free-quota.
+      //
+      // Inverted: name the pages that are NOT the app. Those are enumerable and stable --
+      // sign-in, the OIDC callback and checkout -- and anything new in the shell is the app.
+      const __path = ('' + window.location.pathname).toLowerCase();
+      if (/^\/(login|auth|subscribe|signup)(\/|$)/.test(__path)) return;
       const host = (window['env'] && window['env']['apiUrl']) || window.location.origin;
       const u = this.oidcUser;
       const email = (u && u.email) || '';

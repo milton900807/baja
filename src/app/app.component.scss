@@ -147,19 +147,35 @@
   flex: 0 0 auto;
 }
 
+/* Icon button, sized and centred exactly like .news-btn beside it, so the two glyphs
+   sit on the same line however tall the text buttons around them are. */
 .cite-btn {
   flex: 0 0 auto;
-  min-width: 0;
-  height: 28px;
-  line-height: 28px;
-  padding: 0 10px;
-  font-size: 12.5px;
-  font-weight: 600;
+  align-self: center;
   color: #0b2545;
-  border-radius: 14px;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
 }
 
-.cite-btn:hover { background: rgba(11, 37, 69, 0.07); }
+.cite-btn .mat-icon,
+.cite-btn mat-icon,
+.cite-btn .mat-mdc-button-touch-target {
+  font-size: 21px;
+  width: 21px;
+  height: 21px;
+  line-height: 21px;
+  display: block;
+  margin: 0;
+}
+
+.cite-btn .mat-mdc-button-persistent-ripple,
+.cite-btn .mat-mdc-focus-indicator { inset: 0; }
 
 
 /* ---- Citation card -------------------------------------------------------- */

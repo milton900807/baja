@@ -10,7 +10,7 @@
 
   window["env"]["sharepoint_host"] = "bajabio.sharepoint.com";
   window["env"] = window["env"] || {};
-  window["env"]["theme"] = "Baja Bio";
+  window["env"]["theme"] = "";
   window["env"]["apiUrl"] = "http://localhost:8080";
 
   window["env"]["defaultTheme"] = "ocean";

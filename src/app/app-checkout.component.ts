@@ -64,9 +64,13 @@ import { LionEngine } from './engine/io-engine';
                 </div>
 
 
-                <!-- PayPal Button -->
-                <div class="paypal-section">
-                    <div id="paypal-button-container"></div>
+                <!-- Subscribe. Stripe is the only payment path now, and the only source of
+                     entitlement, so this hands off to /subscribe rather than mounting a button
+                     from a second provider. -->
+                <div class="subscribe-section">
+                    <button type="button" class="demo-button" (click)="subscribe()">
+                        <span class="demo-button-text">Subscribe</span>
+                    </button>
                 </div>
 
             </div>
@@ -75,7 +79,7 @@ import { LionEngine } from './engine/io-engine';
             <div class="checkout-footer">
                 <p class="checkout-note">
                     <span class="dot"></span>
-                    Payments are processed securely by PayPal. 
+                    Payments are processed securely by Stripe.
                     Your full payment information is never stored on our servers.
                 </p>
             </div>
@@ -95,6 +99,13 @@ import { LionEngine } from './engine/io-engine';
     styleUrls: ['./app-checkout.component.css']
 })
 export class AppCheckoutComponent implements AfterViewInit, OnInit, PubComponent {
+
+    // The Stripe subscribe flow. /subscribe is the page that creates the Stripe checkout
+    // session (see baja/datayak/ljlcheckout.js), so everything to do with taking money lives
+    // in one place instead of being split across two providers.
+    subscribe(): void {
+        try { window.location.href = window.location.origin + '/subscribe'; } catch (e) { }
+    }
 
     currencySymbol: string = '$';
 
@@ -132,12 +143,8 @@ export class AppCheckoutComponent implements AfterViewInit, OnInit, PubComponent
     }
 
     ngAfterViewInit(): void {
-        // Ensure the PayPal SDK is loaded
-        if (typeof paypal !== 'undefined') {
-            this.renderPayPalButton(); // Call the method to render the button
-        } else {
-            console.error('PayPal SDK not loaded.');
-        }
+        // No payment SDK to mount: subscribing goes through /subscribe, which creates the
+        // Stripe checkout session server-side.
 
         this.onSuccess = (details) => {
             if (this.successListener) {
@@ -224,74 +231,4 @@ export class AppCheckoutComponent implements AfterViewInit, OnInit, PubComponent
         }
     }
 
-    renderPayPalButton(...args: []): void {
-        paypal.Buttons({
-            style: {
-                layout: 'vertical',
-                color: 'gold',
-                shape: 'rect',
-                label: 'checkout',
-            },
-            // Set up the transaction
-            createOrder: (data, actions) => {
-                return actions.order.create({
-                    purchase_units: [
-                        {
-                            amount: {
-                                value: this.amount.toString(), // Convert amount to string
-                                currency_code: this.currency, // Use the provided currency
-                            },
-                        },
-                    ],
-                    // Disable shipping address collection
-                    application_context: {
-                        shipping_preference: 'NO_SHIPPING', // Prevent shipping options from appearing
-                    },
-                });
-            },
-            // Finalize the transaction
-            onApprove: async (data, actions) => {
-                try {
-
-                    let p = this.position;
-                    if (!p || p.length === 0) {
-                        p = 'all';
-                    }
-                    const details = await actions.order.capture();
-                    const payerEmail = details?.payer?.email_address?.trim().toLowerCase();
-                    details.app = this.product;
-                    details.position = p;
-
-                    // Check if the stored email exists
-                    if (this.email) {
-                        if (payerEmail !== this.email) {
-                            alert(
-                                "Warning: The email used for PayPal (" + payerEmail +
-                                ") does not match the registered purchase email (" + this.email +
-                                "). Please ensure they match to avoid processing delays."
-                            );
-                        }
-                    }
-
-                    if (this.onSuccess) {
-                        this.onSuccess(details);
-                    }
-
-                    console.log('Payment Successful:', details);
-                } catch (error) {
-                    if (this.onError) {
-                        this.onError(error);
-                    }
-                    console.error('Error capturing payment:', error);
-                }
-            },
-            // Handle errors during the process
-            onError: (error) => {
-                if (this.onError) {
-                    this.onError(error);
-                }
-                console.error('PayPal Checkout Error:', error);
-            }
-        }).render('#paypal-button-container'); // Render PayPal button
-    }
 }

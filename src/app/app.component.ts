@@ -240,6 +240,64 @@ export class AppComponent implements OnInit {
   fg = 'white';
   bg = '#ffffff'
 
+  // ---- Citation ------------------------------------------------------------
+  // The year is taken from the clock rather than hard-coded, so the reference does not
+  // quietly go stale the way a literal would.
+  showCite = false;
+  citeCopied = false;
+  private citeYear = new Date().getFullYear();
+
+  get citePlain(): string {
+    return 'Milton, J. (' + this.citeYear + '). BajaBio Designer '
+      + '[computer software]. BajaBio, La Jolla, California. '
+      + 'https://oligodesigner.com';
+  }
+
+  get citeBibtex(): string {
+    return '@software{milton_bajabio_designer,\n'
+      + '  author    = {Milton, Jeff},\n'
+      + '  title     = {BajaBio Designer},\n'
+      + '  year      = {' + this.citeYear + '},\n'
+      + '  publisher = {BajaBio},\n'
+      + '  address   = {La Jolla, California, USA},\n'
+      + '  url       = {https://oligodesigner.com}\n'
+      + '}';
+  }
+
+  copyCitation(text: string): void {
+    const done = () => {
+      this.zone.run(() => {
+        this.citeCopied = true;
+        setTimeout(() => this.zone.run(() => (this.citeCopied = false)), 2000);
+      });
+    };
+    try {
+      // navigator.clipboard needs a secure context; fall back so the button still
+      // works over plain http rather than failing silently.
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text).then(done, () => this.copyFallback(text, done));
+      } else {
+        this.copyFallback(text, done);
+      }
+    } catch (e) {
+      this.copyFallback(text, done);
+    }
+  }
+
+  private copyFallback(text: string, done: () => void): void {
+    try {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      done();
+    } catch (e) { }
+  }
+
   private readonly _destroying$ = new Subject<void>();
 
   static titleService: any;
@@ -274,7 +332,153 @@ export class AppComponent implements OnInit {
 
 
 
+  // ---- News ("The Baja Times") ---------------------------------------------
+  // The newspaper already existed inside the editor's startup progress bar, where it showed
+  // once and could not be brought back. This puts it behind a toolbar button so it can be
+  // opened on demand, and renders it maximised rather than as a small card.
+  showNews = false;
+  newsItems: string[] = [];
+  newsLoading = false;
+
+  get newsDate(): string {
+    try {
+      return new Date().toLocaleDateString('en-US',
+        { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    } catch (e) { return ''; }
+  }
+
+  async openNews(): Promise<void> {
+    this.showNews = true;
+    if (this.newsItems.length || this.newsLoading) return;
+    this.newsLoading = true;
+    try {
+      const host = (window['env'] && window['env']['apiUrl']) || window.location.origin;
+      const r = await fetch(host + '/news-headlines');
+      const j = r.ok ? await r.json() : null;
+      this.zone.run(() => {
+        this.newsItems = (j && Array.isArray(j.items)) ? j.items : [];
+        this.newsLoading = false;
+      });
+    } catch (e) {
+      // An empty paper says "nothing today", which is honest; a spinner that never resolves
+      // would not be.
+      this.zone.run(() => { this.newsItems = []; this.newsLoading = false; });
+    }
+  }
+
+  // ---- Free-plan bar -------------------------------------------------------
+  // Rendered HERE, in the app shell, rather than by the lionscript module it lived in before.
+  // That module was correct in isolation -- it compiled and rendered under the engine's own
+  // pipeline -- but it never appeared in the running app, and every layer between the two
+  // (exec, the script cache, the editor's own re-mounts) swallows errors silently, so there
+  // was nothing to follow. The shell is the one layer that is provably running: it draws the
+  // toolbar the user is already looking at. No exec, no compile step, no DOM node appended
+  // from outside Angular's lifecycle for a later re-mount to take away.
+  freeBar: any = null;
+  freeBarCollapsed = false;
+  private freePollTimer: any = null;
+  // When the subscription first failed to validate, and how many tries have failed since.
+  private freeFailSince = 0;
+  private freeFailTries = 0;
+
+  private async checkFreePlan(): Promise<void> {
+    try {
+      // Only inside the app itself; the marketing and auth pages are not "the editor".
+      if (('' + window.location.pathname).indexOf('/app/') < 0) return;
+      const host = (window['env'] && window['env']['apiUrl']) || window.location.origin;
+      const u = this.oidcUser;
+      const email = (u && u.email) || '';
+      const r = await fetch(host + '/free-quota?user=' + encodeURIComponent(email));
+      if (!r.ok) { this.onFreeCheckFailed(); return; }
+      const q = await r.json();
+      if (!q) { this.onFreeCheckFailed(); return; }
+      // Answered: whatever it says, validation is working again.
+      this.freeFailSince = 0;
+      this.freeFailTries = 0;
+
+      // flexigraph/gene.js runs its own two-try subscription check and sets these when it
+      // concludes the user is not on a subscription. Honoured here because the badge is drawn
+      // by the shell: without this, gene.js could reach that conclusion and nothing would show.
+      let flagged = false, unverified = false;
+      try {
+        flagged = !!(window as any).__bajaFreeTier;
+        unverified = !!(window as any).__bajaFreeUnverified;
+      } catch (e) { }
+
+      if (q.subscribed) {
+        // The live answer wins over a stale flag: a subscriber who tripped gene.js during a
+        // network wobble gets the badge cleared here rather than carrying it for the session.
+        try { (window as any).__bajaFreeTier = false; (window as any).__bajaFreeUnverified = false; } catch (e) { }
+        this.zone.run(() => (this.freeBar = null));
+        return;
+      }
+      this.zone.run(() => {
+        // Going from subscribed to not-subscribed is news: un-collapse so the badge is seen
+        // rather than restored as a corner tab the user already dismissed this session.
+        if (!this.freeBar) this.freeBarCollapsed = false;
+        this.freeBar = {
+          limit: q.limit != null ? q.limit : 5,
+          // designRemaining is the current field; aiRemaining is its old name, still sent for
+          // one release so a client cached mid-deploy does not read undefined.
+          design: q.designRemaining != null ? q.designRemaining
+            : (q.aiRemaining != null ? q.aiRemaining : (q.limit != null ? q.limit : 5)),
+          ot: q.offtargetRemaining != null ? q.offtargetRemaining : (q.limit != null ? q.limit : 5),
+          resetsOn: q.resetsOn || '',
+          // Only "unverified" when a check actually failed to answer -- a plain non-subscriber
+          // is not unverified, and saying so would be wrong.
+          unverified: unverified && flagged
+        };
+      });
+    } catch (e) {
+      this.onFreeCheckFailed();
+    }
+  }
+
+  // Validation failed. Stay quiet at first, then fall back to FREE USE.
+  //
+  // A single failure means nothing -- a blip should not put an upgrade bar in front of someone
+  // who pays -- so the first three minutes of failures are ignored. Past that the endpoint is
+  // not coming back on its own, and the honest position is that the subscription is UNPROVEN:
+  // the user keeps working with the free-tier allowance and can see why, rather than silently
+  // holding paid access on the strength of a check that has not answered since startup. The
+  // metered calls are capped server-side regardless, so this only decides what is shown.
+  //
+  // The moment a check answers again this resets, and a subscriber's bar disappears on the
+  // next poll 20 seconds later.
+  private onFreeCheckFailed(): void {
+    const now = Date.now();
+    if (!this.freeFailSince) this.freeFailSince = now;
+    this.freeFailTries++;
+    const elapsed = now - this.freeFailSince;
+    // Both conditions: three minutes AND several attempts, so a single slow request that
+    // straddles the window cannot trip it on its own.
+    if (elapsed < 180000 || this.freeFailTries < 3) return;
+    try { (window as any).__bajaFreeTier = true; } catch (e) { }
+    this.zone.run(() => {
+      if (!this.freeBar) this.freeBarCollapsed = false;
+      this.freeBar = {
+        limit: 5, design: 5, ot: 5, resetsOn: '',
+        unverified: true
+      };
+    });
+  }
+
   ngOnInit(): void {
+    // Re-check the subscription every 20 seconds, not once at startup.
+    //
+    // The answer changes DURING a session and in both directions: someone subscribes in another
+    // tab and the bar should go away without a reload, or a subscription lapses and the bar
+    // should appear. A single check at boot also raced sign-in -- the email decides the answer
+    // and is not always known on the first tick.
+    //
+    // checkFreePlan sets freeBar when the account is not subscribed and clears it when it is,
+    // so the same poll both raises and retires the badge.
+    setTimeout(() => this.checkFreePlan(), 1200);
+    try {
+      if (this.freePollTimer) clearInterval(this.freePollTimer);
+      this.freePollTimer = setInterval(() => this.checkFreePlan(), 20000);
+    } catch (e) { }
+
     this.canSignUp = window['env']['canSignUp'];
     this.message = window['env']['theme']
     if (window['env']['fg']) {
@@ -599,6 +803,7 @@ export class AppComponent implements OnInit {
 
   // unsubscribe to events when component is destroyed
   ngOnDestroy(): void {
+    try { if (this.freePollTimer) { clearInterval(this.freePollTimer); this.freePollTimer = null; } } catch (e) { }
     this._destroying$.next(undefined);
     this._destroying$.complete();
   }

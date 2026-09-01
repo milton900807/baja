@@ -2,11 +2,27 @@
   <mat-toolbar *ngIf="showToolbar" class="custom-toolbar" [color]="fg"
     [ngStyle]="{ 'background-color': 'white', 'position': 'relative', 'z-index': 5 }"
     style="max-height:36px;font-size:small">
-    <img src="assets/logos/baja-logo.png" alt="Baja Bio" class="baja-brand-logo"
+    <img src="assets/logos/baja-logo.png" class="baja-brand-logo"
       style="width:26px;height:26px;margin-right:8px;vertical-align:middle;flex:0 0 auto;" />
 
     <button mat-icon-button [matMenuTriggerFor]="menu">
       <mat-icon>menu</mat-icon>
+    </button>
+
+    <span class="baja-brand-name">BajaBio Designer</span>
+
+    <!-- Sits after the round icon button so the citation is one click from anywhere in the app.
+         Academic users need something to put in a methods section; leaving them to invent a
+         reference is how software ends up cited three different ways in the same field. -->
+    <!-- Icon rather than a word: the toolbar is narrow and this one has an unambiguous
+         glyph. The title carries the name for anyone hovering, and for screen readers. -->
+    <button mat-icon-button class="news-btn" (click)="openNews()"
+            title="The Baja Times" aria-label="The Baja Times">
+      <mat-icon>newspaper</mat-icon>
+    </button>
+
+    <button mat-button class="cite-btn" (click)="showCite = true" title="[How to cite BajaBio Designer]">
+      [How to cite]
     </button>
 
     <mat-menu #menu="matMenu">
@@ -40,6 +56,93 @@
     </ng-container>
 
   </mat-toolbar>
+
+  <!-- "The Baja Times", maximised. Broadsheet styling on purpose: it is a masthead and
+       columns, not a modal with a list in it. -->
+  <div class="news-backdrop" *ngIf="showNews" (click)="showNews = false">
+    <div class="news-paper" (click)="$event.stopPropagation()">
+      <div class="news-masthead">
+        <div class="news-title">The Baja Times</div>
+        <div class="news-sub">{{ newsDate }} &nbsp;&bull;&nbsp; Genomics Edition</div>
+      </div>
+
+      <div class="news-loading" *ngIf="newsLoading">Setting today's type&hellip;</div>
+
+      <div class="news-body" *ngIf="!newsLoading">
+        <div class="news-article" *ngFor="let item of newsItems; let i = index">
+          <div class="news-kicker">{{ i === 0 ? 'Lead story' : 'Also today' }}</div>
+          <div class="news-headline">{{ item }}</div>
+        </div>
+        <div class="news-empty" *ngIf="!newsItems.length">
+          No dispatches today. The presses are idle.
+        </div>
+      </div>
+
+      <button class="news-close" (click)="showNews = false">Close</button>
+    </div>
+  </div>
+
+  <!-- Free-plan bar, docked at the bottom for anyone without a subscription.
+       Bottom rather than top: the editor's menus, toolbar and track labels line the top edge,
+       so a bar there covers the controls the user is reaching for. It is not a blocking
+       overlay -- the whole point of the free tier is that the editor works. -->
+  <div class="freebar" *ngIf="freeBar && !freeBarCollapsed">
+    <span class="freebar-chip">{{ freeBar.unverified ? 'FREE PLAN (UNVERIFIED)' : 'FREE PLAN' }}</span>
+    <span class="freebar-text">
+      <span *ngIf="freeBar.unverified">
+        <b>Your subscription could not be verified</b> for the last few minutes, so the free-tier
+        allowance applies until it can be. This clears itself as soon as the check succeeds.
+      </span>
+      <b>Editing is unlimited</b> &mdash; load, edit, save and browse as much as you like.
+      Two features are metered: <b>designs</b> (siRNA and single-stranded ASO) and
+      <b>off-target searches</b>,
+      <b>{{ freeBar.limit }} each per month</b><span *ngIf="freeBar.resetsOn"> (resets {{ freeBar.resetsOn }})</span>.
+      You have <b>{{ freeBar.design }}</b> design<span *ngIf="freeBar.design !== 1">s</span>
+      and <b>{{ freeBar.ot }}</b> off-target left.
+    </span>
+    <a class="freebar-cta" href="/subscribe">Subscribe for unlimited</a>
+    <button class="freebar-x" (click)="freeBarCollapsed = true" title="Collapse">&#9662;</button>
+  </div>
+
+  <!-- Collapsed form: a corner tab that brings it back. It collapses rather than dismissing,
+       so the upgrade path stays one click away without a permanent strip of chrome. -->
+  <div class="freetab" *ngIf="freeBar && freeBarCollapsed" (click)="freeBarCollapsed = false">
+    <span>Free plan &middot; designs {{ freeBar.design }}/{{ freeBar.limit }} &middot; off-targets {{ freeBar.ot }}/{{ freeBar.limit }}</span>
+    <span class="freetab-cta">Subscribe</span>
+  </div>
+
+  <!-- Citation card. Plain overlay rather than a MatDialog: it carries no state and no result,
+       so a whole dialog component would be more machinery than the content justifies. -->
+  <div class="cite-backdrop" *ngIf="showCite" (click)="showCite = false">
+    <div class="cite-card" (click)="$event.stopPropagation()">
+      <div class="cite-head">
+        <div class="cite-title">How to cite BajaBio Designer</div>
+        <button mat-icon-button class="cite-x" (click)="showCite = false" title="Close">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+
+      <div class="cite-body">
+
+        <div class="cite-block">
+          <div class="cite-label">Reference</div>
+          <pre class="cite-text">{{ citePlain }}</pre>
+          <button mat-button class="cite-copy" (click)="copyCitation(citePlain)">Copy</button>
+        </div>
+
+        <div class="cite-block">
+          <div class="cite-label">BibTeX</div>
+          <pre class="cite-text">{{ citeBibtex }}</pre>
+          <button mat-button class="cite-copy" (click)="copyCitation(citeBibtex)">Copy</button>
+        </div>
+
+        <div class="cite-foot">
+          Jeff Milton &middot; BajaBio &middot; La Jolla, California
+          <span class="cite-copied" *ngIf="citeCopied">Copied</span>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <div class="app-content">
     <div *ngIf="!showLJW" class="route-host">

@@ -53,16 +53,91 @@ function __bajaWorkIndicator(): HTMLElement {
     return el;
 }
 let __bajaWorkTimer: any = null;
-function __bajaWorkShow(show: boolean): void {
-    // The top-center "working" spinner is disabled by request — never display it, and keep any
-    // existing element hidden / its refresh timer cleared regardless of the requested state.
+let __bajaWorkSince = 0;
+
+// The indicator was previously hard-disabled, because a permanent top-centre "Working…" blob
+// with no information in it is just something covering the canvas. The rule now is narrower:
+// it appears ONLY when a script has set a context-specific status describing what is running
+// and where it is going. No status, no badge — so the generic version cannot come back, while
+// real work announces itself.
+function __bajaWorkRefresh(): void {
     try {
-        const el = document.getElementById('baja-working') as HTMLElement;
-        if (el) el.style.display = 'none';
-        if (__bajaWorkTimer) { clearInterval(__bajaWorkTimer); __bajaWorkTimer = null; }
-        try { (window as any).__workStatus = ''; } catch (e) { }
+        const status = ('' + ((window as any).__workStatus || '')).trim();
+        // The file-upload blur overlay carries its own spinner; two at once reads as two jobs.
+        let suppressed = false;
+        try { suppressed = !!document.getElementById('baja-upload-blur'); } catch (e) { }
+        const show = !!status && !suppressed;
+
+        if (show) {
+            const el = __bajaWorkIndicator();
+            el.style.display = 'flex';
+            const txt = document.getElementById('baja-working-txt');
+            if (txt && txt.textContent !== status) txt.textContent = status;
+            if (!__bajaWorkSince) __bajaWorkSince = Date.now();
+
+            // Sit BELOW the canvas button row, not at the very top of the window. Pinned to the
+            // top it sat against the toolbar, in the busiest strip of the page, and was easy to
+            // miss entirely — which defeats the point of a progress indicator. Measured from the
+            // live button elements rather than hard-coded, so it follows the toolbar's real
+            // height and stays right if the button row wraps or is hidden.
+            // The gap is deliberately generous. What gets measured is the button COMPONENT's
+            // element box, but the round buttons are painted inside a canvas within it and can
+            // extend past the box the browser reports, so a small gap still overlapped them.
+            const GAP = 60;
+            let top = 66;   // no button row present: still clear of the toolbar
+            try {
+                let lowest = 0;
+                const nodes = document.querySelectorAll('button-menu, button-canvas');
+                for (let i = 0; i < nodes.length; i++) {
+                    const r = (nodes[i] as HTMLElement).getBoundingClientRect();
+                    if (r && r.height > 0 && r.bottom > lowest) lowest = r.bottom;
+                }
+                if (lowest > 0) top = lowest + GAP;
+            } catch (e) { }
+            if (el.style.top !== top + 'px') el.style.top = top + 'px';
+        } else {
+            const el = document.getElementById('baja-working') as HTMLElement;
+            if (el) el.style.display = 'none';
+            __bajaWorkSince = 0;
+        }
+
+        // Safety valve: a script that sets a status and then dies without clearing it would
+        // otherwise leave the badge up for the rest of the session. Two minutes with no backend
+        // work outstanding is well past any real job, so drop it.
+        const busy = (((window as any).__backendWorkCount) || 0) > 0;
+        if (show && !busy && __bajaWorkSince && (Date.now() - __bajaWorkSince) > 120000) {
+            try { (window as any).__workStatus = ''; } catch (e) { }
+        }
+        if (!show && !busy && __bajaWorkTimer) { clearInterval(__bajaWorkTimer); __bajaWorkTimer = null; }
     } catch (e) { }
 }
+
+function __bajaWorkShow(show: boolean): void {
+    try {
+        if (show) {
+            if (!__bajaWorkTimer) __bajaWorkTimer = setInterval(__bajaWorkRefresh, 200);
+            __bajaWorkRefresh();
+            return;
+        }
+        // Called only once the LAST outstanding .py exec has finished (the caller guards on the
+        // count), so the status that framed those calls is done with.
+        try { (window as any).__workStatus = ''; } catch (e) { }
+        __bajaWorkRefresh();
+        if (__bajaWorkTimer) { clearInterval(__bajaWorkTimer); __bajaWorkTimer = null; }
+    } catch (e) { }
+}
+
+// Let lionscript set a status and have it appear immediately, without waiting for the poll
+// and without needing a .py exec to be in flight (loading a track or running a design is not
+// always a python call).
+try {
+    (window as any).__bajaWorkRefresh = () => {
+        try {
+            if (!__bajaWorkTimer) __bajaWorkTimer = setInterval(__bajaWorkRefresh, 200);
+        } catch (e) { }
+        __bajaWorkRefresh();
+    };
+} catch (e) { }
 
 @Injectable()
 export class IoniScriptEngine {

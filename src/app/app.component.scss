@@ -28,6 +28,10 @@
 }
 
 .custom-toolbar {
+  /* Everything on the bar sits on one centred line -- the brand text, the text buttons and the
+     icon button -- so an icon cannot drift off the baseline of the words next to it. */
+  display: flex;
+  align-items: center;
   position: relative;
   z-index: 5;
   flex: 0 0 36px;
@@ -131,3 +135,338 @@
 .oidc-menu-name { font-weight: 700; font-size: 13px; }
 .oidc-menu-email { font-size: 12px; color: #64748b; }
 .oidc-menu-prov { font-size: 11px; color: #94a3b8; text-transform: capitalize; margin-top: 2px; }
+
+/* ---- Brand name, citation button, island mark ----------------------------- */
+.baja-brand-name {
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 0.2px;
+  color: #0b2545;
+  margin-right: 10px;
+  white-space: nowrap;
+  flex: 0 0 auto;
+}
+
+.cite-btn {
+  flex: 0 0 auto;
+  min-width: 0;
+  height: 28px;
+  line-height: 28px;
+  padding: 0 10px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #0b2545;
+  border-radius: 14px;
+}
+
+.cite-btn:hover { background: rgba(11, 37, 69, 0.07); }
+
+
+/* ---- Citation card -------------------------------------------------------- */
+.cite-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483000;
+  background: rgba(6, 18, 34, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.cite-card {
+  width: min(640px, 100%);
+  max-height: 85vh;
+  overflow: auto;
+  background: #ffffff;
+  color: #16212e;
+  border-radius: 12px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.4);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.cite-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 10px 14px 20px;
+  background: #0b2545;
+  color: #e8f0fb;
+  border-radius: 12px 12px 0 0;
+}
+
+.cite-title { font-size: 17px; font-weight: 700; flex: 1 1 auto; }
+.cite-x { color: #e8f0fb; flex: 0 0 auto; }
+
+.cite-body { padding: 18px 20px 20px; }
+
+.cite-lead {
+  margin: 0 0 16px;
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: #44586d;
+}
+
+.cite-block { margin-bottom: 16px; }
+
+.cite-label {
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: #7b8ea2;
+  margin-bottom: 6px;
+}
+
+.cite-text {
+  margin: 0;
+  padding: 12px 14px;
+  background: #f4f7fa;
+  border: 1px solid #e0e7ee;
+  border-radius: 8px;
+  font: 12.5px/1.6 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.cite-copy {
+  margin-top: 6px;
+  min-width: 0;
+  height: 26px;
+  line-height: 26px;
+  padding: 0 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #0b2545;
+  border-radius: 13px;
+  background: #eef3f8;
+}
+
+.cite-foot {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-top: 12px;
+  border-top: 1px solid #e6ecf2;
+  font-size: 12.5px;
+  color: #7b8ea2;
+}
+
+.cite-copied {
+  margin-left: auto;
+  color: #1e9e6a;
+  font-weight: 700;
+}
+
+@media (max-width: 700px) {
+  .baja-brand-name { display: none; }
+}
+
+/* ---- Free-plan bar -------------------------------------------------------- */
+.freebar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2147483400;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 9px 14px;
+  background: linear-gradient(90deg, #0b2545, #123a63);
+  color: #e8f0fb;
+  border-top: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 -4px 18px rgba(0, 0, 0, 0.35);
+  font: 13px/1.45 Arial, Helvetica, sans-serif;
+}
+
+.freebar-chip {
+  flex: 0 0 auto;
+  background: #22c55e;
+  color: #04210f;
+  border-radius: 999px;
+  padding: 3px 10px;
+  font: 700 11.5px Arial, Helvetica, sans-serif;
+}
+
+.freebar-text { flex: 1 1 auto; min-width: 0; }
+
+.freebar-cta {
+  flex: 0 0 auto;
+  color: #04210f;
+  background: #22c55e;
+  border-radius: 8px;
+  padding: 7px 14px;
+  font: 700 12.5px Arial, Helvetica, sans-serif;
+  text-decoration: none;
+}
+
+.freebar-x {
+  flex: 0 0 auto;
+  cursor: pointer;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  color: #e8f0fb;
+  border-radius: 8px;
+  padding: 6px 10px;
+  font: 700 12px Arial, Helvetica, sans-serif;
+}
+
+.freetab {
+  position: fixed;
+  right: 12px;
+  bottom: 12px;
+  z-index: 2147483400;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  cursor: pointer;
+  background: rgba(11, 37, 69, 0.94);
+  color: #e8f0fb;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 10px;
+  padding: 8px 12px;
+  font: 600 12px Arial, Helvetica, sans-serif;
+  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.35);
+}
+
+.freetab-cta {
+  color: #04210f;
+  background: #22c55e;
+  border-radius: 7px;
+  padding: 4px 9px;
+  font: 700 11.5px Arial, Helvetica, sans-serif;
+}
+
+@media (max-width: 700px) {
+  .freebar-text { display: none; }
+}
+
+/* ---- The Baja Times -------------------------------------------------------- */
+.news-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483200;
+  background: rgba(8, 12, 20, 0.72);
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  padding: 24px;
+}
+
+/* Maximised: the paper fills the viewport rather than sitting in it. */
+.news-paper {
+  position: relative;
+  width: 100%;
+  max-width: 1100px;
+  height: 100%;
+  overflow: auto;
+  background: #f6f1e3;
+  color: #1a1a1a;
+  border: 2px solid #1a1a1a;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  padding: 28px 34px 76px;
+  font-family: Georgia, 'Times New Roman', serif;
+}
+
+.news-masthead {
+  text-align: center;
+  border-bottom: 4px double #1a1a1a;
+  padding-bottom: 12px;
+  margin-bottom: 20px;
+}
+
+.news-title {
+  font-size: clamp(34px, 6vw, 64px);
+  font-weight: 900;
+  letter-spacing: 1px;
+  font-variant: small-caps;
+  line-height: 1;
+}
+
+.news-sub {
+  font-size: 11.5px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: #555;
+  margin-top: 8px;
+  font-family: system-ui, sans-serif;
+}
+
+/* Columns on wide screens, a single column when there is no room for them. */
+.news-body { columns: 2; column-gap: 34px; }
+@media (max-width: 760px) { .news-body { columns: 1; } }
+
+.news-article {
+  break-inside: avoid;
+  border-top: 1px solid #cbb6a0;
+  padding-top: 12px;
+  margin-bottom: 18px;
+}
+
+.news-article:first-child { border-top: 0; padding-top: 0; }
+
+.news-kicker {
+  font-family: system-ui, sans-serif;
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: 1.6px;
+  color: #8a7f6d;
+  margin-bottom: 4px;
+}
+
+.news-headline { font-size: 21px; font-weight: 700; line-height: 1.32; }
+
+.news-loading,
+.news-empty {
+  text-align: center;
+  color: #8a7f6d;
+  font-style: italic;
+  padding: 30px 0;
+}
+
+.news-close {
+  position: absolute;
+  right: 26px;
+  bottom: 22px;
+  cursor: pointer;
+  background: #1a1a1a;
+  color: #f6f1e3;
+  border: none;
+  border-radius: 6px;
+  padding: 9px 20px;
+  font: 700 13px system-ui, sans-serif;
+}
+
+/* Material gives an icon button its own line-height and the icon another, so the glyph sat
+   off the text baseline of the buttons either side of it. Centre it with flex instead and
+   zero both line-heights, so it lines up with the text buttons whatever their height. */
+.news-btn {
+  flex: 0 0 auto;
+  align-self: center;
+  color: #0b2545;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+}
+
+.news-btn .mat-icon,
+.news-btn mat-icon,
+.news-btn .mat-mdc-button-touch-target {
+  font-size: 21px;
+  width: 21px;
+  height: 21px;
+  line-height: 21px;
+  display: block;
+  margin: 0;
+}
+
+/* The ripple/touch-target overlay Material injects is centred on the button box, so it does
+   not need adjusting -- but it must not stretch the button and shift the icon. */
+.news-btn .mat-mdc-button-persistent-ripple,
+.news-btn .mat-mdc-focus-indicator { inset: 0; }

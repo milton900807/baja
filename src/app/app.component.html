@@ -83,6 +83,14 @@
     </div>
   </div>
 
+  <!-- Checkout escape hatch. Anyone who lands on /subscribe can carry on without paying:
+       the free tier is a real product, not a teaser, so the choice belongs on the page that
+       asks for money rather than only inside the editor. -->
+  <div class="freeentry" *ngIf="showFreeEntry">
+    <button class="freeentry-btn" (click)="goFreeVersion()">Continue with free version</button>
+    <span class="freeentry-note">Editing is unlimited. Designs and off-target searches are metered.</span>
+  </div>
+
   <!-- Free-plan bar, docked at the bottom for anyone without a subscription.
        Bottom rather than top: the editor's menus, toolbar and track labels line the top edge,
        so a bar there covers the controls the user is reaching for. It is not a blocking

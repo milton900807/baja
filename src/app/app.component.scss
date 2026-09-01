@@ -279,6 +279,37 @@
 }
 
 /* ---- Free-plan bar -------------------------------------------------------- */
+/* Sits above the free-plan bar so the two never collide on the same page. */
+.freeentry {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2147483399;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 14px;
+  background: linear-gradient(90deg, #0b2545, #123a63);
+  border-top: 1px solid rgba(255, 255, 255, 0.18);
+  font: 13px/1.45 Arial, Helvetica, sans-serif;
+}
+
+.freeentry-btn {
+  cursor: pointer;
+  border-radius: 9px;
+  padding: 11px 18px;
+  font: 700 14px Arial, Helvetica, sans-serif;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  background: transparent;
+  color: #e8f0fb;
+}
+
+.freeentry-btn:hover { background: rgba(255, 255, 255, 0.10); }
+
+.freeentry-note { color: #9fb3c8; }
+
 .freebar {
   position: fixed;
   left: 0;

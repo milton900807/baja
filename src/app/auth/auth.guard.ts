@@ -13,11 +13,20 @@ export const authGuard: CanActivateFn = async (route, state): Promise<boolean | 
   const sub = inject(SubscriptionService);
   const router = inject(Router);
 
-  // Public read-only viewer: shared "view-only" links (manchester/viewer) must open
-  // without any login or subscription. Allow them through unconditionally.
+  // Routes that must open WITHOUT an active subscription:
+  //   • manchester/viewer            — shared read-only links, no login either
+  //   • manchester/clinical-library-public — the public compound library
+  //   • free/editor                  — the free-tier editor. Its limits are the metered AI and
+  //                                    off-target calls (enforced server-side), NOT access, so
+  //                                    gating it here sent every non-subscriber who chose
+  //                                    "Continue with the free version" straight back to
+  //                                    /subscribe — the exact dead end that option exists to
+  //                                    avoid.
   try {
     const u = (state.url || '').toLowerCase();
     if (u.includes('/manchester/viewer') || u.includes('manchester%2fviewer')) return true;
+    if (u.includes('/clinical-library-public') || u.includes('clinical-library-public')) return true;
+    if (u.includes('/free/editor') || u.includes('free%2feditor')) return true;
   } catch { /* ignore */ }
 
   // Don't gate the app until at least one OIDC provider is actually configured — this

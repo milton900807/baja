@@ -48,6 +48,17 @@ import { SubscriptionService } from './subscription.service';
       </button>
       <div class="pay-note">Card, Apple&nbsp;Pay, Google&nbsp;Pay &amp; Link · secured by Stripe</div>
 
+      <!-- Free tier. Someone who is not ready to pay should have a way in rather than a dead
+           end: this page previously offered only Subscribe, Contact-us and Sign-out. -->
+      <div class="or-row"><span>or</span></div>
+      <button class="free-btn" type="button" (click)="useFree()">
+        Continue with the free version
+      </button>
+      <div class="free-note">
+        Full editor — load, edit, save and design without limit.
+        {{ freeLimit }} AI requests and {{ freeLimit }} off-target searches per month.
+      </div>
+
       <a class="enterprise-btn" href="mailto:contact@baja.bio?subject=Baja.bio%20enterprise%20inquiry">
         ✉ Contact us for enterprise use
       </a>
@@ -111,6 +122,14 @@ import { SubscriptionService } from './subscription.service';
     .cta:hover:not(:disabled) { transform: translateY(-1px); box-shadow:0 10px 26px rgba(255,120,80,0.6); }
     .cta:disabled { opacity:.6; cursor:default; }
     .pay-note { margin-top:10px; text-align:center; font-size:11.5px; color:#7e97a6; }
+    .or-row { display:flex; align-items:center; gap:10px; margin:16px 0 10px; color:#7f97a6; font-size:12px; }
+    .or-row:before, .or-row:after { content:""; flex:1 1 auto; height:1px; background:rgba(255,255,255,0.14); }
+    .free-btn { display:block; width:100%; box-sizing:border-box; padding:12px 16px; cursor:pointer;
+      text-align:center; font-size:14px; font-weight:800; color:#eaf6f9;
+      background: rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.28); border-radius:12px;
+      transition: transform .1s ease, background .15s ease; }
+    .free-btn:hover { transform: translateY(-1px); background: rgba(255,255,255,0.12); }
+    .free-note { margin-top:8px; font-size:12px; line-height:1.55; color:#8fb8c8; text-align:center; }
     .enterprise-btn { display:block; width:100%; box-sizing:border-box; margin-top:12px; padding:10px 14px;
       text-align:center; text-decoration:none; font-size:13px; font-weight:800; color:#bfeef6;
       background: rgba(18,194,224,0.10); border:1px solid rgba(18,194,224,0.45); border-radius:11px;
@@ -133,6 +152,8 @@ export class SubscriptionPromptComponent implements OnInit {
   busy = false;
   checking = true;
   justSubscribed = false;
+  /** Free-tier monthly allowance, shown on the free option. Matches FREE_LIMIT in baja-server. */
+  freeLimit = 5;
   canceled = false;
   error = '';
 
@@ -222,4 +243,11 @@ export class SubscriptionPromptComponent implements OnInit {
   }
 
   signOut() { this.auth.logout('/login'); }
+
+  /**
+   * Take the user into the free-tier editor. A full page navigation, not a router hop:
+   * /app/... is resolved by dash.component from the URL, so the app has to load at that
+   * path rather than be routed to it in place.
+   */
+  useFree() { window.location.href = window.location.origin + '/app/free/editor'; }
 }

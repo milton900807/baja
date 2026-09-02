@@ -228,8 +228,6 @@ export class AppComponent implements OnInit {
   user = null;
   host: string = null;
   ready = true;
-  message = '';
-  // message = '`La Jolla Labs`';
   showLJW = false;
   buttons = []
   showToolbar = true;
@@ -489,17 +487,15 @@ export class AppComponent implements OnInit {
     } catch (e) { }
 
     this.canSignUp = window['env']['canSignUp'];
-    this.message = window['env']['theme']
     if (window['env']['fg']) {
       this.fg = window['env']['fg']
     }
     if (window['env']['bg']) {
       this.fg = window['env']['bg']
     }
-    this.message = window['env']['theme']
-    if (this.message === null) {
-      this.message = "La Jolla Labs"
-    }
+    // The theme name is no longer printed in the toolbar. It is a DEPLOYMENT setting
+    // ("Baja Bio" in production), not information anyone using the app needs, and it sat
+    // among the controls. It still selects the empty-canvas splash in manchester/editor.js.
     let t = window['env']['menu']
     for (let button of t) {
       this.buttons.push({
@@ -787,10 +783,14 @@ export class AppComponent implements OnInit {
       // page the visitor is standing on.
       if (/(^|[?&])free=1(&|$)/.test('' + window.location.search)) return false;
       const p = ('' + window.location.pathname).toLowerCase();
-      // The front page, and the two gates in front of it. A signed-out visitor is routed
-      // from '/' to /login by authGuard, so the button has to exist on both to be seen at
-      // all -- on '/' for someone already signed in, on /login for someone who is not.
-      return p === '/' || p === '' || /^\/(login|subscribe)(\/|$)/.test(p);
+      // The front page and the sign-in page. NOT /subscribe: the subscription prompt draws
+      // its own "continue with free version" control, so the bar there was a second copy of
+      // a choice already on the page.
+      //
+      // A signed-out visitor is routed from '/' to /login by authGuard, so the bar has to
+      // exist on both to be seen at all -- on '/' for someone already signed in, on /login
+      // for someone who is not.
+      return p === '/' || p === '' || /^\/login(\/|$)/.test(p);
     } catch (e) { return false; }
   }
 

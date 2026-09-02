@@ -410,10 +410,24 @@
   /* The FRAME. It no longer scrolls -- .news-sheet inside it does -- so the turned-down
      corner can be pinned to the paper instead of sliding away with the text. */
   overflow: hidden;
-  background: #f6f1e3;
+  /* Aged stock: a warm ground with scorch creeping in from the edges and corners. Layered
+     radial gradients rather than an image, so it scales to any size, costs no request, and
+     cannot fail to load behind a splash. */
+  background:
+    radial-gradient(120% 90% at 50% 50%, rgba(246,241,227,0) 55%, rgba(190,150,95,0.20) 78%, rgba(120,75,30,0.38) 100%),
+    radial-gradient(60% 45% at 0% 0%,   rgba(96,58,18,0.42), rgba(96,58,18,0) 70%),
+    radial-gradient(55% 40% at 100% 8%, rgba(96,58,18,0.34), rgba(96,58,18,0) 70%),
+    radial-gradient(60% 45% at 100% 100%, rgba(96,58,18,0.40), rgba(96,58,18,0) 70%),
+    radial-gradient(50% 38% at 4% 96%,  rgba(96,58,18,0.30), rgba(96,58,18,0) 70%),
+    #f6f1e3;
   color: #1a1a1a;
-  border: 2px solid #1a1a1a;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  /* No hard rule around the sheet: a burnt edge does not end in a ruled line. The dark
+     inner shadow is the char, the outer one is the sheet lifting off the backdrop. */
+  border: 0;
+  box-shadow:
+    inset 0 0 44px rgba(92, 52, 12, 0.36),
+    inset 0 0 12px rgba(60, 30, 6, 0.28),
+    0 20px 60px rgba(0, 0, 0, 0.5);
   padding: 28px 34px 76px;
   font-family: Georgia, 'Times New Roman', serif;
 }
@@ -427,6 +441,22 @@
   box-sizing: border-box;
 }
 
+/* The burn, over the text. An edge that only tinted the ground looked like a page ON
+   something scorched; laid over the columns, the paper itself is what is burnt. Ignores
+   the pointer so it cannot swallow a click or a scroll. */
+.news-paper::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background:
+    radial-gradient(115% 88% at 50% 50%, rgba(120,75,30,0) 58%, rgba(120,75,30,0.16) 82%, rgba(74,40,10,0.40) 100%);
+  /* Fade the edge itself away rather than stopping it at a line. */
+  -webkit-mask-image: radial-gradient(118% 92% at 50% 50%, #000 52%, rgba(0,0,0,0.85) 76%, rgba(0,0,0,0.55) 100%);
+  mask-image: radial-gradient(118% 92% at 50% 50%, #000 52%, rgba(0,0,0,0.85) 76%, rgba(0,0,0,0.55) 100%);
+}
+
 /* Turned-down corner, top right. Two triangles: the cut, which shows the backdrop through
    the paper, and the flap folded over it, lit from the other side so it reads as the BACK of
    the sheet rather than a shape drawn on the front. */
@@ -436,7 +466,7 @@
   right: 0;
   width: 54px;
   height: 54px;
-  z-index: 3;
+  z-index: 4;   /* above the scorch, which is 2 */
   pointer-events: none;
 }
 

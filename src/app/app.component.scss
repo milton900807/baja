@@ -404,9 +404,13 @@
 /* Maximised: the paper fills the viewport rather than sitting in it. */
 .news-paper {
   position: relative;
-  width: 100%;
-  max-width: 1100px;
-  height: 100%;
+  /* About 30% smaller than the full backdrop, and centred in it -- the backdrop is already
+     a centring flex container, so shrinking the sheet is all that is needed. A max-width
+     keeps it from stretching into a broadsheet on a wide monitor. */
+  width: 70%;
+  max-width: 780px;
+  height: 70%;
+  margin: auto;
   /* The FRAME. It no longer scrolls -- .news-sheet inside it does -- so the turned-down
      corner can be pinned to the paper instead of sliding away with the text. */
   overflow: hidden;

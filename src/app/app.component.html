@@ -16,7 +16,7 @@
          reference is how software ends up cited three different ways in the same field. -->
     <!-- Icon rather than a word: the toolbar is narrow and this one has an unambiguous
          glyph. The title carries the name for anyone hovering, and for screen readers. -->
-    <button mat-icon-button class="news-btn" (click)="openNews()"
+    <button mat-icon-button class="news-btn" (click)="openNewsFromButton()"
             title="The Baja Times" aria-label="The Baja Times">
       <mat-icon>newspaper</mat-icon>
     </button>
@@ -59,7 +59,7 @@
 
   <!-- "The Baja Times", maximised. Broadsheet styling on purpose: it is a masthead and
        columns, not a modal with a list in it. -->
-  <div class="news-backdrop" *ngIf="showNews" (click)="showNews = false">
+  <div class="news-backdrop" *ngIf="showNews" (click)="closeNews()">
     <div class="news-paper" (click)="$event.stopPropagation()">
       <div class="news-masthead">
         <div class="news-title">The Baja Times</div>
@@ -78,7 +78,7 @@
         </div>
       </div>
 
-      <button class="news-close" (click)="showNews = false">Close</button>
+      <button class="news-close" (click)="closeNews()">Close</button>
     </div>
   </div>
 

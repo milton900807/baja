@@ -345,6 +345,64 @@ export class AppComponent implements OnInit {
     } catch (e) { return ''; }
   }
 
+  // True while the paper is on screen as the LOADING SPLASH rather than because the user
+  // asked for it. Only a splash is auto-dismissed; a paper the user opened stays until they
+  // close it, even if the app finishes booting while they are reading.
+  private newsIsSplash = false;
+  private newsSplashTimer: any = null;
+
+  // Show the paper while the app boots, and take it away once the app is up.
+  //
+  // Startup is the one moment there is nothing to look at and a wait to fill, so the news
+  // reads as a splash rather than an interruption. Not shown on the sign-in or checkout
+  // pages: those are not the app booting, and the paper would cover the thing being asked for.
+  private startNewsSplash(): void {
+    try {
+      const p = ('' + window.location.pathname).toLowerCase();
+      if (/^\/(login|auth|subscribe|signup)(\/|$)/.test(p)) return;
+
+      this.newsIsSplash = true;
+      this.openNews();
+
+      // "Up" is the lionscript canvas existing: every host in this app draws onto one, so it
+      // is the signal that does not need each host to announce itself. __bajaAppReady is
+      // honoured too, for a host that wants to say so explicitly.
+      //
+      // The deadline is not a fallback, it is the guarantee: if the app never finishes, or
+      // finishes in a way this cannot see, the paper still goes away rather than sitting over
+      // a dead page.
+      const t0 = Date.now();
+      const tick = () => {
+        if (!this.newsIsSplash) return;              // the user took it over
+        let ready = false;
+        try { ready = !!document.querySelector('canvas') || !!(window as any).__bajaAppReady; } catch (e) { }
+        if (ready || (Date.now() - t0) > 12000) {
+          this.newsIsSplash = false;
+          this.zone.run(() => (this.showNews = false));
+          return;
+        }
+        this.newsSplashTimer = setTimeout(tick, 250);
+      };
+      // A beat before the first check: the canvas can exist before anything is drawn on it,
+      // and closing in the same frame it appears makes the paper flash rather than show.
+      this.newsSplashTimer = setTimeout(tick, 1200);
+    } catch (e) { }
+  }
+
+  // Called from the toolbar button. Hands the paper to the user: it stops being a splash, so
+  // the boot watcher leaves it alone.
+  openNewsFromButton(): void {
+    this.newsIsSplash = false;
+    try { clearTimeout(this.newsSplashTimer); } catch (e) { }
+    this.openNews();
+  }
+
+  closeNews(): void {
+    this.newsIsSplash = false;
+    try { clearTimeout(this.newsSplashTimer); } catch (e) { }
+    this.showNews = false;
+  }
+
   async openNews(): Promise<void> {
     this.showNews = true;
     if (this.newsItems.length || this.newsLoading) return;
@@ -480,6 +538,7 @@ export class AppComponent implements OnInit {
     //
     // checkFreePlan sets freeBar when the account is not subscribed and clears it when it is,
     // so the same poll both raises and retires the badge.
+    this.startNewsSplash();
     setTimeout(() => this.checkFreePlan(), 1200);
     try {
       if (this.freePollTimer) clearInterval(this.freePollTimer);

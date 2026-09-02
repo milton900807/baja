@@ -45,10 +45,6 @@ import { b2cPolicies, rarePolicies } from '../onedrive/auth-config';
            need to be sold the product again, they need to know what they are getting. -->
       <div class="freeuse" *ngIf="freeMode">
         <div class="fu-title">Free version</div>
-        <p class="fu-lead">
-          Sign in to start. An account is only used to keep your work and track usage of the
-          metered tools &mdash; there is no card and no trial period.
-        </p>
         <ul class="fu-list">
           <li><b>Editing is unlimited.</b> Load, edit, save and browse as much as you like.</li>
           <li>Limited GPU off-target analysis</li>
@@ -114,8 +110,7 @@ import { b2cPolicies, rarePolicies } from '../onedrive/auth-config';
       font-family: "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif;
     }
     .freeuse { margin: 4px 0 14px; text-align:left; }
-    .fu-title { font: 700 15px "Segoe UI", system-ui, Arial, sans-serif; color:#eaf6ff; margin-bottom:6px; }
-    .fu-lead { font: 13px/1.5 "Segoe UI", system-ui, Arial, sans-serif; color:#b9d2e2; margin:0 0 10px; }
+    .fu-title { font: 700 15px "Segoe UI", system-ui, Arial, sans-serif; color:#eaf6ff; margin-bottom:10px; }
     .fu-list { margin:0; padding-left:18px; }
     .fu-list li { font: 13px/1.6 "Segoe UI", system-ui, Arial, sans-serif; color:#cfe3f0; }
     .fu-list b { color:#eaf6ff; }

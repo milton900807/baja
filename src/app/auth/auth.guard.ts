@@ -61,6 +61,21 @@ export const authGuard: CanActivateFn = async (route, state): Promise<boolean | 
   const s = await sub.statusCached();
   if (s.active || s.status === 'error' || s.status === 'no-user') return true;
 
-  try { sessionStorage.setItem('oidc.returnTo', state.url); } catch { /* ignore */ }
-  return router.parseUrl('/subscribe');
+  // Signed in, not subscribed: the FREE TIER, and it keeps the page it asked for.
+  //
+  // This used to redirect to /subscribe, which meant a free user could not RELOAD. Every
+  // refresh threw away the editor they were working in and put the paywall in front of them,
+  // on a plan whose whole premise is that editing is unlimited. The free-editor URL was
+  // exempted at the top of this file, but the app does not stay on that URL once a track is
+  // open, so the exemption stopped applying the moment the tier was actually being used.
+  //
+  // Access is not what the free tier limits. Designs and off-target searches are, and those
+  // are metered in freeGate on the server, which is the only place a browser cannot edit.
+  // Gating the page as well was a second lock on a door whose real lock is elsewhere.
+  //
+  // The flag tells the editor to run in free mode -- it skips its own subscription gate and
+  // the shell draws the free-plan badge. checkFreePlan re-asks every 20 seconds either way,
+  // so someone who subscribes in another tab has it cleared without reloading.
+  try { (window as any).__bajaFreeTier = true; } catch { /* ignore */ }
+  return true;
 };

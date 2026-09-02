@@ -462,7 +462,25 @@
   box-shadow: -2px 2px 6px rgba(0, 0, 0, 0.28);
 }
 
+/* The palm. Sits to the left of the masthead, low-contrast so it reads as printed ON the
+   paper rather than pasted over it, and out of the flow so it cannot push the title around.
+   Hidden on narrow screens, where the masthead needs its whole width. */
+.news-palm {
+  position: absolute;
+  top: 10px;
+  left: 18px;
+  width: clamp(64px, 11vw, 120px);
+  height: auto;
+  opacity: 0.30;
+  mix-blend-mode: multiply;
+  pointer-events: none;
+  user-select: none;
+}
+
+@media (max-width: 700px) { .news-palm { display: none; } }
+
 .news-masthead {
+  position: relative;
   text-align: center;
   border-bottom: 4px double #1a1a1a;
   padding-bottom: 12px;

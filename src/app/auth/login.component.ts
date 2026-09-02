@@ -46,15 +46,14 @@ import { b2cPolicies, rarePolicies } from '../onedrive/auth-config';
       <div class="freeuse" *ngIf="freeMode">
         <div class="fu-title">Free version</div>
         <p class="fu-lead">
-          Sign in to start. An account is only used to keep your work and count the two
+          Sign in to start. An account is only used to keep your work and track usage of the
           metered tools &mdash; there is no card and no trial period.
         </p>
         <ul class="fu-list">
           <li><b>Editing is unlimited.</b> Load, edit, save and browse as much as you like.</li>
-          <li><b>{{ freeLimit }} designs a month</b> &mdash; siRNA and single-stranded ASO.</li>
-          <li><b>{{ freeLimit }} off-target searches a month.</b></li>
-          <li>The allowance resets on the 1st of each month.</li>
-          <li>Subscribe later for unlimited use; nothing you make is locked in.</li>
+          <li>Limited GPU off-target analysis</li>
+          <li>Limited use of AI/ML models</li>
+          <li>Limited use of data resources</li>
         </ul>
       </div>
 
@@ -235,9 +234,7 @@ export class LoginComponent {
     try { return /(^|[?&])free=1(&|$)/.test('' + window.location.search); }
     catch (e) { return false; }
   }
-  // Kept in one place: the server enforces this number (FREE_LIMIT in baja-server), and a
-  // figure quoted here that disagreed with it would be worse than none.
-  freeLimit = 5;
+
 
   // Product highlights shown on the login card. Overridable via window.env['loginFeatures'].
   features: string[] = ((typeof window !== 'undefined' && (window as any)['env']?.['loginFeatures']) || [

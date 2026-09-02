@@ -462,31 +462,6 @@
   box-shadow: -2px 2px 6px rgba(0, 0, 0, 0.28);
 }
 
-/* Masthead: the title flanked by the two drawings. */
-.news-titlerow {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: clamp(8px, 2vw, 22px);
-}
-
-.news-flourish {
-  flex: 0 0 auto;
-  fill: #1a1a1a;
-  stroke: #1a1a1a;
-  opacity: 0.82;
-  width: clamp(26px, 5vw, 52px);
-  height: clamp(26px, 5vw, 52px);
-}
-
-/* The plane is the wider drawing, so it gets a little more room to keep both optically
-   the same weight beside the title. */
-.news-plane { width: clamp(32px, 6vw, 64px); }
-
-@media (max-width: 560px) {
-  .news-flourish { display: none; }   /* the title needs the whole line on a phone */
-}
-
 .news-masthead {
   text-align: center;
   border-bottom: 4px double #1a1a1a;

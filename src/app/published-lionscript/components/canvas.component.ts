@@ -790,11 +790,17 @@ export class CanvasComponent implements PubComponent, AfterViewInit, OnDestroy {
                 // the touch start) — a stationary tap keeps the current mode so it can select.
                 if (!this._touchNavStarted && this._touchStartPt) {
                     const dx = ct.x - this._touchStartPt.x, dy = ct.y - this._touchStartPt.y;
-                    if ((dx * dx + dy * dy) > 64) {
-                        this._touchNavStarted = true;
-                        if (this.touchMove) this.touchMove(ct);   // lionscript: switch to navigate + re-anchor
-                    }
+                    if ((dx * dx + dy * dy) > 64) this._touchNavStarted = true;
                 }
+                // Forward the EVENT, and forward it on every move once the drag is under way.
+                //
+                // This used to hand lionscript the canvas point {x, y}, once, at the moment the
+                // threshold was crossed. The pan in flexigraph/graph.js reads evt.touches to get
+                // the finger position, and {x, y} has no `touches`, so its length check failed
+                // and the pan never ran at all -- a single-finger drag did nothing while pinch
+                // (which gets its own listener) worked. It also needs every move, not the first
+                // one: the pan is incremental, each step measured against the previous touch.
+                if (this._touchNavStarted && this.touchMove) this.touchMove(evt);
                 this.mouseMoveListener(ct.x, ct.y);
             }
         }, false)

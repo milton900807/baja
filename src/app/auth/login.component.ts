@@ -31,19 +31,38 @@ import { b2cPolicies, rarePolicies } from '../onedrive/auth-config';
       <div class="brandline"></div>
 
       <div class="beta-banner" role="status">
-        <span class="beta-tag">Beta release!</span>
-        <span class="beta-text">Early access now open</span>
+        <span class="beta-tag">{{ freeMode ? 'Free version' : 'Beta release!' }}</span>
+        <span class="beta-text">{{ freeMode ? 'Sign in to continue' : 'Early access now open' }}</span>
       </div>
 
       <div class="head">
         <div class="logo"><img src="assets/img/icons/yak.png" alt="Sign in" /></div>
       </div>
 
-      <ul class="features">
+      <!-- Arriving from "Continue with free version": say what the free tier IS before asking
+           anyone to sign in for it. The generic product pitch and the demo links are replaced
+           rather than added to -- someone who has already chosen the free version does not
+           need to be sold the product again, they need to know what they are getting. -->
+      <div class="freeuse" *ngIf="freeMode">
+        <div class="fu-title">Free version</div>
+        <p class="fu-lead">
+          Sign in to start. An account is only used to keep your work and count the two
+          metered tools &mdash; there is no card and no trial period.
+        </p>
+        <ul class="fu-list">
+          <li><b>Editing is unlimited.</b> Load, edit, save and browse as much as you like.</li>
+          <li><b>{{ freeLimit }} designs a month</b> &mdash; siRNA and single-stranded ASO.</li>
+          <li><b>{{ freeLimit }} off-target searches a month.</b></li>
+          <li>The allowance resets on the 1st of each month.</li>
+          <li>Subscribe later for unlimited use; nothing you make is locked in.</li>
+        </ul>
+      </div>
+
+      <ul class="features" *ngIf="!freeMode">
         <li *ngFor="let f of features">{{ f }}</li>
       </ul>
 
-      <div class="demo-row">
+      <div class="demo-row" *ngIf="!freeMode">
         <a class="demo-link" href="assets/demo/index.html" target="baja-demo"
            (click)="openDemo($event, 'index.html')">Scientists</a>
         <a class="demo-link demo-link--alt" href="assets/demo/for-you.html" target="baja-demo-curious"
@@ -95,6 +114,13 @@ import { b2cPolicies, rarePolicies } from '../onedrive/auth-config';
         #071b2a;
       font-family: "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif;
     }
+    .freeuse { margin: 4px 0 14px; text-align:left; }
+    .fu-title { font: 700 15px "Segoe UI", system-ui, Arial, sans-serif; color:#eaf6ff; margin-bottom:6px; }
+    .fu-lead { font: 13px/1.5 "Segoe UI", system-ui, Arial, sans-serif; color:#b9d2e2; margin:0 0 10px; }
+    .fu-list { margin:0; padding-left:18px; }
+    .fu-list li { font: 13px/1.6 "Segoe UI", system-ui, Arial, sans-serif; color:#cfe3f0; }
+    .fu-list b { color:#eaf6ff; }
+
     .palm-bg {
       position:absolute; inset:0; overflow:hidden; pointer-events:none; z-index:0;
       display:flex; align-items:flex-end; justify-content:center;
@@ -201,6 +227,17 @@ export class LoginComponent {
   providers: OidcProvider[] = [];
   busy = false;
   error = '';
+
+  // Free-use arrival: app.component's "Continue with free version" sends ?free=1. Read from
+  // the URL rather than from a service so a shared or bookmarked link lands on the same page,
+  // and so a normal /login is completely unaffected.
+  get freeMode(): boolean {
+    try { return /(^|[?&])free=1(&|$)/.test('' + window.location.search); }
+    catch (e) { return false; }
+  }
+  // Kept in one place: the server enforces this number (FREE_LIMIT in baja-server), and a
+  // figure quoted here that disagreed with it would be worse than none.
+  freeLimit = 5;
 
   // Product highlights shown on the login card. Overridable via window.env['loginFeatures'].
   features: string[] = ((typeof window !== 'undefined' && (window as any)['env']?.['loginFeatures']) || [

@@ -799,7 +799,10 @@ export class AppComponent implements OnInit {
     try { sessionStorage.setItem('oidc.returnTo', '/app/free/editor'); } catch (e) { }
     try {
       const signedIn = !!(this.oidcUser && this.oidcUser.email);
-      window.location.href = window.location.origin + (signedIn ? '/app/free/editor' : '/login');
+      // ?free=1 tells the login page to describe the FREE TIER rather than run the generic
+      // product pitch: the visitor has already chosen, so the page's job is to say what they
+      // are getting and take the sign-in.
+      window.location.href = window.location.origin + (signedIn ? '/app/free/editor' : '/login?free=1');
     } catch (e) {
       try { window.location.href = window.location.origin + '/login'; } catch (e2) { }
     }

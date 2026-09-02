@@ -348,7 +348,47 @@ export class AppComponent implements OnInit {
   // True while the paper is on screen as the LOADING SPLASH rather than because the user
   // asked for it. Only a splash is auto-dismissed; a paper the user opened stays until they
   // close it, even if the app finishes booting while they are reading.
-  private newsIsSplash = false;
+  // Public: the template shows the press-run strip while the paper is standing in for a
+  // loading screen, and hides it once the app is up.
+  newsIsSplash = false;
+
+  // Standing features, written as short dispatches. They run under the day's headlines so the
+  // paper has something to READ during a boot that is usually a second or two -- and they say
+  // what the app can do, which is the one thing a first-time reader is actually after.
+  //
+  // Every one describes something that exists today. A paper that advertises what the app
+  // cannot do yet is worse than a blank page.
+  featureStories: Array<{ kicker: string; headline: string; body: string }> = [
+    {
+      kicker: 'Design desk',
+      headline: 'Oligos designed against the whole track, or just the part you picked',
+      body: 'siRNA and single-stranded ASO designers run from the Design menu, with primer '
+        + 'pairs from primer3 and djPrimer alongside them. Select a stretch of sequence first '
+        + 'and the design is confined to it; select nothing and it runs the length of the track.'
+    },
+    {
+      kicker: 'Off-target bureau',
+      headline: 'Seventeen indexes stand between a candidate and a surprise',
+      body: 'Every design can be swept against human, mouse, rat, dog, cynomolgus and rhesus '
+        + 'sequence, in both cDNA and pre-mRNA form, so a site that looks clean in one species '
+        + 'can be checked in the animal it will be tested in before anyone orders it.'
+    },
+    {
+      kicker: 'Models',
+      headline: 'Splicing, RNA-binding and intron retention, scored on the canvas',
+      body: 'BajaSplice scores splice-site strength and PSI, BajaCLIP predicts where an '
+        + 'RNA-binding protein footprints, and BajaIR ranks introns by how retention-prone '
+        + 'they are. Each writes its answer onto the track as a layer you can keep or remove.'
+    },
+    {
+      kicker: 'Data desk',
+      headline: 'Patents and miRNA sites arrive as layers, not as a separate search',
+      body: 'Published patent claims and experimentally reported miRNA target sites drop onto '
+        + 'the transcript in place, so an oligo can be read against the IP and the regulation '
+        + 'covering the same bases. RNASeq coverage loads the same way.'
+    }
+  ];
+
   private newsSplashTimer: any = null;
 
   // Show the paper while the app boots, and take it away once the app is up.

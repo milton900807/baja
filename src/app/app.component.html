@@ -66,6 +66,13 @@
         <div class="news-sub">{{ newsDate }} &nbsp;&bull;&nbsp; Genomics Edition</div>
       </div>
 
+      <!-- Says plainly that the app is still coming up. Without it the paper reads as
+           something the user opened, and the wait behind it looks like nothing happening. -->
+      <div class="news-press" *ngIf="newsIsSplash">
+        <span class="news-press-bar"><i></i></span>
+        <span class="news-press-text">The presses are running &mdash; loading the editor&hellip;</span>
+      </div>
+
       <div class="news-loading" *ngIf="newsLoading">Setting today's type&hellip;</div>
 
       <div class="news-body" *ngIf="!newsLoading">
@@ -75,6 +82,14 @@
         </div>
         <div class="news-empty" *ngIf="!newsItems.length">
           No dispatches today. The presses are idle.
+        </div>
+
+        <!-- Standing features. They run below the day's headlines and give the paper
+             something to read while the editor comes up. -->
+        <div class="news-article news-feature" *ngFor="let f of featureStories">
+          <div class="news-kicker">{{ f.kicker }}</div>
+          <div class="news-feature-headline">{{ f.headline }}</div>
+          <div class="news-feature-body">{{ f.body }}</div>
         </div>
       </div>
 

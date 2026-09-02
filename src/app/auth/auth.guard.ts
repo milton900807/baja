@@ -45,6 +45,17 @@ export const authGuard: CanActivateFn = async (route, state): Promise<boolean | 
     return router.parseUrl('/login');
   }
 
+  // The FREE TIER is behind sign-in but not behind payment. Without this, a signed-in
+  // non-subscriber asking for /app/free/editor was sent to /subscribe by the check below --
+  // so the free version could not be reached by the only people it exists for, and the
+  // "continue with free version" button led to the paywall it was meant to bypass.
+  //
+  // Login is still required: this sits AFTER the authentication check above, so an
+  // anonymous visitor is still routed to /login with oidc.returnTo pointing back here.
+  try {
+    if (/^\/app\/free(\/|$)/.test(('' + state.url).toLowerCase().split('?')[0])) return true;
+  } catch { /* fall through to the subscription check */ }
+
   // Signed in — require an active subscription. Fail open on error / no email so a Stripe
   // outage (or a backend without STRIPE_SECRET_KEY) never blocks access.
   const s = await sub.statusCached();

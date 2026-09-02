@@ -781,11 +781,28 @@ export class AppComponent implements OnInit {
   // sends a non-subscriber straight to free/editor), so neither page offered anything but
   // the paid path.
   get showFreeEntry(): boolean {
-    try { return /^\/(login|subscribe)(\/|$)/.test(('' + window.location.pathname).toLowerCase()); }
-    catch (e) { return false; }
+    try {
+      const p = ('' + window.location.pathname).toLowerCase();
+      // The front page, and the two gates in front of it. A signed-out visitor is routed
+      // from '/' to /login by authGuard, so the button has to exist on both to be seen at
+      // all -- on '/' for someone already signed in, on /login for someone who is not.
+      return p === '/' || p === '' || /^\/(login|subscribe)(\/|$)/.test(p);
+    } catch (e) { return false; }
   }
+
+  // Sign-in first, then the free editor. Navigating straight to /app/free/editor also works
+  // -- authGuard would bounce an anonymous visitor to /login and stash the destination -- but
+  // setting oidc.returnTo here means the round trip is deliberate rather than a redirect the
+  // user has to be lucky to survive. auth-callback.component reads this key after the code
+  // exchange and lands the user on it.
   goFreeVersion(): void {
-    try { window.location.href = window.location.origin + '/app/free/editor'; } catch (e) { }
+    try { sessionStorage.setItem('oidc.returnTo', '/app/free/editor'); } catch (e) { }
+    try {
+      const signedIn = !!(this.oidcUser && this.oidcUser.email);
+      window.location.href = window.location.origin + (signedIn ? '/app/free/editor' : '/login');
+    } catch (e) {
+      try { window.location.href = window.location.origin + '/login'; } catch (e2) { }
+    }
   }
 
   get oidcUser(): AuthUser | null { return this.oidc.getUser(); }

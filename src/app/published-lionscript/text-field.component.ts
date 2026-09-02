@@ -91,23 +91,40 @@ export class TextFieldComponent implements OnInit, PubComponent, HookFunctionCom
                 this.updateMeth = LionEngine.ionfunctions[this.data['typeahead']]
             if (this.data['typeahead_url'] != null) {
                 this.updateMeth = async (value) => {
-                    let url = this.data['typeahead_url']
-                    let fields = this.data['typeahead_fields']
-                    if (url && fields) {
-                        let r: any = await FunctionUtil.GETJSON(url + '?key=' + value);
+                    const url = this.data['typeahead_url'];
+                    const fields = this.data['typeahead_fields'];
+                    if (!url || !Array.isArray(fields) || !fields.length) { return []; }
+                    // The key is whatever the user typed, so it has to be escaped. Concatenated
+                    // raw, a '&', '#', '+' or space ended the query string early and the endpoint
+                    // saw a truncated key -- silently, as fewer suggestions rather than an error.
+                    const r: any = await FunctionUtil.GETJSON(url + '?key=' + encodeURIComponent(value));
+                    // GETJSON RESOLVES on failure -- catchError calls resolve(error) rather than
+                    // rejecting (see functions/trail-script.ts) -- so a 404 or 500 arrives here as
+                    // an HttpErrorResponse. That is truthy, which the old `if (r)` accepted, and
+                    // then .map threw 'r.map is not a function' out of an rxjs next handler,
+                    // where the stack said nothing about the typeahead. Test for the shape we
+                    // actually need, not for truthiness.
+                    if (!Array.isArray(r)) {
                         if (r) {
-                            return r.map(obj => {
-                                let t = '';
-                                for (let f of fields) {
-                                    t += `${obj[f]}, `;
-                                }
-                                if (t.endsWith(',')) {
-                                    t = t.substring(0, t.length - 1)
-                                }
-                                return t;
-                            });
+                            // Named, because a typeahead that silently returns nothing looks
+                            // identical to an endpoint with no matches.
+                            console.warn('typeahead ' + url + ' did not return a list:',
+                                (r && (r.status || r.message)) ? (r.status + ' ' + r.message) : r);
                         }
+                        return [];
                     }
+                    return r.map(obj => {
+                        let t = '';
+                        for (const f of fields) {
+                            // Skip a field the row does not carry: it used to render the string
+                            // 'undefined' into the suggestion list.
+                            const v = obj ? obj[f] : null;
+                            if (v !== undefined && v !== null && v !== '') { t += `${v}, `; }
+                        }
+                        if (t.endsWith(', ')) { t = t.substring(0, t.length - 2); }
+                        else if (t.endsWith(',')) { t = t.substring(0, t.length - 1); }
+                        return t;
+                    });
                 };
             }
         }

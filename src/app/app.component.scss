@@ -407,13 +407,84 @@
   width: 100%;
   max-width: 1100px;
   height: 100%;
-  overflow: auto;
+  /* The FRAME. It no longer scrolls -- .news-sheet inside it does -- so the turned-down
+     corner can be pinned to the paper instead of sliding away with the text. */
+  overflow: hidden;
   background: #f6f1e3;
   color: #1a1a1a;
   border: 2px solid #1a1a1a;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
   padding: 28px 34px 76px;
   font-family: Georgia, 'Times New Roman', serif;
+}
+
+/* The scrolling sheet. Carries the padding the paper used to, so the fold sits on the frame
+   edge and the text still clears it. */
+.news-sheet {
+  height: 100%;
+  overflow: auto;
+  padding: 28px 34px 76px;
+  box-sizing: border-box;
+}
+
+/* Turned-down corner, top right. Two triangles: the cut, which shows the backdrop through
+   the paper, and the flap folded over it, lit from the other side so it reads as the BACK of
+   the sheet rather than a shape drawn on the front. */
+.news-fold {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 54px;
+  height: 54px;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.news-fold::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: #0f1c26;             /* the cut: what is behind the page */
+  clip-path: polygon(100% 0, 0 0, 100% 100%);
+}
+
+.news-fold::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  /* The flap, folded down over the cut: the COMPLEMENTARY triangle of ::before, so the two
+     together fill the square and the diagonal between them reads as the crease. The reverse
+     of the sheet, darker along the crease where it lifts away from the page.
+     Stated as its own polygon rather than a mirrored transform -- a flip plus a translate is
+     easy to get subtly wrong and hard to read back. */
+  background: linear-gradient(225deg, #b9ae95 0%, #ded3bb 40%, #f2ecdc 100%);
+  clip-path: polygon(0 0, 100% 100%, 0 100%);
+  box-shadow: -2px 2px 6px rgba(0, 0, 0, 0.28);
+}
+
+/* Masthead: the title flanked by the two drawings. */
+.news-titlerow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(8px, 2vw, 22px);
+}
+
+.news-flourish {
+  flex: 0 0 auto;
+  fill: #1a1a1a;
+  stroke: #1a1a1a;
+  opacity: 0.82;
+  width: clamp(26px, 5vw, 52px);
+  height: clamp(26px, 5vw, 52px);
+}
+
+/* The plane is the wider drawing, so it gets a little more room to keep both optically
+   the same weight beside the title. */
+.news-plane { width: clamp(32px, 6vw, 64px); }
+
+@media (max-width: 560px) {
+  .news-flourish { display: none; }   /* the title needs the whole line on a phone */
 }
 
 .news-masthead {

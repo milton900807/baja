@@ -782,6 +782,10 @@ export class AppComponent implements OnInit {
   // the paid path.
   get showFreeEntry(): boolean {
     try {
+      // Already ON the free-use sign-in page (/login?free=1): that page states the limits and
+      // takes the sign-in itself, so the bar would repeat it and its button would link to the
+      // page the visitor is standing on.
+      if (/(^|[?&])free=1(&|$)/.test('' + window.location.search)) return false;
       const p = ('' + window.location.pathname).toLowerCase();
       // The front page, and the two gates in front of it. A signed-out visitor is routed
       // from '/' to /login by authGuard, so the button has to exist on both to be seen at

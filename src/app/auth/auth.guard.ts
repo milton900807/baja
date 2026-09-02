@@ -25,7 +25,8 @@ export const authGuard: CanActivateFn = async (route, state): Promise<boolean | 
   try {
     const u = (state.url || '').toLowerCase();
     if (u.includes('/manchester/viewer') || u.includes('manchester%2fviewer')) return true;
-    if (u.includes('/clinical-library-public') || u.includes('clinical-library-public')) return true;
+    // The clinical-library-public exemption is gone: the library is subscribers-only, and a
+    // route that skipped sign-in was a way around that gate rather than a separate product.
     if (u.includes('/free/editor') || u.includes('free%2feditor')) return true;
   } catch { /* ignore */ }
 

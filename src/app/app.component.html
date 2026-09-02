@@ -86,7 +86,7 @@
        not a teaser, so the choice belongs on the pages that stand in front of the editor
        rather than only inside it. -->
   <div class="freeentry" *ngIf="showFreeEntry">
-    <button class="freeentry-btn" (click)="goFreeVersion()">Continue with free version</button>
+    <button class="freeentry-btn" (click)="goFreeVersion()">Free version (with limited features)</button>
     <span class="freeentry-note">Sign in to continue. Editing is unlimited; designs and off-target searches are metered.</span>
   </div>
 
@@ -101,12 +101,13 @@
         <b>Your subscription could not be verified</b> for the last few minutes, so the free-tier
         allowance applies until it can be. This clears itself as soon as the check succeeds.
       </span>
-      <b>Editing is unlimited</b> &mdash; load, edit, save and browse as much as you like.
-      Two features are metered: <b>designs</b> (siRNA and single-stranded ASO) and
-      <b>off-target searches</b>,
-      <b>{{ freeBar.limit }} each per month</b><span *ngIf="freeBar.resetsOn"> (resets {{ freeBar.resetsOn }})</span>.
-      You have <b>{{ freeBar.design }}</b> design<span *ngIf="freeBar.design !== 1">s</span>
-      and <b>{{ freeBar.ot }}</b> off-target left.
+      <!-- Status only. This used to explain the free tier in full -- what is metered, the
+           monthly figure, the reset date and the remaining counts -- every time it was drawn.
+           The explanation belongs on the free-use sign-in page, which someone reads once; a
+           bar that sits above the editor while you work only needs to say where you stand. -->
+      Designs <b>{{ freeBar.design }}/{{ freeBar.limit }}</b>
+      &nbsp;&middot;&nbsp;
+      Off-target <b>{{ freeBar.ot }}/{{ freeBar.limit }}</b>
     </span>
     <a class="freebar-cta" href="/subscribe">Subscribe for unlimited</a>
     <button class="freebar-x" (click)="freeBarCollapsed = true" title="Collapse">&#9662;</button>

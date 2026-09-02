@@ -39,7 +39,7 @@ import { b2cPolicies, rarePolicies } from '../onedrive/auth-config';
         <div class="logo"><img src="assets/img/icons/yak.png" alt="Sign in" /></div>
       </div>
 
-      <!-- Arriving from "Continue with free version": say what the free tier IS before asking
+      <!-- Arriving from "Free version (with limited features)": say what the free tier IS before asking
            anyone to sign in for it. The generic product pitch and the demo links are replaced
            rather than added to -- someone who has already chosen the free version does not
            need to be sold the product again, they need to know what they are getting. -->
@@ -222,7 +222,7 @@ export class LoginComponent {
   busy = false;
   error = '';
 
-  // Free-use arrival: app.component's "Continue with free version" sends ?free=1. Read from
+  // Free-use arrival: app.component's "Free version (with limited features)" sends ?free=1. Read from
   // the URL rather than from a service so a shared or bookmarked link lands on the same page,
   // and so a normal /login is completely unaffected.
   get freeMode(): boolean {

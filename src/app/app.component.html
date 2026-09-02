@@ -83,9 +83,9 @@
     </div>
   </div>
 
-  <!-- Checkout escape hatch. Anyone who lands on /subscribe can carry on without paying:
-       the free tier is a real product, not a teaser, so the choice belongs on the page that
-       asks for money rather than only inside the editor. -->
+  <!-- The way through, on both gates: sign-in and checkout. The free tier is a real product,
+       not a teaser, so the choice belongs on the pages that stand in front of the editor
+       rather than only inside it. -->
   <div class="freeentry" *ngIf="showFreeEntry">
     <button class="freeentry-btn" (click)="goFreeVersion()">Continue with free version</button>
     <span class="freeentry-note">Editing is unlimited. Designs and off-target searches are metered.</span>

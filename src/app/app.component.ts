@@ -775,12 +775,13 @@ export class AppComponent implements OnInit {
   }
 
   // --- OIDC session (from the /login providers) ---
-  // The checkout page needs a way OUT into the free editor. The paywall drawn by
-  // baja/datayak/ljlcheckout.js carries one, but lib/subscription.js no longer shows that
-  // paywall -- showSubscribeGate() sends a non-subscriber straight to free/editor -- so on
-  // /subscribe there was no free option at all, only Subscribe.
+  // The two pages that stand between someone and the editor -- sign-in and checkout -- both
+  // need a way THROUGH to the free version. The paywall drawn by baja/datayak/ljlcheckout.js
+  // carries one, but lib/subscription.js no longer shows that paywall (showSubscribeGate()
+  // sends a non-subscriber straight to free/editor), so neither page offered anything but
+  // the paid path.
   get showFreeEntry(): boolean {
-    try { return /^\/subscribe(\/|$)/.test(('' + window.location.pathname).toLowerCase()); }
+    try { return /^\/(login|subscribe)(\/|$)/.test(('' + window.location.pathname).toLowerCase()); }
     catch (e) { return false; }
   }
   goFreeVersion(): void {

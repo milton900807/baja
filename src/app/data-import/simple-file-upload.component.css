@@ -10,10 +10,18 @@
     text-align: center;
   }
   
-  .file-upload-container p {
+  .file-upload-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
     margin-top: 10px;
   }
-  
+
+  .file-upload-selected {
+    display: inline;
+  }
+
   .file-upload-container button {
     margin-top: 10px;
     display: block;

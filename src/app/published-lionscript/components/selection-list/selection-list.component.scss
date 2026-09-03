@@ -132,3 +132,39 @@
   padding: 12px;
   color: #9fb4c6;
 }
+
+/* ===========================================
+   Touch
+   =========================================== */
+
+/* A tap should act immediately. Without touch-action the browser holds each tap back waiting
+   to see whether a second one arrives to double-tap-zoom, which reads as an unresponsive list.
+   `manipulation` keeps panning and pinch-zoom and drops only that wait. */
+.selection-option {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: rgba(26, 163, 189, 0.25);
+}
+
+/* On a COARSE pointer the row has to be big enough to hit. Material's default list row is
+   sized for a mouse; a finger contact patch is ~9mm, and rows below ~44px are the ones that
+   feel like the tap "did not take" when in fact it landed between them. */
+@media (pointer: coarse) {
+  :host ::ng-deep .selection-option.mat-mdc-list-item {
+    min-height: 48px;
+  }
+  :host ::ng-deep .selection-option .mdc-list-item__content {
+    padding-top: 6px;
+    padding-bottom: 6px;
+  }
+  /* Momentum scrolling inside the capped list, so a drag that starts on a row still scrolls. */
+  .selection-card :where(.mat-mdc-card-content) {
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* The row's own text must never eat the tap: the handlers are on the option, and a child that
+   swallowed the event would leave the option looking dead on touch while working with a mouse. */
+.selection-option .item-title,
+.selection-option .item-desc {
+  pointer-events: none;
+}

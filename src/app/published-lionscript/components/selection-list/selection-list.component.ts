@@ -112,9 +112,49 @@ export class SelectionListComponent implements OnInit, AfterViewInit, PubCompone
     return item;
   }
   private _lastActionAt = 0;
-  // A tap on mobile does not reliably fire mat-selection-list's (selectionChange), so the
-  // option also has a direct (click). Route both through onChange, debounced so a desktop
-  // click (which fires BOTH selectionChange and click) only triggers the action once.
+  private _lastActionItem: any = null;
+  private _touch: { x: number, y: number, t: number } | null = null;
+
+  // ---- Tapping ---------------------------------------------------------------------------
+  // Three things can select an option, and on mobile only the last of them is reliable:
+  //   (selectionChange)  Material's own event
+  //   (click)            the synthesized click a tap is supposed to produce
+  //   (touchend)         the touch itself
+  //
+  // Adding the direct (click) was not enough. Inside a scrollable list a tap that moves even a
+  // pixel can be consumed as a scroll gesture, and the synthesized click is then never
+  // delivered — so the row highlighted and nothing happened. touchend always arrives, so the
+  // tap is decided here from the touch itself: stationary and short means a tap, anything else
+  // is a scroll and is left alone.
+  private static TAP_SLOP_PX = 14;    // a finger is not a mouse; a few px of travel is still a tap
+  private static TAP_MAX_MS = 700;    // longer than this is a press-and-hold, not a tap
+
+  onTouchStart(ev: TouchEvent) {
+    try {
+      const t = ev.changedTouches && ev.changedTouches[0];
+      this._touch = t ? { x: t.clientX, y: t.clientY, t: Date.now() } : null;
+    } catch (e) { this._touch = null; }
+  }
+
+  onTouchEnd(ev: TouchEvent, item: any) {
+    const start = this._touch;
+    this._touch = null;
+    if (!start) { return; }
+    let moved = Infinity, held = Infinity;
+    try {
+      const t = ev.changedTouches && ev.changedTouches[0];
+      if (t) { moved = Math.hypot(t.clientX - start.x, t.clientY - start.y); }
+      held = Date.now() - start.t;
+    } catch (e) { return; }
+    if (moved > SelectionListComponent.TAP_SLOP_PX || held > SelectionListComponent.TAP_MAX_MS) {
+      return;   // a scroll or a long press: not ours
+    }
+    // Consume it, so the browser does not also deliver a synthesized click for the same
+    // finger. The de-dupe below would absorb that anyway; this keeps it from firing at all.
+    try { ev.preventDefault(); } catch (e) { }
+    this.onOptionClick(item);
+  }
+
   onOptionClick(item: any) {
     if (this.singleSelect) this.onChange([item]);
   }
@@ -124,9 +164,15 @@ export class SelectionListComponent implements OnInit, AfterViewInit, PubCompone
       if (this.displayButton) this.showButton = true;
     }
     if (this.singleSelect && this.actionIonFunction) {
+      // De-duplicated PER ITEM, not by time alone. One gesture reaches onChange from up to
+      // three directions (touchend, click, selectionChange) and must act once -- but a bare
+      // 350ms window also swallowed a deliberate second tap on a DIFFERENT row, which on a
+      // list of short options is an easy thing to do and looked exactly like a dropped tap.
       const now = Date.now();
-      if (now - this._lastActionAt < 350) return;   // de-dupe tap + selectionChange
+      const item = (this.selectedItems && this.selectedItems.length) ? this.selectedItems[0] : null;
+      if (item === this._lastActionItem && now - this._lastActionAt < 350) { return; }
       this._lastActionAt = now;
+      this._lastActionItem = item;
       this.actionIonFunction(this.selectedItems);
     }
   }

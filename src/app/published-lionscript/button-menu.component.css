@@ -149,8 +149,3 @@
   pointer-events: none;   /* never intercept the click meant for the button */
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.28);
 }
-
-/* An icon and a label together: the icon needs a little room before the words. */
-.circle-btn__icon + .circle-btn__label {
-  margin-inline-start: 4px;
-}

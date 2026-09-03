@@ -8,9 +8,10 @@
       (click)="click(b)" (mouseenter)="hover(b)">
       <span *ngIf="b.icon" class="material-icons circle-btn__icon">{{ b.icon }}</span>
       <span *ngIf="b.iconSymbol" class="material-symbols-outlined circle-btn__icon">{{ b.iconSymbol }}</span>
-      <!-- The label sits WITH the icon rather than instead of it. Every other button in this
-           row is text, so an icon-only one would read as a different kind of control. -->
-      <span *ngIf="b.label" class="circle-btn__label">{{ b.label }}</span>
+      <!-- Icons only. The label is the FALLBACK for a button that has no icon, never a
+           caption beside one -- the toolbar reads as a row of marks, and the name is on the
+           tooltip (see [attr.title] above), which is also what a screen reader announces. -->
+      <span *ngIf="!b.icon && !b.iconSymbol" class="circle-btn__label">{{ b.label }}</span>
       <!-- A live count, when the button carries one. Rendered only when non-empty, so a
            button with nothing to report shows no empty bubble. -->
       <span *ngIf="b.badge" class="circle-btn__badge">{{ b.badge }}</span>

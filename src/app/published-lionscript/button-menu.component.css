@@ -124,3 +124,33 @@
   line-height: 1;
   margin-top: 1px;
 }
+
+/* A button that carries a count needs the badge to sit outside the circle's flow, so adding
+   one does not reflow the label or change the button's width as the number changes. */
+.circle-btn {
+  position: relative;
+}
+
+/* The count. Small, top-right, warm against the toolbar so it reads as a quantity rather than
+   as part of the label. Left-to-right independent: `inset-inline-end` keeps it on the trailing
+   edge in RTL too. */
+.circle-btn__badge {
+  position: absolute;
+  top: -2px;
+  inset-inline-end: -2px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 999px;
+  background: #ff8c2f;
+  color: #2b1400;
+  font: 700 10px/16px Arial, sans-serif;
+  text-align: center;
+  pointer-events: none;   /* never intercept the click meant for the button */
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.28);
+}
+
+/* An icon and a label together: the icon needs a little room before the words. */
+.circle-btn__icon + .circle-btn__label {
+  margin-inline-start: 4px;
+}

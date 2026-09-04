@@ -698,23 +698,20 @@ export class CanvasComponent implements PubComponent, AfterViewInit, OnDestroy {
 
         var TargetTouches;
 
+        // Registered for touchstart/touchmove/touchend below PURELY for preventDefault, which
+        // is what stops the page scrolling/rubber-banding under a finger drag. touchmove has
+        // no preventDefault of its own, so this is the one keeping a drag on the canvas.
+        //
+        // It used to also fire mouseUpListener on touchend, reading e.x / e.y -- MouseEvent
+        // properties that do not exist on a TouchEvent, so both were undefined and it called
+        // mouseUpListener(NaN, NaN). The touchend handler above had ALREADY delivered the
+        // correct mouse-up from changedTouches; this second bogus one landed straight after
+        // it and re-ran the same completion logic with garbage coordinates, wiping the
+        // selection that had just been made. That is why a finger drag in select-sequence or
+        // lasso mode appeared to do nothing on mobile: the drag worked, and lifting the
+        // finger destroyed the result.
         let send = (e) => {
             e.preventDefault();
-            var type = e.type;
-            var pageY;
-            if (type === 'touchend') {
-                if (this.mouseUpListener) {
-                    const rect = canvasEl.getBoundingClientRect();
-                    if (rect && rect.left) {
-                        const ct = {
-                            x: e.x - rect.left,
-                            y: e.y - rect.top
-                        };
-                        if (ct)
-                            this.mouseUpListener(ct.x, ct.y);
-                    }
-                }
-            }
         }
 
         ['touchstart', 'touchmove', 'touchend'].forEach(function (e) {

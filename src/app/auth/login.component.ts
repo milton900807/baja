@@ -36,8 +36,33 @@ import { b2cPolicies, rarePolicies } from '../onedrive/auth-config';
           : (freeMode ? 'Sign in to continue' : 'Early access now open') }}</span>
       </div>
 
-      <div class="head">
+      <div class="head" *ngIf="!clinicMode">
         <div class="logo"><img src="assets/img/icons/yak.png" alt="Sign in" /></div>
+      </div>
+
+      <!-- gene.clinic's own header. The yak is the BajaBio RNATx Designer's mark, and a
+           family arriving here has no reason to know it -- a logo you do not recognise on a
+           sign-in page is a reason to hesitate, not a reassurance.
+           
+           Drawn inline rather than loaded as an asset: it ships with the bundle, so there is
+           no second request, nothing to 404 on a domain whose assets are new, and no image
+           to go missing from /eln later. A double helix, because it is the one mark that
+           says "this is about genes" without a word. -->
+      <div class="head clinic-head" *ngIf="clinicMode">
+        <div class="cl-mark" aria-hidden="true">
+          <svg viewBox="0 0 64 64" width="52" height="52">
+            <g fill="none" stroke-linecap="round" stroke-width="3.4">
+              <path d="M22 6 C22 20 42 26 42 32 C42 38 22 44 22 58" stroke="#16c47f"/>
+              <path d="M42 6 C42 20 22 26 22 32 C22 38 42 44 42 58" stroke="#12a7e8"/>
+              <g stroke="#bfe8ff" stroke-width="2.2" opacity="0.85">
+                <path d="M25 14 L39 14"/><path d="M28 21 L36 21"/>
+                <path d="M28 43 L36 43"/><path d="M25 50 L39 50"/>
+              </g>
+            </g>
+          </svg>
+        </div>
+        <div class="cl-word">gene<span class="cl-dot">.</span>clinic</div>
+        <div class="cl-tag">Rare disease, explained</div>
       </div>
 
       <!-- Arriving from "Free version (with limited features)": say what the free tier IS before asking
@@ -201,6 +226,23 @@ import { b2cPolicies, rarePolicies } from '../onedrive/auth-config';
     }
     .beta-text { font-size:13.5px; font-weight:600; color:#eaf6f9; letter-spacing:.2px; }
     .head { text-align:center; margin-bottom: 22px; }
+    .clinic-head { margin-bottom: 18px; }
+    .cl-mark {
+      width:72px; height:72px; margin:6px auto 10px; border-radius:20px;
+      display:flex; align-items:center; justify-content:center;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(22,196,127,0.40);
+      box-shadow: 0 6px 18px rgba(0,0,0,0.30);
+    }
+    .cl-word {
+      font: 300 27px/1.1 "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
+      color:#eaf6ff; letter-spacing:.6px;
+    }
+    .cl-dot { color:#16c47f; font-weight:600; }
+    .cl-tag {
+      margin-top:6px; font: 12px "Segoe UI", system-ui, Arial, sans-serif;
+      color:#8fb8c8; letter-spacing:1.4px; text-transform:uppercase;
+    }
     .logo {
       width:72px; height:72px; margin:6px auto 12px; border-radius:18px;
       display:flex; align-items:center; justify-content:center; overflow:hidden;

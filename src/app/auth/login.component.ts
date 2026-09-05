@@ -31,8 +31,9 @@ import { b2cPolicies, rarePolicies } from '../onedrive/auth-config';
       <div class="brandline"></div>
 
       <div class="beta-banner" role="status">
-        <span class="beta-tag">{{ freeMode ? 'Free version' : 'Beta release!' }}</span>
-        <span class="beta-text">{{ freeMode ? 'Sign in to continue' : 'Early access now open' }}</span>
+        <span class="beta-tag">{{ clinicMode ? 'gene.clinic' : (freeMode ? 'Free version' : 'Beta release!') }}</span>
+        <span class="beta-text">{{ clinicMode ? 'For families, patients and physicians'
+          : (freeMode ? 'Sign in to continue' : 'Early access now open') }}</span>
       </div>
 
       <div class="head">
@@ -53,11 +54,31 @@ import { b2cPolicies, rarePolicies } from '../onedrive/auth-config';
         </ul>
       </div>
 
-      <ul class="features" *ngIf="!freeMode">
+      <!-- gene.clinic: understanding a gene, not operating a design tool. -->
+      <div class="clinic" *ngIf="clinicMode">
+        <div class="cl-title">Understanding a rare condition, gene by gene</div>
+        <ul class="cl-list">
+          <li *ngFor="let f of clinicFeatures">{{ f }}</li>
+        </ul>
+        <p class="cl-note">
+          This is a tool for reading and understanding genetic information. It is
+          <b>not medical advice</b>, and it does not diagnose or recommend treatment —
+          those decisions belong with your clinical team.
+        </p>
+      </div>
+
+      <ul class="features" *ngIf="!freeMode && !clinicMode">
         <li *ngFor="let f of features">{{ f }}</li>
       </ul>
 
-      <div class="demo-row" *ngIf="!freeMode">
+      <!-- One tour on gene.clinic, and it is the plain-language one. Offering "Scientists"
+           alongside it invites a family to pick the wrong door on their first visit. -->
+      <div class="demo-row" *ngIf="clinicMode">
+        <a class="demo-link demo-link--alt" href="assets/demo/for-you.html" target="baja-demo-curious"
+           (click)="openDemo($event, 'for-you.html')">Take a look around first</a>
+      </div>
+
+      <div class="demo-row" *ngIf="!freeMode && !clinicMode">
         <a class="demo-link" href="assets/demo/index.html" target="baja-demo"
            (click)="openDemo($event, 'index.html')">Scientists</a>
         <a class="demo-link demo-link--alt" href="assets/demo/for-you.html" target="baja-demo-curious"
@@ -85,13 +106,20 @@ import { b2cPolicies, rarePolicies } from '../onedrive/auth-config';
       <div class="signup">
         <span class="secure">🔒 Authorization Code + PKCE</span>
         <div class="su-row">
-          New here?
+          {{ clinicMode ? 'First time here?' : 'New here?' }}
           <button class="su-link" type="button" (click)="signUp()">Create an account</button>
         </div>
       </div>
 
-      <a class="enterprise-btn" href="mailto:contact@baja.bio?subject=Baja.bio%20enterprise%20inquiry">
+      <a class="enterprise-btn" *ngIf="!clinicMode"
+         href="mailto:contact@baja.bio?subject=Baja.bio%20enterprise%20inquiry">
         ✉ Contact us for enterprise use
+      </a>
+
+      <!-- A family arriving here has a question about a person, not a procurement question. -->
+      <a class="enterprise-btn" *ngIf="clinicMode"
+         href="mailto:contact@baja.bio?subject=gene.clinic%20-%20question%20from%20a%20family%20or%20clinician">
+        ✉ Ask us a question
       </a>
     </div>
   </div>
@@ -109,6 +137,17 @@ import { b2cPolicies, rarePolicies } from '../onedrive/auth-config';
         #071b2a;
       font-family: "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif;
     }
+    .clinic { margin: 4px 0 14px; text-align:left; }
+    .cl-title { font: 700 15px "Segoe UI", system-ui, Arial, sans-serif; color:#eaf6ff; margin-bottom:10px; }
+    .cl-list { margin:0; padding-left:18px; }
+    .cl-list li { font: 13px/1.7 "Segoe UI", system-ui, Arial, sans-serif; color:#cfe3f0; }
+    .cl-note {
+      margin: 12px 0 0; padding: 9px 11px; border-radius: 8px;
+      background: rgba(255,214,10,0.10); border-left: 3px solid #ffd60a;
+      font: 12px/1.55 "Segoe UI", system-ui, Arial, sans-serif; color:#e6dcae;
+    }
+    .cl-note b { color:#ffd60a; }
+
     .freeuse { margin: 4px 0 14px; text-align:left; }
     .fu-title { font: 700 15px "Segoe UI", system-ui, Arial, sans-serif; color:#eaf6ff; margin-bottom:10px; }
     .fu-list { margin:0; padding-left:18px; }
@@ -229,6 +268,41 @@ export class LoginComponent {
     try { return /(^|[?&])free=1(&|$)/.test('' + window.location.search); }
     catch (e) { return false; }
   }
+
+  /**
+   * gene.clinic — the same application, entered by someone who is not a bench scientist.
+   *
+   * Read from the HOSTNAME, not from a route or a stored preference: the domain someone typed
+   * is the most reliable statement of who they think they are, it survives a bookmark and a
+   * shared link, and it cannot drift out of step with a setting somewhere else.
+   *
+   * ?clinic=1 forces it on, because the hostname cannot be gene.clinic on localhost and a page
+   * nobody can open on their own machine is a page nobody will look at before it ships.
+   */
+  get clinicMode(): boolean {
+    try {
+      if (/(^|[?&])clinic=1(&|$)/.test('' + window.location.search)) return true;
+      const h = ('' + window.location.hostname).toLowerCase();
+      return h === 'gene.clinic' || h.endsWith('.gene.clinic');
+    } catch (e) { return false; }
+  }
+
+  /**
+   * What gene.clinic says instead of the product pitch.
+   *
+   * Deliberately about UNDERSTANDING rather than doing. The scientist card sells capabilities
+   * -- design siRNA, export IDT codes -- which to a family reads as a list of things they are
+   * about to be asked to operate. What a parent, a patient or a referring physician arrives
+   * wanting is to make sense of a gene and a variant somebody has just named at them.
+   *
+   * Overridable the same way the scientist list is, via window.env['clinicFeatures'].
+   */
+  clinicFeatures: string[] = ((typeof window !== 'undefined' && (window as any)['env']?.['clinicFeatures']) || [
+    'See the gene, and the change in it, drawn in plain language',
+    'Understand where a variant sits and what it affects',
+    'Follow what researchers are working on for this gene',
+    'Keep your own notes and share a clear summary with your care team',
+  ]);
 
 
   // Product highlights shown on the login card. Overridable via window.env['loginFeatures'].

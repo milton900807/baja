@@ -71,11 +71,16 @@ import { b2cPolicies, rarePolicies } from '../onedrive/auth-config';
         <li *ngFor="let f of features">{{ f }}</li>
       </ul>
 
-      <!-- One tour on gene.clinic, and it is the plain-language one. Offering "Scientists"
-           alongside it invites a family to pick the wrong door on their first visit. -->
-      <div class="demo-row" *ngIf="clinicMode">
+      <!-- The offer, in place of the tour link. A family who has been told a gene name is
+           not looking for a product tour; they are deciding whether to start. The tour is
+           still reachable, as the quieter second line under the button. -->
+      <div class="trial-row" *ngIf="clinicMode">
+        <button class="trial-btn" type="button" [disabled]="busy" (click)="signUp()">
+          Start your 1 month free trial
+        </button>
+        <div class="trial-sub">No charge for 30 days &middot; cancel any time</div>
         <a class="demo-link demo-link--alt" href="assets/demo/for-you.html" target="baja-demo-curious"
-           (click)="openDemo($event, 'for-you.html')">Take a look around first</a>
+           (click)="openDemo($event, 'for-you.html')">Or take a look around first</a>
       </div>
 
       <div class="demo-row" *ngIf="!freeMode && !clinicMode">
@@ -137,6 +142,19 @@ import { b2cPolicies, rarePolicies } from '../onedrive/auth-config';
         #071b2a;
       font-family: "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif;
     }
+    .trial-row { margin: 14px 0 6px; text-align:center; }
+    .trial-btn {
+      width:100%; box-sizing:border-box; cursor:pointer;
+      border:0; border-radius:10px; padding:13px 18px;
+      font: 700 15px "Segoe UI", system-ui, Arial, sans-serif;
+      color:#04210f; background: linear-gradient(180deg,#3ddc84,#16c47f);
+      box-shadow: 0 6px 18px rgba(22,196,127,0.35);
+    }
+    .trial-btn:hover:not(:disabled) { filter: brightness(1.06); }
+    .trial-btn:disabled { opacity:.6; cursor:default; }
+    .trial-sub { margin-top:7px; font: 12px "Segoe UI", system-ui, Arial, sans-serif; color:#9fc7b6; }
+    .trial-row .demo-link { display:inline-block; margin-top:10px; }
+
     .clinic { margin: 4px 0 14px; text-align:left; }
     .cl-title { font: 700 15px "Segoe UI", system-ui, Arial, sans-serif; color:#eaf6ff; margin-bottom:10px; }
     .cl-list { margin:0; padding-left:18px; }

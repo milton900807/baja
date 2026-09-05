@@ -94,7 +94,7 @@ import { b2cPolicies, rarePolicies } from '../onedrive/auth-config';
                 [disabled]="busy"
                 [title]="'Login with ' + p.name"
                 (click)="signIn(p)">
-          <span class="glyph" [innerHTML]="glyph(p)"></span>
+          <span class="glyph" *ngIf="showGlyph(p)" [innerHTML]="glyph(p)"></span>
           <span class="ptext">Login with {{ p.name }}</span>
         </button>
       </div>
@@ -382,6 +382,22 @@ export class LoginComponent {
 
   glyph(p: OidcProvider): SafeHtml {
     return this.sanitizer.bypassSecurityTrustHtml(p.glyph);
+  }
+
+  /**
+   * Whether a provider button carries its mark.
+   *
+   * Google's and Microsoft's glyphs ARE the reassurance -- you recognise the mark before you
+   * read the word, and that is most of why those buttons work. The generic OIDC glyph is not
+   * that: it is a stand-in for "some single sign-on provider", and on gene.clinic that button
+   * now carries the site's own name. A placeholder mark next to your own name reads as a third
+   * party the visitor does not recognise, which is the opposite of what it is there to do.
+   *
+   * So it is dropped for the generic provider on the clinic door only. Every other button, and
+   * every button on oligodesigner.com, keeps its mark.
+   */
+  showGlyph(p: OidcProvider): boolean {
+    return !(this.clinicMode && p && p.id === 'oidc');
   }
 
   async signIn(p: OidcProvider) {

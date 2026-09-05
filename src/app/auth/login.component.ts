@@ -71,16 +71,14 @@ import { b2cPolicies, rarePolicies } from '../onedrive/auth-config';
         <li *ngFor="let f of features">{{ f }}</li>
       </ul>
 
-      <!-- The offer, in place of the tour link. A family who has been told a gene name is
-           not looking for a product tour; they are deciding whether to start. The tour is
-           still reachable, as the quieter second line under the button. -->
+      <!-- The offer, and nothing beside it. A family who has been told a gene name is not
+           looking for a product tour; they are deciding whether to start, and a second
+           option next to the one action worth taking only asks them to decide twice. -->
       <div class="trial-row" *ngIf="clinicMode">
         <button class="trial-btn" type="button" [disabled]="busy" (click)="signUp()">
           Start your 1 month free trial
         </button>
         <div class="trial-sub">No charge for 30 days &middot; cancel any time</div>
-        <a class="demo-link demo-link--alt" href="assets/demo/for-you.html" target="baja-demo-curious"
-           (click)="openDemo($event, 'for-you.html')">Or take a look around first</a>
       </div>
 
       <div class="demo-row" *ngIf="!freeMode && !clinicMode">
@@ -153,7 +151,6 @@ import { b2cPolicies, rarePolicies } from '../onedrive/auth-config';
     .trial-btn:hover:not(:disabled) { filter: brightness(1.06); }
     .trial-btn:disabled { opacity:.6; cursor:default; }
     .trial-sub { margin-top:7px; font: 12px "Segoe UI", system-ui, Arial, sans-serif; color:#9fc7b6; }
-    .trial-row .demo-link { display:inline-block; margin-top:10px; }
 
     .clinic { margin: 4px 0 14px; text-align:left; }
     .cl-title { font: 700 15px "Segoe UI", system-ui, Arial, sans-serif; color:#eaf6ff; margin-bottom:10px; }

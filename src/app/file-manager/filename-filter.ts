@@ -13,12 +13,17 @@ export class FilenameFilter implements PipeTransform {
             .map(ext => {
                 const trimmed = ext.trim();
                 const withDot = trimmed.startsWith('.') ? trimmed : '.' + trimmed;
-                return withDot.replace(/^\.+/, ''); // Remove all leading '.' characters
+                // Lower-cased on both sides below. Every other branch of transform()
+                // compares with toLowerCase(), so a single-extension filter listed
+                // SCREEN.BAJA and a comma-separated one silently did not -- the same
+                // filter string behaving differently depending on how many extensions
+                // were in it.
+                return withDot.replace(/^\.+/, '').toLowerCase(); // Remove all leading '.' characters
             });
         // const extensions = extensionString.split(',').map(ext => ext.startsWith('.') ? ext : '.' + ext.trim()); // Ensure each extension starts with '.'
         return fileElements.filter(fileElement => {
             if (fileElement.isFolder) return true; // Automatically include folders
-            const extension = fileElement.name.split('.').pop(); // Extract the extension from the file name
+            const extension = (fileElement.name.split('.').pop() || '').toLowerCase(); // Extract the extension from the file name
             return extensions.includes(extension);
         });
     }

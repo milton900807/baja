@@ -23,8 +23,15 @@ export class FilenameFilter implements PipeTransform {
         // const extensions = extensionString.split(',').map(ext => ext.startsWith('.') ? ext : '.' + ext.trim()); // Ensure each extension starts with '.'
         return fileElements.filter(fileElement => {
             if (fileElement.isFolder) return true; // Automatically include folders
-            const extension = (fileElement.name.split('.').pop() || '').toLowerCase(); // Extract the extension from the file name
-            return extensions.includes(extension);
+            const name = (fileElement.name || '').toLowerCase();
+            // endsWith('.' + ext) -- the same comparison the single-extension branch
+            // makes -- rather than matching the last dot-segment. Matching the last
+            // segment meant a file called "baja" with no extension at all satisfied a
+            // '.baja' filter, and a multi-part filter such as '.tar.gz' or
+            // '.karyotype.json' could never match anything, since the last segment is
+            // only ever 'gz' or 'json'. An empty entry (a trailing comma) matches
+            // nothing rather than everything.
+            return extensions.some(ext => ext.length > 0 && name.endsWith('.' + ext));
         });
     }
     transform(all: FileElement[], filterArgs: string, fileType: string) {

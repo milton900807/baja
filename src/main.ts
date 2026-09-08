@@ -15,7 +15,11 @@ import { AppModule } from './app/app.module';
 // user-initiated Home navigation is never hijacked.
 try {
   const loc = window.location.pathname + window.location.search;
-  if (loc.indexOf('manchester/editor') >= 0 && loc.indexOf('path=') >= 0) {
+  // The karyotype view opens a saved file by URL the same way the editor does, so it
+  // needs the same recovery -- otherwise reloading /app/manchester/karyotype?path=…
+  // on prod loses the file for exactly the reason described above.
+  const deepView = loc.indexOf('manchester/editor') >= 0 || loc.indexOf('manchester/karyotype') >= 0;
+  if (deepView && loc.indexOf('path=') >= 0) {
     sessionStorage.setItem('deep.editor', JSON.stringify({ url: loc, t: Date.now() }));
   }
 } catch (e) { /* sessionStorage may be unavailable; ignore */ }

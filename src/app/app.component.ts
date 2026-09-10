@@ -246,7 +246,7 @@ export class AppComponent implements OnInit {
   private citeYear = new Date().getFullYear();
 
   get citePlain(): string {
-    return 'Milton, J. (' + this.citeYear + '). BajaBio RNATx Designer '
+    return 'Milton, J. (' + this.citeYear + '). BajaBio GeneTx Designer '
       + '[computer software]. BajaBio, La Jolla, California. '
       + 'https://oligodesigner.com';
   }
@@ -254,7 +254,7 @@ export class AppComponent implements OnInit {
   get citeBibtex(): string {
     return '@software{milton_bajabio_rnatx_designer,\n'
       + '  author    = {Milton, Jeff},\n'
-      + '  title     = {BajaBio RNATx Designer},\n'
+      + '  title     = {BajaBio GeneTx Designer},\n'
       + '  year      = {' + this.citeYear + '},\n'
       + '  publisher = {BajaBio},\n'
       + '  address   = {La Jolla, California, USA},\n'

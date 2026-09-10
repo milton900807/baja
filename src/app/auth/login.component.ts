@@ -45,7 +45,7 @@ import { b2cPolicies, rarePolicies } from '../onedrive/auth-config';
         <div class="logo"><img src="assets/img/icons/yak.png" alt="Sign in" /></div>
       </div>
 
-      <!-- gene.clinic's own header. The yak is the BajaBio RNATx Designer's mark, and a
+      <!-- gene.clinic's own header. The yak is the BajaBio GeneTx Designer's mark, and a
            family arriving here has no reason to know it -- a logo you do not recognise on a
            sign-in page is a reason to hesitate, not a reassurance.
            

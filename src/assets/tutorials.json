@@ -1,7 +1,7 @@
 {
   "_comment": "The video tutorial catalogue. Edit this file to publish a tutorial: give an entry a `video` URL and set `ready` to true. An entry with ready:false renders greyed with a 'coming soon' note rather than being hidden, so the catalogue reads as complete instead of silently short — the same rule baja/lib/shelf.js uses. `video` may be a YouTube/Vimeo watch or embed URL, or a direct .mp4/.webm.",
   "title": "Video tutorials",
-  "subtitle": "BajaBio RNATx Designer — short walkthroughs of the tools, grouped by what you are trying to do",
+  "subtitle": "BajaBio GeneTx Designer — short walkthroughs of the tools, grouped by what you are trying to do",
   "sections": [
     {
       "name": "Getting started",

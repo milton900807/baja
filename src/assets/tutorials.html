@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Video tutorials — BajaBio RNATx Designer</title>
+<!--
+  A PUBLIC PAGE, DELIBERATELY STANDALONE.
+
+  It sits in src/assets so the Angular build carries it and a frontend deploy cannot wipe
+  it, and it is served from /assets like every other static file — no sign-in, no app
+  shell, nothing to boot. Someone sent this link should see the catalogue, not a login.
+
+  The layout is the library (baja/lib/shelf.js): a titled grid of cards with a badge, a
+  name and one line of description, grouped under section headings, with a search that
+  filters as you type. Same rules too — a card that is not ready renders greyed with a
+  "coming soon" note rather than being hidden, so the catalogue reads as complete instead
+  of silently short.
+
+  The content is tutorials.json beside this file. Adding a tutorial is editing that file.
+-->
+<style>
+  :root {
+    --ground: #071a30; --header: #0b2545; --card: #0d2846; --card-hover: #123356;
+    --line: rgba(255,255,255,0.12); --ink: #eaf6f9; --dim: #9fb3c8; --accent: #4fd0e6;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--ground); color: var(--ink);
+    font-family: Arial, Helvetica, sans-serif; min-height: 100vh;
+  }
+  header {
+    position: sticky; top: 0; z-index: 5; background: var(--header);
+    border-bottom: 1px solid var(--line); box-shadow: 0 6px 20px rgba(0,0,0,0.35);
+    padding: 18px 22px; display: flex; align-items: center; gap: 18px; flex-wrap: wrap;
+  }
+  .h-text { min-width: 0; flex: 1 1 320px; }
+  h1 { font: 800 22px/1.25 Arial; margin: 0; }
+  .sub { font: 13px/1.5 Arial; color: var(--dim); margin-top: 5px; }
+  .search {
+    flex: 0 1 280px; background: rgba(255,255,255,0.07); color: var(--ink);
+    border: 1px solid var(--line); border-radius: 9px; padding: 9px 12px; font: 13px Arial;
+  }
+  .search::placeholder { color: #7d93a8; }
+  .back { color: var(--accent); font: 13px Arial; text-decoration: none; white-space: nowrap; }
+  main { padding: 24px 22px 60px; max-width: 1180px; margin: 0 auto; }
+  .section { font: 700 12px Arial; letter-spacing: .1em; text-transform: uppercase;
+             color: var(--dim); margin: 26px 0 12px; }
+  .section:first-child { margin-top: 4px; }
+  .grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
+  .card {
+    background: var(--card); border: 1px solid var(--line); border-radius: 12px;
+    padding: 15px 16px 16px; text-align: left; color: inherit; font: inherit;
+    cursor: pointer; display: flex; flex-direction: column; gap: 7px;
+  }
+  .card:hover, .card:focus-visible { background: var(--card-hover); border-color: rgba(79,208,230,0.5); outline: none; }
+  .card.soon { cursor: default; opacity: 0.55; }
+  .card.soon:hover { background: var(--card); border-color: var(--line); }
+  .badge {
+    align-self: flex-start; border-radius: 999px; padding: 3px 9px; font: 700 10.5px Arial;
+    background: rgba(18,194,224,0.16); color: var(--accent);
+  }
+  .card h2 { font: 700 15px Arial; margin: 0; }
+  .card p { font: 13px/1.5 Arial; color: #cfe6ee; margin: 0; }
+  .soon-note { font: 700 10.5px Arial; color: #f0c274; letter-spacing: .04em; text-transform: uppercase; }
+  .empty { color: var(--dim); font: 14px Arial; padding: 30px 0; }
+  /* The player fills the page rather than floating: a tutorial is the thing you are doing
+     while it is open, and a small box in a corner of a dark page is neither. */
+  .player { position: fixed; inset: 0; z-index: 20; background: rgba(3,12,24,0.94);
+            display: none; flex-direction: column; }
+  .player.on { display: flex; }
+  .player-bar { padding: 14px 20px; display: flex; align-items: center; gap: 16px;
+                border-bottom: 1px solid var(--line); }
+  .player-bar h2 { font: 700 16px Arial; margin: 0; flex: 1 1 auto; }
+  .close {
+    background: transparent; color: var(--ink); border: 1px solid rgba(255,255,255,0.22);
+    border-radius: 8px; padding: 8px 15px; font: 700 12.5px Arial; cursor: pointer;
+  }
+  .close:hover { background: rgba(255,255,255,0.08); }
+  .player-body { flex: 1 1 auto; display: flex; align-items: center; justify-content: center; padding: 20px; }
+  .player-body iframe, .player-body video { width: min(100%, 1100px); aspect-ratio: 16/9; height: auto;
+                                            border: 0; border-radius: 10px; background: #000; }
+</style>
+</head>
+<body>
+  <header>
+    <div class="h-text">
+      <h1 id="title">Video tutorials</h1>
+      <div class="sub" id="subtitle"></div>
+    </div>
+    <input class="search" id="q" type="search" placeholder="Search tutorials…" autocomplete="off" />
+    <a class="back" href="/">← Back to the designer</a>
+  </header>
+
+  <main id="shelf"><div class="empty">Loading the catalogue…</div></main>
+
+  <div class="player" id="player" role="dialog" aria-modal="true" aria-label="Tutorial video">
+    <div class="player-bar">
+      <h2 id="p-title"></h2>
+      <button class="close" id="p-close">Close</button>
+    </div>
+    <div class="player-body" id="p-body"></div>
+  </div>
+
+<script>
+(function () {
+  var esc = function (s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  };
+
+  // A watch URL is not an embed URL, and pasting one into an iframe shows a refusal
+  // rather than a video. Both forms are accepted here and normalised, so whoever edits
+  // the catalogue can paste whatever the address bar gave them.
+  function embedFor(url) {
+    var u = String(url || '').trim();
+    if (!u) { return null; }
+    // Shorts included: a Shorts URL is a normal video and embeds from the same /embed/
+    // path, but it never matches watch?v= or youtu.be/ so it would have fallen through to
+    // the raw-iframe branch and been refused by YouTube.
+    var yt = u.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/shorts\/)([A-Za-z0-9_-]{6,})/);
+    if (yt) { return { kind: 'iframe', src: 'https://www.youtube.com/embed/' + yt[1] }; }
+    var vm = u.match(/vimeo\.com\/(?:video\/)?(\d+)/);
+    if (vm) { return { kind: 'iframe', src: 'https://player.vimeo.com/video/' + vm[1] }; }
+    if (/\.(mp4|webm|ogg|mov)(\?|$)/i.test(u)) { return { kind: 'video', src: u }; }
+    return { kind: 'iframe', src: u };
+  }
+
+  var data = null;
+
+  function render(filter) {
+    var shelf = document.getElementById('shelf');
+    var needle = String(filter || '').trim().toLowerCase();
+    var html = '', shown = 0;
+
+    (data.sections || []).forEach(function (sec) {
+      var books = (sec.books || []).filter(function (b) {
+        if (!needle) { return true; }
+        return ((b.title || '') + ' ' + (b.blurb || '') + ' ' + (b.badge || '') + ' ' + (sec.name || ''))
+          .toLowerCase().indexOf(needle) >= 0;
+      });
+      if (!books.length) { return; }
+      html += '<div class="section">' + esc(sec.name) + '</div><div class="grid">';
+      books.forEach(function (b) {
+        var ready = b.ready !== false && !!String(b.video || '').trim();
+        shown++;
+        html += '<button class="card' + (ready ? '' : ' soon') + '"'
+             + (ready ? ' data-video="' + esc(b.video) + '" data-title="' + esc(b.title) + '"' : ' disabled')
+             + '>'
+             + (b.badge ? '<span class="badge">' + esc(b.badge) + '</span>' : '')
+             + '<h2>' + esc(b.title) + '</h2>'
+             + '<p>' + esc(b.blurb || '') + '</p>'
+             + (ready ? '' : '<span class="soon-note">Coming soon</span>')
+             + '</button>';
+      });
+      html += '</div>';
+    });
+
+    shelf.innerHTML = shown ? html
+      : '<div class="empty">Nothing matches “' + esc(filter) + '”.</div>';
+  }
+
+  function openPlayer(title, url) {
+    var e = embedFor(url);
+    if (!e) { return; }
+    document.getElementById('p-title').textContent = title || 'Tutorial';
+    var body = document.getElementById('p-body');
+    body.innerHTML = e.kind === 'video'
+      ? '<video controls autoplay playsinline src="' + esc(e.src) + '"></video>'
+      : '<iframe src="' + esc(e.src) + '" allow="accelerometer; autoplay; clipboard-write; '
+        + 'encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>';
+    document.getElementById('player').classList.add('on');
+  }
+  function closePlayer() {
+    document.getElementById('player').classList.remove('on');
+    // Emptied rather than hidden, so a paused video stops making sound behind the page.
+    document.getElementById('p-body').innerHTML = '';
+  }
+
+  document.getElementById('p-close').addEventListener('click', closePlayer);
+  document.addEventListener('keydown', function (ev) { if (ev.key === 'Escape') { closePlayer(); } });
+  document.getElementById('shelf').addEventListener('click', function (ev) {
+    var card = ev.target.closest ? ev.target.closest('.card') : null;
+    if (card && card.getAttribute('data-video')) {
+      openPlayer(card.getAttribute('data-title'), card.getAttribute('data-video'));
+    }
+  });
+  document.getElementById('q').addEventListener('input', function (ev) { render(ev.target.value); });
+
+  fetch('tutorials.json', { cache: 'no-cache' })
+    .then(function (r) { return r.json(); })
+    .then(function (j) {
+      data = j || {};
+      if (data.title) { document.getElementById('title').textContent = data.title; }
+      document.getElementById('subtitle').textContent = data.subtitle || '';
+      render('');
+    })
+    .catch(function () {
+      document.getElementById('shelf').innerHTML =
+        '<div class="empty">The tutorial catalogue could not be loaded.</div>';
+    });
+})();
+</script>
+</body>
+</html>

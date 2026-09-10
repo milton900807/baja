@@ -1,0 +1,111 @@
+{
+  "_comment": "The video tutorial catalogue. Edit this file to publish a tutorial: give an entry a `video` URL and set `ready` to true. An entry with ready:false renders greyed with a 'coming soon' note rather than being hidden, so the catalogue reads as complete instead of silently short — the same rule baja/lib/shelf.js uses. `video` may be a YouTube/Vimeo watch or embed URL, or a direct .mp4/.webm.",
+  "title": "Video tutorials",
+  "subtitle": "BajaBio RNATx Designer — short walkthroughs of the tools, grouped by what you are trying to do",
+  "sections": [
+    {
+      "name": "Getting started",
+      "books": [
+        {
+          "title": "A tour of the workspace",
+          "badge": "3 min",
+          "blurb": "The canvas, the toolbar and the file browser: where tracks live and how a session is saved.",
+          "ready": false,
+          "video": ""
+        },
+        {
+          "title": "Loading a transcript",
+          "badge": "2 min",
+          "blurb": "Find a gene by symbol or Ensembl id and put its transcript on the canvas.",
+          "ready": false,
+          "video": ""
+        }
+      ]
+    },
+    {
+      "name": "The karyotype",
+      "books": [
+        {
+          "title": "Opening a VCF on the chromosomes",
+          "badge": "4 min",
+          "blurb": "Upload a VCF, watch it place, and read the density strip beside each chromosome.",
+          "ready": false,
+          "video": ""
+        },
+        {
+          "title": "Selecting regions",
+          "badge": "3 min",
+          "blurb": "Drag a range with Select sequence, or name a gene with Find gene, and collect several regions at once.",
+          "ready": false,
+          "video": ""
+        },
+        {
+          "title": "Highlighting by type",
+          "badge": "3 min",
+          "blurb": "Show the protein-coding, intronic, UTR or pathogenic variants across the whole genome, with everything else greyed out.",
+          "ready": false,
+          "video": ""
+        },
+        {
+          "title": "Bookmarking views",
+          "badge": "2 min",
+          "blurb": "Keep a place you want to come back to, and save it inside the karyotype file.",
+          "ready": false,
+          "video": ""
+        }
+      ]
+    },
+    {
+      "name": "Designing oligos",
+      "books": [
+        {
+          "title": "Allele selective ASOs",
+          "badge": "2 min",
+          "blurb": "Pick a variant, choose a chemistry from the library, and tile allele-selective compounds across it.",
+          "ready": true,
+          "video": "https://youtube.com/shorts/JO2-JqOsIoI"
+        },
+        {
+          "title": "Chemistry templates",
+          "badge": "4 min",
+          "blurb": "Gapmers, uniform ASOs and siRNA duplexes: what the templates mean and how to add your own.",
+          "ready": false,
+          "video": ""
+        },
+        {
+          "title": "Reading a compound",
+          "badge": "3 min",
+          "blurb": "The bead schematic, the backbone chemistry, and the target versus the synthesis strand.",
+          "ready": false,
+          "video": ""
+        },
+        {
+          "title": "Visualize clinical compounds",
+          "badge": "Short",
+          "blurb": "Load compounds like Spinraza and see them in the context of their genomics and chemical modifications.",
+          "ready": true,
+          "video": "https://youtube.com/shorts/XcVpYWMBez8"
+        }
+      ]
+    },
+    {
+      "name": "Checking a design",
+      "books": [
+        {
+          "title": "Running off-targets on a group of ASOs",
+          "badge": "Short",
+          "blurb": "Take a set of designed ASOs, screen them against the transcriptome in one run, and read what comes back for each.",
+          "ready": true,
+          "video": "https://youtube.com/shorts/omhXNoYIC0w"
+        },
+        {
+          "title": "Variant annotations",
+          "badge": "3 min",
+          "blurb": "Clinical significance, phenotypes, and where the red glow on a variant comes from.",
+          "ready": false,
+          "video": ""
+        }
+      ]
+    }
+  ]
+}

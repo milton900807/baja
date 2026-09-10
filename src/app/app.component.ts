@@ -431,6 +431,17 @@ export class AppComponent implements OnInit {
 
   // Called from the toolbar button. Hands the paper to the user: it stops being a splash, so
   // the boot watcher leaves it alone.
+  // The tutorials live as a static page under /assets, so this is a plain navigation
+  // rather than anything the app has to render. noopener because it is a new tab and the
+  // opened page has no business reaching back into this one.
+  openTutorials(): void {
+    try {
+      window.open('assets/tutorials.html', '_blank', 'noopener');
+    } catch (e) {
+      window.location.href = 'assets/tutorials.html';
+    }
+  }
+
   openNewsFromButton(): void {
     this.newsIsSplash = false;
     try { clearTimeout(this.newsSplashTimer); } catch (e) { }

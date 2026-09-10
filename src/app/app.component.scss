@@ -643,7 +643,8 @@
 /* Material gives an icon button its own line-height and the icon another, so the glyph sat
    off the text baseline of the buttons either side of it. Centre it with flex instead and
    zero both line-heights, so it lines up with the text buttons whatever their height. */
-.news-btn {
+.news-btn,
+.video-btn {
   flex: 0 0 auto;
   align-self: center;
   color: #0b2545;
@@ -659,7 +660,10 @@
 
 .news-btn .mat-icon,
 .news-btn mat-icon,
-.news-btn .mat-mdc-button-touch-target {
+.news-btn .mat-mdc-button-touch-target,
+.video-btn .mat-icon,
+.video-btn mat-icon,
+.video-btn .mat-mdc-button-touch-target {
   font-size: 21px;
   width: 21px;
   height: 21px;

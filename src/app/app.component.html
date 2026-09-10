@@ -21,6 +21,16 @@
       <mat-icon>newspaper</mat-icon>
     </button>
 
+    <!-- Between the news and the citation, because it belongs with them: the three
+         buttons that lead OUT of the app rather than acting on what is in it. Opens in a
+         new tab and never closes the workspace -- a tutorial is usually watched beside the
+         thing it is about, not instead of it. The page is a static asset, so the link
+         works for anyone it is sent to, signed in or not. -->
+    <button mat-icon-button class="video-btn" (click)="openTutorials()"
+            title="Video tutorials" aria-label="Video tutorials">
+      <mat-icon>smart_display</mat-icon>
+    </button>
+
     <button mat-icon-button class="cite-btn" (click)="showCite = true"
             title="How to cite BajaBio RNATx Designer" aria-label="How to cite BajaBio RNATx Designer">
       <mat-icon>format_quote</mat-icon>

@@ -28,10 +28,10 @@
 
         <div class="tile-inner">
           <mat-icon class="file-or-folder-icon" [class.folder-icon-hover]="hoveredFolderId === element.id">
-            folder
+            {{ folderIcon(element) }}
           </mat-icon>
 
-          <div class="tile-label">{{ element.name }}</div>
+          <div class="tile-label" [title]="element.name">{{ displayName(element) }}</div>
         </div>
 
         <!-- ✅ DROP OVERLAY -->
@@ -50,7 +50,7 @@
                  Material set, which has no RNA glyph: a strand with an oligo duplexed to
                  it, over the prescription R. -->
             <svg *ngIf="element.name.endsWith('.baja')" class="file-type-icon" viewBox="0 0 32 32"
-              role="img" aria-label="RNA therapeutic design">
+              role="img" aria-label="GeneTx design">
               <g fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
                 <path d="M3 8 C7 5, 11 11, 15 8 C19 5, 23 11, 29 8"/>
               </g>

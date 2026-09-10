@@ -66,19 +66,47 @@ export class FileManagerComponent implements OnChanges {
   // Have an icon, but one shared with another type, so the extension stays.
   static readonly SHARED_ICON_EXTENSIONS: string[] = ['.tsv', '.csv', '.bigwig', '.bam'];
 
-  /** The label for a tile: the file name, without an extension the icon already conveys. */
+  /**
+   * Folders written by the server that deserve a spoken name and their own icon rather than
+   * the raw path segment: the two share folders. Keyed by the exact stored name.
+   */
+  static readonly SPECIAL_FOLDERS: { [name: string]: { label: string; icon: string } } = {
+    shared: { label: 'Shared', icon: 'folder_shared' },
+    shared_with_me: { label: 'Shared with me', icon: 'move_to_inbox' },
+  };
+
+  /** Underscores are how the store spells a space; nobody wants to read them. */
+  private static deunderscore(name: string): string {
+    return ('' + (name || '')).replace(/_+/g, ' ').replace(/\s+/g, ' ').trim();
+  }
+
+  /** The label for a tile: the file name, without an extension the icon already conveys, and
+   *  with underscores shown as spaces. The two share folders get a proper spoken name. */
   displayName(element: FileElement): string {
     const name = (element && element.name) ? ('' + element.name) : '';
-    if (!name || element.isFolder) { return name; }
+    if (!name) { return name; }
+    if (element.isFolder) {
+      const special = FileManagerComponent.SPECIAL_FOLDERS[name.toLowerCase()];
+      if (special) { return special.label; }
+      return FileManagerComponent.deunderscore(name);
+    }
     const lower = name.toLowerCase();
     for (const ext of FileManagerComponent.UNIQUE_ICON_EXTENSIONS) {
       if (lower.endsWith(ext)) {
         const stripped = name.slice(0, name.length - ext.length);
         // Never return an empty label: a file actually called ".baja" keeps its name.
-        return stripped.length ? stripped : name;
+        return stripped.length ? FileManagerComponent.deunderscore(stripped) : name;
       }
     }
-    return name;
+    return FileManagerComponent.deunderscore(name);
+  }
+
+  /** The icon for a folder tile: the two share folders get their own, everything else the
+   *  plain folder glyph. */
+  folderIcon(element: FileElement): string {
+    const name = (element && element.name) ? ('' + element.name).toLowerCase() : '';
+    const special = FileManagerComponent.SPECIAL_FOLDERS[name];
+    return special ? special.icon : 'folder';
   }
 
   /** True when the tile has no type-specific icon, so a generic one is drawn. */

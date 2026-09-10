@@ -1545,14 +1545,21 @@ export class LionEngine {
                     let waiting = false;
                     let lineindex = 0;
                     let counter = 100;
+                    // Lines already dispatched as message / progress / object on an earlier
+                    // poll. See the loop below.
+                    let handled = 0;
 
                     const processLines = async () => {
                         let endDate = new Date();
                         seconds = (endDate.getTime() - startDate.getTime()) / 1000;
 
-                        if (seconds >= 400) {
-                            console.log("FAILED TO COMPLETE TIME OUT IS > 10MIN");
-                            return;
+                        // The server kills a python job at 15 minutes (PY_MAX_RUNTIME_SEC);
+                        // give up a minute after that. And REJECT rather than fall silent: this
+                        // used to return at 400 s with a console line, leaving whoever awaited
+                        // the call hanging forever with the work badge still spinning.
+                        if (seconds >= 960) {
+                            console.log("FAILED TO COMPLETE: python call exceeded 16 minutes: " + path);
+                            return reject(new Error('The server call did not complete within 16 minutes: ' + path));
                         }
 
                         if (!waiting) {
@@ -1570,9 +1577,17 @@ export class LionEngine {
                                     let collectedString = '';
                                     let isResolutionSection = false;
 
-                                    for (let l of lines) {
-                                        l = decodeURI(l).trim();
-
+                                    // Every poll reads from line 0 -- the resolution can span
+                                    // polls and is assembled from the full list each time -- so
+                                    // every poll returns every line so far. Messages, progress and
+                                    // objects are dispatched ONCE, for lines not seen on an
+                                    // earlier poll. Without this each poll replayed the whole log:
+                                    // the console repeated the same lines and the progress bar
+                                    // jumped back to the start on every tick, which read as the
+                                    // job restarting from scratch.
+                                    for (let li = 0; li < lines.length; li++) {
+                                        let l = decodeURI(lines[li]).trim();
+                                        const fresh = li >= handled;
 
                                         if (l.startsWith('EXIT_CODE:')) {
                                             try {
@@ -1595,30 +1610,32 @@ export class LionEngine {
                                                     isResolutionSection = true;
                                                     collectedString += l.substring(20).trim();
                                                 } else if (l.startsWith('IONWORKS:OBJ:')) {
-                                                    let obj = l.substring(13);
-                                                    try {
-                                                        let jobj = JSON.parse(obj);
-                                                        engineMonitor.update(jobj);
-                                                    } catch (exception) {
-                                                        console.log(exception);
-                                                        waiting = false;
-                                                        setTimeout(processLines, counter);
+                                                    if (fresh) {
+                                                        let obj = l.substring(13);
+                                                        try {
+                                                            let jobj = JSON.parse(obj);
+                                                            if (engineMonitor != null) engineMonitor.update(jobj);
+                                                        } catch (exception) {
+                                                            console.log(exception);
+                                                        }
                                                     }
                                                 } else if (l.startsWith('IONWORKS:PROGRESS:')) {
-                                                    let progress = l.substring(18);
-                                                    if (engineMonitor != null) {
+                                                    if (fresh && engineMonitor != null) {
+                                                        let progress = l.substring(18);
                                                         engineMonitor.setProgress(+progress.trim());
                                                     }
                                                 } else if (l.startsWith('IONWORKS:MSG:')) {
-                                                    let msg = l.substring(14);
-                                                    console.log('msg ' + msg);
-                                                    if (engineMonitor != null) {
-                                                        engineMonitor.setMSG(msg);
+                                                    if (fresh) {
+                                                        let msg = l.substring(14);
+                                                        console.log('msg ' + msg);
+                                                        if (engineMonitor != null) {
+                                                            engineMonitor.setMSG(msg);
+                                                        }
                                                     }
-
                                                 }
 
                                     }
+                                    handled = Math.max(handled, lines.length);
 
 
                                     prev = out['lines'];
@@ -1668,9 +1685,9 @@ export class LionEngine {
                 try { if (((window as any).__backendWorkCount || 0) <= 0) __bajaWorkShow(false); } catch (e) { }
             };
             // Clear when the call settles (either way); plus a safety timeout in
-            // case the backend poll never resolves (its own cap is ~400s).
+            // case the backend poll never resolves (its own cap is 960 s).
             pr.then(__clear, __clear);
-            setTimeout(__clear, 420000);
+            setTimeout(__clear, 990000);
         }
 
         return pr;

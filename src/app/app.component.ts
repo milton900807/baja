@@ -910,14 +910,18 @@ export class AppComponent implements OnInit {
       // page the visitor is standing on.
       if (/(^|[?&])free=1(&|$)/.test('' + window.location.search)) return false;
       const p = ('' + window.location.pathname).toLowerCase();
-      // The front page and the sign-in page. NOT /subscribe: the subscription prompt draws
-      // its own "continue with free version" control, so the bar there was a second copy of
-      // a choice already on the page.
+      // The front page only.
       //
-      // A signed-out visitor is routed from '/' to /login by authGuard, so the bar has to
-      // exist on both to be seen at all -- on '/' for someone already signed in, on /login
-      // for someone who is not.
-      return p === '/' || p === '' || /^\/login(\/|$)/.test(p);
+      // It used to appear on /login as well. It was removed from the sign-in page
+      // deliberately: that page is the first thing a visitor sees and it should ask one
+      // question, not offer a tier alongside it.
+      //
+      // KNOWN CONSEQUENCE, recorded here rather than discovered later. authGuard routes a
+      // signed-out visitor from '/' to /login, so an anonymous visitor no longer meets this
+      // bar at all -- the front page it still appears on is one they are redirected away
+      // from. The remaining routes to the free tier are the direct /login?free=1 link and
+      // the "Continue with the free version" control on the subscription prompt.
+      return p === '/' || p === '';
     } catch (e) { return false; }
   }
 

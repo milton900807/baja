@@ -22,7 +22,6 @@ import { SubscriptionService } from './subscription.service';
       <div class="plan">
         <div class="plan__top">
           <div class="plan__name">{{ planName }}</div>
-          <span class="beta-badge">Beta release</span>
         </div>
         <div class="plan__price">{{ planPrice }}<span class="per">{{ planPeriod }}</span></div>
         <div class="beta-note">🔥 Early-access pricing, limited time — lock in $99/year before it goes up. Limited early-user spots, and your rate stays locked in.</div>
@@ -97,9 +96,6 @@ import { SubscriptionService } from './subscription.service';
       background: rgba(18,194,224,0.06); }
     .plan__top { display:flex; align-items:center; justify-content:space-between; gap:8px; }
     .plan__name { font-size:14px; font-weight:800; letter-spacing:.2px; color:#12c2e0; }
-    .beta-badge { font-size:10.5px; font-weight:800; text-transform:uppercase; letter-spacing:.5px;
-      color:#0a2540; background:#ffca28; border-radius:6px; padding:3px 8px; white-space:nowrap;
-      box-shadow:0 2px 6px rgba(0,0,0,0.25); }
     .beta-note { margin-top:10px; padding:8px 10px; border-radius:9px; font-size:12.5px; line-height:1.45;
       color:#ffe0c2; background: rgba(255,140,26,0.12); border:1px solid rgba(255,140,26,0.4); }
     .demo-row { display:flex; flex-wrap:nowrap; gap:10px; margin-top:14px; }

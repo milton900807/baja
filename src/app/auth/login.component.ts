@@ -30,10 +30,15 @@ import { b2cPolicies, rarePolicies } from '../onedrive/auth-config';
     <div class="login-card">
       <div class="brandline"></div>
 
-      <div class="beta-banner" role="status">
-        <span class="beta-tag">{{ clinicMode ? 'gene.clinic' : (freeMode ? 'Free version' : 'Beta release!') }}</span>
+      <!-- The banner now only speaks when it has something specific to say: which product
+           this is (gene.clinic) or which tier the visitor chose (free). The default
+           sign-in page carried "Beta release! / Early access now open", which told a
+           returning user nothing and set a tentative tone on the first screen of the
+           product. -->
+      <div class="beta-banner" role="status" *ngIf="clinicMode || freeMode">
+        <span class="beta-tag">{{ clinicMode ? 'gene.clinic' : 'Free version' }}</span>
         <span class="beta-text">{{ clinicMode ? 'For families, patients and physicians'
-          : (freeMode ? 'Sign in to continue' : 'Early access now open') }}</span>
+          : 'Sign in to continue' }}</span>
       </div>
 
       <div class="head" *ngIf="!clinicMode">

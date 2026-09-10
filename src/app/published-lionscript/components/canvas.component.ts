@@ -36,13 +36,16 @@ import { TextEditorComponent } from './texteditor-component';
                     class="drag-handle"
                     (mousedown)="onMouseDown($event)"
                 >
+                    <span class="editor-title">{{ editorTitle }}</span>
                     <span style="flex-grow: 1"></span>
 
                     <ng-container *ngFor="let button of buttons">
                         <button
                             type="button"
+                            class="ed-btn"
+                            [ngClass]="buttonClass(button)"
                             (click)="button.action()"
-                            [style.background-color]="button.color"
+                            (mousedown)="$event.stopPropagation()"
                         >
                             {{ button.label }}
                         </button>
@@ -100,9 +103,22 @@ export class CanvasComponent implements PubComponent, AfterViewInit, OnDestroy {
     private dragOffsetY: number = 0;
 
     editor;
+    editorTitle = '';
 
     static index = 0;
     editorKey = 1;
+
+    // Buttons carry only a label and an action; their look comes from the app's
+    // palette. `primary: true` (or an affirmative label) gets the blue button,
+    // a red `color` on a non-close button reads as destructive.
+    buttonClass(button: any): string {
+        if (!button) return '';
+        const label = ('' + (button.label || '')).trim().toLowerCase();
+        if (button.primary === true || /^(apply|insert|run|build|save|ok|create|submit|▶)$/.test(label)) return 'ed-btn--primary';
+        const color = ('' + (button.color || '')).toLowerCase();
+        if ((color === 'red' || color === 'crimson' || color === '#ff0000') && !/^(close|✕|x|cancel)$/.test(label)) return 'ed-btn--danger';
+        return '';
+    }
 
     // Inputs for x, y, width, and height
     @Input() mx: number = 120;
@@ -245,6 +261,7 @@ export class CanvasComponent implements PubComponent, AfterViewInit, OnDestroy {
             this.my = parseInt(editor.y)
         }
         this.editor = editor;
+        this.editorTitle = ('' + (editor.title || '')).trim();
         this.editorKey++;
         this.mwidth = 600;
         this.mheight = 400;

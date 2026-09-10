@@ -48,6 +48,8 @@ canvas {
 	object-fit: fill;
 }
 
+// Floating editor window: white card, slate border, soft shadow -- the same look
+// as the plot title bars, menus and cursor hints drawn on the canvas.
 .editor-container {
 	position: absolute;
 	inset: 0;
@@ -61,13 +63,26 @@ canvas {
 	min-height: 0;
 	margin: 0;
 	padding: 0;
-	overflow: auto;
+	overflow: hidden;
 	cursor: default;
-	box-shadow: 4px 8px 12px rgba(0, 0, 0, 0.5);
+	background: #ffffff;
+	border: 1px solid rgba(15, 23, 42, 0.16);
+	border-radius: 10px;
+	box-shadow: 0 12px 32px rgba(15, 23, 42, 0.18), 0 2px 6px rgba(15, 23, 42, 0.08);
+	font-family: Inter, "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif;
 }
 
 .editor-container.focused {
-	box-shadow: 1px 1px 2px rgba(212, 21, 21, 0.4);
+	box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.35), 0 12px 32px rgba(15, 23, 42, 0.18);
+}
+
+.editor-content {
+	flex: 1 1 auto;
+	min-height: 0;
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+	background: #ffffff;
 }
 
 .resize-handle {
@@ -75,23 +90,82 @@ canvas {
 	right: 0;
 	bottom: 0;
 	z-index: 3;
-	width: 15px;
-	height: 15px;
-	background-color: lightgray;
-	border: 1px solid #ccc;
+	width: 16px;
+	height: 16px;
 	cursor: se-resize;
+	background:
+		linear-gradient(135deg, transparent 0 50%, rgba(148, 163, 184, 0.9) 50% 58%, transparent 58% 70%, rgba(148, 163, 184, 0.9) 70% 78%, transparent 78%);
+	border-bottom-right-radius: 9px;
 }
 
+// Header: title on the left, actions on the right. The whole bar drags the window.
 .drag-handle {
-	flex: 0 0 30px;
+	flex: 0 0 40px;
 	box-sizing: border-box;
+	display: flex;
+	align-items: center;
+	gap: 8px;
 	width: 100%;
-	height: 30px;
-	background-color: #333;
-	color: white;
-	text-align: center;
-	line-height: 30px;
-	font-size: 14px;
+	height: 40px;
+	padding: 0 8px 0 14px;
+	background: #f8fafc;
+	color: #1f2937;
+	border-bottom: 1px solid rgba(15, 23, 42, 0.10);
+	font-size: 13px;
 	cursor: move;
 	user-select: none;
+}
+
+.editor-title {
+	font-weight: 600;
+	color: #0f172a;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	max-width: 50%;
+}
+
+.ed-btn {
+	appearance: none;
+	height: 28px;
+	padding: 0 12px;
+	border-radius: 6px;
+	border: 1px solid rgba(148, 163, 184, 0.9);
+	background: #ffffff;
+	color: #1f2937;
+	font: 500 12px Inter, "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif;
+	line-height: 26px;
+	cursor: pointer;
+	white-space: nowrap;
+	transition: background 120ms ease, border-color 120ms ease;
+}
+
+.ed-btn:hover {
+	background: #e2e8f0;
+	border-color: #64748b;
+}
+
+.ed-btn:active {
+	background: #cbd5e1;
+}
+
+.ed-btn--primary {
+	background: #2563eb;
+	border-color: #2563eb;
+	color: #ffffff;
+}
+
+.ed-btn--primary:hover {
+	background: #1d4ed8;
+	border-color: #1d4ed8;
+}
+
+.ed-btn--danger {
+	background: #ffffff;
+	border-color: #ef4444;
+	color: #b91c1c;
+}
+
+.ed-btn--danger:hover {
+	background: #fee2e2;
 }

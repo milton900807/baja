@@ -13,16 +13,16 @@ import { BaseEditor } from 'ngx-monaco-editor-v2/lib/base-editor';
   selector: 'text-editor',
   templateUrl: './texteditor-component.html',
   styleUrls: ['./../jsonviewer.component.scss'],
-  // Navy rounded border + light-gray panel for the simple text-editor. The border/radius
-  // sit on the .nt-monaco container; ::ng-deep paints Monaco's own background light gray
-  // (Monaco renders its bg inline from the theme, so it needs piercing overrides). Scoped
-  // to .nt-monaco so other Monaco editors are unaffected.
+  // The simple editor sits inside the canvas editor window, which already draws the
+  // card border and header, so the editor itself is borderless on white. ::ng-deep
+  // pins Monaco's own background (rendered inline from the theme). Scoped to
+  // .nt-monaco so other Monaco editors are unaffected.
   styles: [`
-    .nt-monaco { border: 2px solid #0a2a66 !important; border-radius: 12px !important; overflow: hidden !important; background: #e8e8e8; }
+    .nt-monaco { border: none !important; border-radius: 0 !important; overflow: hidden !important; background: #ffffff; }
     .nt-monaco ::ng-deep .monaco-editor,
     .nt-monaco ::ng-deep .monaco-editor .monaco-editor-background,
     .nt-monaco ::ng-deep .monaco-editor .margin,
-    .nt-monaco ::ng-deep .monaco-editor .overflow-guard { background-color: #e8e8e8 !important; }
+    .nt-monaco ::ng-deep .monaco-editor .overflow-guard { background-color: #ffffff !important; }
   `]
 })
 export class TextEditorComponent implements OnInit, PubComponent, OnDestroy {
@@ -370,7 +370,65 @@ export class TextEditorComponent implements OnInit, PubComponent, OnDestroy {
 
 
 
+  // Light Monaco theme in the app's slate/blue palette. Applied whenever a caller
+  // asks for the old 'no-border-theme' (never defined, so Monaco fell back to the
+  // stock 'vs' look) or names no theme at all.
+  private static themeDefined = false;
+  private applyAppTheme(editor) {
+    try {
+      if (!TextEditorComponent.themeDefined) {
+        monaco.editor.defineTheme('bajabio-light', {
+          base: 'vs',
+          inherit: true,
+          rules: [
+            { token: '', foreground: '1f2937' },
+            { token: 'identifier', foreground: '1f2937' },
+            { token: 'string', foreground: '0f766e' },
+            { token: 'number', foreground: '1d4ed8' },
+            { token: 'keyword', foreground: '7c3aed' },
+            { token: 'comment', foreground: '94a3b8', fontStyle: 'italic' },
+            { token: 'custom-todo', foreground: 'b45309', fontStyle: 'bold' }
+          ],
+          colors: {
+            'editor.background': '#ffffff',
+            'editor.foreground': '#1f2937',
+            'editorCursor.foreground': '#2563eb',
+            'editor.selectionBackground': '#dbeafe',
+            'editor.inactiveSelectionBackground': '#e2e8f0',
+            'editor.lineHighlightBackground': '#f8fafc',
+            'editor.lineHighlightBorder': '#00000000',
+            'editorLineNumber.foreground': '#94a3b8',
+            'editorLineNumber.activeForeground': '#475569',
+            'editorIndentGuide.background': '#e2e8f0',
+            'editorWidget.background': '#ffffff',
+            'editorWidget.border': '#cbd5e1',
+            'editorSuggestWidget.background': '#ffffff',
+            'editorSuggestWidget.border': '#cbd5e1',
+            'editorSuggestWidget.selectedBackground': '#eef2f8',
+            'scrollbarSlider.background': '#cbd5e180',
+            'scrollbarSlider.hoverBackground': '#94a3b8a0',
+            'minimap.background': '#f8fafc'
+          }
+        });
+        TextEditorComponent.themeDefined = true;
+      }
+      const wanted = (this.editorOptions && (this.editorOptions as any).theme) || '';
+      if (!wanted || wanted === 'no-border-theme' || wanted === 'vs') {
+        monaco.editor.setTheme('bajabio-light');
+      }
+      editor.updateOptions({
+        fontFamily: '"JetBrains Mono", "Cascadia Code", Consolas, "SF Mono", Menlo, monospace',
+        fontLigatures: false,
+        lineHeight: 22,
+        cursorBlinking: 'smooth',
+        smoothScrolling: true,
+        roundedSelection: true
+      });
+    } catch (e) { }
+  }
+
   onInit(editor) {
+    this.applyAppTheme(editor);
 
     monaco.languages.register({ id: 'ljl' });
     monaco.languages.setMonarchTokensProvider('ljl', {

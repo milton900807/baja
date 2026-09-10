@@ -104,13 +104,6 @@ import { b2cPolicies, rarePolicies } from '../onedrive/auth-config';
       <!-- The offer, and nothing beside it. A family who has been told a gene name is not
            looking for a product tour; they are deciding whether to start, and a second
            option next to the one action worth taking only asks them to decide twice. -->
-      <div class="trial-row" *ngIf="clinicMode">
-        <button class="trial-btn" type="button" [disabled]="busy" (click)="signUp()">
-          Start your 1 month free trial
-        </button>
-        <div class="trial-sub">No charge for 30 days &middot; cancel any time</div>
-      </div>
-
       <div class="demo-row" *ngIf="!freeMode && !clinicMode">
         <a class="demo-link" href="assets/demo/index.html" target="baja-demo"
            (click)="openDemo($event, 'index.html')">Scientists</a>

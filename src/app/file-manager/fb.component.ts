@@ -220,10 +220,17 @@ export class FBComponent implements OnInit, PubComponent {
   isHidden(name: string): boolean {
     if (!this.hideExtensions || this.hideExtensions.length === 0) { return false; }
     const n = String(name == null ? '' : name).toLowerCase();
-    const dot = n.lastIndexOf('.');
-    // A name with no dot, or a dotfile like ".vcf", has no extension to match on.
-    if (dot <= 0) { return false; }
-    return this.hideExtensions.indexOf(n.substring(dot + 1)) >= 0;
+    // Matched as a SUFFIX, not as the text after the last dot, so a compound extension
+    // works: 'vcf.gz' has to hide variants.vcf.gz, and the last dot there only says 'gz'.
+    // The length test is what keeps a dotfile out of it -- '.vcf' ends with '.vcf' but is
+    // a name in its own right, with nothing in front of the extension.
+    for (const ext of this.hideExtensions) {
+      const suffix = '.' + ext;
+      if (n.length > suffix.length && n.substring(n.length - suffix.length) === suffix) {
+        return true;
+      }
+    }
+    return false;
   }
 
   async addFolder(folder: { name: string, _id: string }) {

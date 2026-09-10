@@ -138,9 +138,9 @@
            monthly figure, the reset date and the remaining counts -- every time it was drawn.
            The explanation belongs on the free-use sign-in page, which someone reads once; a
            bar that sits above the editor while you work only needs to say where you stand. -->
-      Designs <b>{{ freeBar.design }}/{{ freeBar.limit }}</b>
+      Designs <b>{{ freeBar.design }}/{{ freeBar.designLimit }}</b>
       &nbsp;&middot;&nbsp;
-      Off-target <b>{{ freeBar.ot }}/{{ freeBar.limit }}</b>
+      Off-target <b>{{ freeBar.ot }}/{{ freeBar.otLimit }}</b>
     </span>
     <a class="freebar-cta" href="/subscribe">Subscribe for unlimited</a>
     <button class="freebar-x" (click)="freeBarCollapsed = true" title="Collapse">&#9662;</button>
@@ -149,7 +149,7 @@
   <!-- Collapsed form: a corner tab that brings it back. It collapses rather than dismissing,
        so the upgrade path stays one click away without a permanent strip of chrome. -->
   <div class="freetab" *ngIf="freeBar && freeBarCollapsed" (click)="freeBarCollapsed = false">
-    <span>Free plan &middot; designs {{ freeBar.design }}/{{ freeBar.limit }} &middot; off-targets {{ freeBar.ot }}/{{ freeBar.limit }}</span>
+    <span>Free plan &middot; designs {{ freeBar.design }}/{{ freeBar.designLimit }} &middot; off-targets {{ freeBar.ot }}/{{ freeBar.otLimit }}</span>
     <span class="freetab-cta">Subscribe</span>
   </div>
 

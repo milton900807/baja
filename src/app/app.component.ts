@@ -532,13 +532,27 @@ export class AppComponent implements OnInit {
         // Going from subscribed to not-subscribed is news: un-collapse so the badge is seen
         // rather than restored as a corner tab the user already dismissed this session.
         if (!this.freeBar) this.freeBarCollapsed = false;
+        // USED, AND A LIMIT PER METRIC.
+        //
+        // This read `designRemaining` and `offtargetRemaining` into fields the template
+        // rendered as "n/limit", so the numerator counted DOWN while the label said used.
+        // It also used one `limit` for both counters, taken from the server's legacy single
+        // figure, which is the design allowance. Off-target therefore showed remaining over
+        // the wrong limit: "Off-target 100/5" for someone who had run nothing.
+        //
+        // The server sends `design` and `offtarget` as the counts actually used, and
+        // `designLimit` / `offtargetLimit` alongside them. Use those, and fall back to
+        // deriving used from remaining only if an older server is answering.
+        const __n = (v: any, d: number) => (v != null && !isNaN(+v)) ? +v : d;
+        const __designLimit = __n(q.designLimit, __n(q.limit, 5));
+        const __otLimit = __n(q.offtargetLimit, __n(q.limit, 5));
         this.freeBar = {
-          limit: q.limit != null ? q.limit : 5,
-          // designRemaining is the current field; aiRemaining is its old name, still sent for
-          // one release so a client cached mid-deploy does not read undefined.
-          design: q.designRemaining != null ? q.designRemaining
-            : (q.aiRemaining != null ? q.aiRemaining : (q.limit != null ? q.limit : 5)),
-          ot: q.offtargetRemaining != null ? q.offtargetRemaining : (q.limit != null ? q.limit : 5),
+          designLimit: __designLimit,
+          otLimit: __otLimit,
+          design: q.design != null ? __n(q.design, 0)
+            : Math.max(0, __designLimit - __n(q.designRemaining, __n(q.aiRemaining, __designLimit))),
+          ot: q.offtarget != null ? __n(q.offtarget, 0)
+            : Math.max(0, __otLimit - __n(q.offtargetRemaining, __otLimit)),
           resetsOn: q.resetsOn || '',
           // Only "unverified" when a check actually failed to answer -- a plain non-subscriber
           // is not unverified, and saying so would be wrong.
@@ -572,8 +586,11 @@ export class AppComponent implements OnInit {
     try { (window as any).__bajaFreeTier = true; } catch (e) { }
     this.zone.run(() => {
       if (!this.freeBar) this.freeBarCollapsed = false;
+      // The check has not answered, so the usage is unknown. Show none used against the
+      // real limits rather than inventing a figure -- the bar already says "unverified",
+      // and the server caps regardless of what is drawn here.
       this.freeBar = {
-        limit: 5, design: 5, ot: 5, resetsOn: '',
+        designLimit: 5, otLimit: 100, design: 0, ot: 0, resetsOn: '',
         unverified: true
       };
     });

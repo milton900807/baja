@@ -4,6 +4,7 @@ import {
     ViewChild,
     EventEmitter, ChangeDetectorRef, ChangeDetectionStrategy, Output, NgModule, ElementRef, Inject, Input, NgZone
 } from "@angular/core";
+import { DomSanitizer, SafeHtml } from "@angular/platform-browser";
 import { LionEngine } from "../engine/io-engine";
 import { PubComponent } from "./pub-component";
 import { PubComponentListener } from "./pub-component-listener";
@@ -23,8 +24,37 @@ export class HTMLFieldComponent implements OnInit, PubComponent {
     @Input() html: string = '';
     click = null;
     width = '100%'
-    constructor ( private zone:NgZone ) {
-        
+    constructor ( private zone:NgZone, private sanitizer: DomSanitizer ) {
+
+    }
+
+    // STYLE SURVIVES; SCRIPTS DO NOT.
+    //
+    // [innerHTML] runs Angular's HTML sanitizer, whose attribute allowlist contains no
+    // style, no class, no color and no font element -- so EVERY inline style on the markup
+    // these widgets are given was being discarded. The text then inherited whatever colour
+    // the surrounding card set, which in a modal is white, on a white card: the panel was
+    // there and unreadable, and nothing about the markup said why.
+    //
+    // The content comes from the application's own lionscript modules, the same place its
+    // templates come from, so it is trusted the way a template is -- but only after the
+    // parts that could execute are taken out of it. Angular's sanitizer is doing two jobs
+    // at once, and only one of them was wanted here.
+    private scrub(v: any): string {
+        let t = ('' + (v == null ? '' : v));
+        // Elements that execute or embed, paired and unpaired.
+        t = t.replace(/<\s*(script|iframe|object|embed|link|meta|base)\b[\s\S]*?<\s*\/\s*\1\s*>/gi, '');
+        t = t.replace(/<\s*(script|iframe|object|embed|link|meta|base)\b[^>]*>/gi, '');
+        // Handler attributes, which turn an inert-looking element into an executing one.
+        t = t.replace(/\son[a-z]+\s*=\s*"[^"]*"/gi, '');
+        t = t.replace(/\son[a-z]+\s*=\s*'[^']*'/gi, '');
+        t = t.replace(/\son[a-z]+\s*=\s*[^\s>]+/gi, '');
+        // And javascript: wherever a URL is expected.
+        t = t.replace(/(href|src|xlink:href)\s*=\s*(["']?)\s*javascript:[^"'>\s]*/gi, '$1=$2#');
+        return t;
+    }
+    safe(v: any): SafeHtml {
+        return this.sanitizer.bypassSecurityTrustHtml(this.scrub(v));
     }
     
     

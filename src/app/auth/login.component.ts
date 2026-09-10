@@ -343,6 +343,10 @@ export class LoginComponent {
    */
   get clinicMode(): boolean {
     try {
+      // A visitor who explicitly chose the free version wins over the hostname: a share
+      // recipient is sent to /login?free=1, and on gene.clinic that must show the
+      // free-version wording, not the family/clinic pitch.
+      if (this.freeMode) return false;
       if (/(^|[?&])clinic=1(&|$)/.test('' + window.location.search)) return true;
       const h = ('' + window.location.hostname).toLowerCase();
       return h === 'gene.clinic' || h.endsWith('.gene.clinic');

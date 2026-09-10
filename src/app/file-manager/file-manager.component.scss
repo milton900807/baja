@@ -137,3 +137,18 @@ mat-toolbar {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+/* Hand-drawn file-type icons (.baja, .karyotype). Sized and coloured to sit in the same
+   optical place as the Material glyphs beside them, and inheriting currentColor so they
+   follow the theme rather than pinning a hex. */
+.file-type-icon {
+  width: 26px;
+  height: 26px;
+  display: block;
+  color: #0f6e7a;
+  flex: 0 0 auto;
+}
+
+.file-generic-icon {
+  color: #9aa8b2;
+}

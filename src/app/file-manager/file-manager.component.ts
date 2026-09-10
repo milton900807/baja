@@ -46,6 +46,48 @@ export class FileManagerComponent implements OnChanges {
   isDragging = false;
   private ignoreNextClick = false;
   // ---- Native DnD: FILE ----
+  // Extensions whose icon UNIQUELY identifies the type. Only these have the extension
+  // dropped from the label, because only here is the extension repeating what the icon
+  // already said.
+  //
+  // The stricter test matters. .csv and .tsv both draw the same data icon, so stripping
+  // both would render results.csv and results.tsv as two tiles reading "results" with
+  // identical pictures -- the extension is doing the work there, not the icon. Same for
+  // .bigwig and .bam, which share the storage icon. Those keep their extensions and are
+  // listed separately below so they still get an icon.
+  //
+  // Longest first, so ".karyotype.json" is matched before ".karyotype" would be.
+  static readonly UNIQUE_ICON_EXTENSIONS: string[] = [
+    '.karyotype.json', '.karyotype', '.baja',
+    '.timeline', '.ljlpx', '.layout', '.screen',
+    '.ljp', '.ljt', '.ljl', '.pdf'
+  ];
+
+  // Have an icon, but one shared with another type, so the extension stays.
+  static readonly SHARED_ICON_EXTENSIONS: string[] = ['.tsv', '.csv', '.bigwig', '.bam'];
+
+  /** The label for a tile: the file name, without an extension the icon already conveys. */
+  displayName(element: FileElement): string {
+    const name = (element && element.name) ? ('' + element.name) : '';
+    if (!name || element.isFolder) { return name; }
+    const lower = name.toLowerCase();
+    for (const ext of FileManagerComponent.UNIQUE_ICON_EXTENSIONS) {
+      if (lower.endsWith(ext)) {
+        const stripped = name.slice(0, name.length - ext.length);
+        // Never return an empty label: a file actually called ".baja" keeps its name.
+        return stripped.length ? stripped : name;
+      }
+    }
+    return name;
+  }
+
+  /** True when the tile has no type-specific icon, so a generic one is drawn. */
+  isUniconed(element: FileElement): boolean {
+    const lower = (element && element.name ? ('' + element.name) : '').toLowerCase();
+    return !FileManagerComponent.UNIQUE_ICON_EXTENSIONS.some((e) => lower.endsWith(e))
+        && !FileManagerComponent.SHARED_ICON_EXTENSIONS.some((e) => lower.endsWith(e));
+  }
+
   onFileDragStart(event: DragEvent, file: FileElement) {
     if (!file || file.isFolder) return;
 

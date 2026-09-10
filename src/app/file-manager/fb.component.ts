@@ -47,6 +47,10 @@ export class FBComponent implements OnInit, PubComponent {
   backgroundcolor = 'white';
   folderAddedPath;
   filterFunction;
+  // Extensions this browser never lists. A VCF sits next to the design it was called
+  // from and is read by the tools, not opened by hand, so showing it only adds noise
+  // to the folder. Lower-case, no leading dot; set per browser from lionscript.
+  hideExtensions: string[] = [];
   folderDialogFunction;
   folderPath;
   fileclickFunction;
@@ -118,6 +122,13 @@ export class FBComponent implements OnInit, PubComponent {
     }
     if (this.data["filterFunction"]) {
       this.filterFunction = LionEngine.ionfunctions[this.data['filterFunction']]
+    }
+    if (this.data['hideExtensions']) {
+      // Accepts 'vcf', '.vcf', or a list of either.
+      const raw = this.data['hideExtensions'];
+      this.hideExtensions = (Array.isArray(raw) ? raw : [raw])
+        .map((e: any) => String(e == null ? '' : e).trim().toLowerCase().replace(/^\./, ''))
+        .filter((e: string) => e.length > 0);
     }
     if (this.data["columns"]) {
       this.columns = this.data['columns']
@@ -191,6 +202,11 @@ export class FBComponent implements OnInit, PubComponent {
     let nodes = fol['values'];
     if (nodes && nodes.length > 0) {
       for (let n of nodes) {
+        // Folders are never hidden by extension: a folder called "batch.vcf" is
+        // somewhere the user can still navigate into.
+        if (!n['isFolder'] && this.isHidden(n['name'])) {
+          continue;
+        }
         if (this.filterFunction && this.filterFunction(n)) {
           let pnode = await this.fileService.add(n);
         } else {
@@ -201,6 +217,15 @@ export class FBComponent implements OnInit, PubComponent {
     }
     this.updateFileElementQuery();
   }
+  isHidden(name: string): boolean {
+    if (!this.hideExtensions || this.hideExtensions.length === 0) { return false; }
+    const n = String(name == null ? '' : name).toLowerCase();
+    const dot = n.lastIndexOf('.');
+    // A name with no dot, or a dotfile like ".vcf", has no extension to match on.
+    if (dot <= 0) { return false; }
+    return this.hideExtensions.indexOf(n.substring(dot + 1)) >= 0;
+  }
+
   async addFolder(folder: { name: string, _id: string }) {
   }
   removeElement(element: FileElement) {

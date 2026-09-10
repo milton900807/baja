@@ -113,7 +113,19 @@ export class TextFieldComponent implements OnInit, PubComponent, HookFunctionCom
                         }
                         return [];
                     }
-                    return r.map(obj => {
+                    // ONE LINE PER DISTINCT SUGGESTION. These endpoints return one row per
+                    // JOIN, not per thing: /gene-lookup carries a row for every synonym a
+                    // gene has, so a search for SOD offered SOD1 three times over. Whatever
+                    // the row count, what the list is offering is the set of distinct
+                    // strings -- an option that reads identically to the one above it is
+                    // not a second choice, it is the same choice again.
+                    //
+                    // First occurrence wins, so the endpoint's own ordering (best match
+                    // first) survives. Empty rows are dropped: a row carrying none of the
+                    // requested fields rendered as a blank, unselectable line.
+                    const seen = new Set<string>();
+                    const outv: string[] = [];
+                    for (const obj of r) {
                         let t = '';
                         for (const f of fields) {
                             // Skip a field the row does not carry: it used to render the string
@@ -123,8 +135,12 @@ export class TextFieldComponent implements OnInit, PubComponent, HookFunctionCom
                         }
                         if (t.endsWith(', ')) { t = t.substring(0, t.length - 2); }
                         else if (t.endsWith(',')) { t = t.substring(0, t.length - 1); }
-                        return t;
-                    });
+                        if (!t) { continue; }
+                        if (seen.has(t)) { continue; }
+                        seen.add(t);
+                        outv.push(t);
+                    }
+                    return outv;
                 };
             }
         }

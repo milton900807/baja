@@ -37,7 +37,7 @@ import { b2cPolicies, rarePolicies } from '../onedrive/auth-config';
            product. -->
       <div class="beta-banner" role="status" *ngIf="clinicMode || freeMode">
         <span class="beta-tag">{{ clinicMode ? 'gene.clinic' : 'Free version' }}</span>
-        <span class="beta-text">{{ clinicMode ? 'For families, patients and physicians'
+        <span class="beta-text">{{ clinicMode ? 'For a deeper understanding of genetic medicine'
           : 'Sign in to continue' }}</span>
       </div>
 

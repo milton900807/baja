@@ -437,9 +437,23 @@ export class AppComponent implements OnInit {
         }
         this.newsSplashTimer = setTimeout(tick, 250);
       };
-      // A beat before the first check: the canvas can exist before anything is drawn on it,
-      // and closing in the same frame it appears makes the paper flash rather than show.
+      // A beat before the first readiness check: the canvas can exist before anything is
+      // drawn on it, and closing in the same frame it appears makes the paper flash.
       this.newsSplashTimer = setTimeout(tick, 1200);
+      // But watch for a SIGN-IN redirect straight away, not on that beat: the root of the app
+      // boots the paper and then bounces an anonymous visitor to /login (or /subscribe), so
+      // without this the paper flashes over the sign-in for over a second. Polls fast for a
+      // few seconds and takes the paper down the instant the view is a sign-in/checkout page.
+      const signInWatch = () => {
+        if (!this.newsIsSplash) return;
+        if (onSignInPage()) {
+          this.newsIsSplash = false;
+          this.zone.run(() => (this.showNews = false));
+          return;
+        }
+        if (Date.now() - t0 < 4000) setTimeout(signInWatch, 100);
+      };
+      setTimeout(signInWatch, 60);
     } catch (e) { }
   }
 

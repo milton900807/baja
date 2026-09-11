@@ -32,7 +32,7 @@ export class HTMLFieldComponent implements OnInit, PubComponent {
     //
     // [innerHTML] runs Angular's HTML sanitizer, whose attribute allowlist contains no
     // style, no class, no color and no font element -- so EVERY inline style on the markup
-    // these widgets are given was being discarded. The text then inherited whatever colour
+    // these widgets are given was being discarded. The text then inherited whatever color
     // the surrounding card set, which in a modal is white, on a white card: the panel was
     // there and unreadable, and nothing about the markup said why.
     //

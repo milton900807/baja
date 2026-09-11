@@ -246,7 +246,7 @@ lion-app #___dashboard>app-canvas {
 /* Matte button "kits". Kept under the --metal-* names so every existing
    consumer (mt-button, selection-list, carousel, title, …) automatically
    renders flat: all four gradient stops are identical, so any
-   linear-gradient(top → bot) collapses to a solid colour, and --metal-gloss
+   linear-gradient(top → bot) collapses to a solid color, and --metal-gloss
    is 0 so gloss highlights disappear. Change once here → all buttons match. */
 @mixin metal-light {
   /* Navy buttons with white text — high contrast on the white backgrounds. */

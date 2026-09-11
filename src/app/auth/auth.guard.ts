@@ -24,10 +24,16 @@ export const authGuard: CanActivateFn = async (route, state): Promise<boolean | 
   //                                    avoid.
   try {
     const u = (state.url || '').toLowerCase();
+    // THE ONLY PAGES THAT OPEN WITHOUT SIGN-IN: the read-only viewer (shared links and the
+    // public IP genome viewer, /public/ip -> /app/manchester/viewer?ip=1). Everything else
+    // requires login and is bounced to /login on the same host by the checks below.
     if (u.includes('/manchester/viewer') || u.includes('manchester%2fviewer')) return true;
     // The clinical-library-public exemption is gone: the library is subscribers-only, and a
     // route that skipped sign-in was a way around that gate rather than a separate product.
-    if (u.includes('/free/editor') || u.includes('free%2feditor')) return true;
+    //
+    // The free editor is NOT exempt any more: it is "behind sign-in but not behind payment"
+    // (see the /app/free bypass further down), so an anonymous visitor is sent to /login and
+    // only the subscription check is skipped once they are signed in.
   } catch { /* ignore */ }
 
   // Don't gate the app until at least one OIDC provider is actually configured — this
@@ -43,7 +49,11 @@ export const authGuard: CanActivateFn = async (route, state): Promise<boolean | 
       if (u && u.email) return true;
     } catch { /* fall through to /login */ }
     try { sessionStorage.setItem('oidc.returnTo', state.url); } catch { /* ignore */ }
-    return router.parseUrl('/login');
+    // A free-editor visitor is bounced into the FREE sign-in (/login?free=1) so the
+    // "continue without paying" path is offered; everything else goes to the plain
+    // /login. Either way it is the same host — parseUrl keeps the current origin.
+    const isFree = /^\/app\/free(\/|$)/.test(('' + state.url).toLowerCase().split('?')[0]);
+    return router.parseUrl(isFree ? '/login?free=1' : '/login');
   }
 
   // The FREE TIER is behind sign-in but not behind payment. Without this, a signed-in

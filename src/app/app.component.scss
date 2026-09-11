@@ -28,7 +28,7 @@
 }
 
 .custom-toolbar {
-  /* Everything on the bar sits on one centred line -- the brand text, the text buttons and the
+  /* Everything on the bar sits on one centerd line -- the brand text, the text buttons and the
      icon button -- so an icon cannot drift off the baseline of the words next to it. */
   display: flex;
   align-items: center;
@@ -147,7 +147,7 @@
   flex: 0 0 auto;
 }
 
-/* Icon button, sized and centred exactly like .news-btn beside it, so the two glyphs
+/* Icon button, sized and centerd exactly like .news-btn beside it, so the two glyphs
    sit on the same line however tall the text buttons around them are. */
 .cite-btn {
   flex: 0 0 auto;
@@ -404,8 +404,8 @@
 /* Maximised: the paper fills the viewport rather than sitting in it. */
 .news-paper {
   position: relative;
-  /* About 30% smaller than the full backdrop, and centred in it -- the backdrop is already
-     a centring flex container, so shrinking the sheet is all that is needed. A max-width
+  /* About 30% smaller than the full backdrop, and centerd in it -- the backdrop is already
+     a centering flex container, so shrinking the sheet is all that is needed. A max-width
      keeps it from stretching into a broadsheet on a wide monitor. */
   width: 70%;
   max-width: 780px;
@@ -641,7 +641,7 @@
 }
 
 /* Material gives an icon button its own line-height and the icon another, so the glyph sat
-   off the text baseline of the buttons either side of it. Centre it with flex instead and
+   off the text baseline of the buttons either side of it. Center it with flex instead and
    zero both line-heights, so it lines up with the text buttons whatever their height. */
 .news-btn,
 .video-btn {
@@ -672,7 +672,7 @@
   margin: 0;
 }
 
-/* The ripple/touch-target overlay Material injects is centred on the button box, so it does
+/* The ripple/touch-target overlay Material injects is centerd on the button box, so it does
    not need adjusting -- but it must not stretch the button and shift the icon. */
 .news-btn .mat-mdc-button-persistent-ripple,
 .news-btn .mat-mdc-focus-indicator { inset: 0; }

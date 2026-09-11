@@ -55,7 +55,7 @@ function __bajaWorkIndicator(): HTMLElement {
 let __bajaWorkTimer: any = null;
 let __bajaWorkSince = 0;
 
-// The indicator was previously hard-disabled, because a permanent top-centre "Working…" blob
+// The indicator was previously hard-disabled, because a permanent top-center "Working…" blob
 // with no information in it is just something covering the canvas. The rule now is narrower:
 // it appears ONLY when a script has set a context-specific status describing what is running
 // and where it is going. No status, no badge — so the generic version cannot come back, while

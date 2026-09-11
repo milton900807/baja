@@ -400,6 +400,10 @@ export class AppComponent implements OnInit {
     try {
       const p = ('' + window.location.pathname).toLowerCase();
       if (/^\/(login|auth|subscribe|signup)(\/|$)/.test(p)) return;
+      // gene.clinic is a clinical sign-in, not the Baja app booting: no "Baja Times" splash
+      // there, including at the root that redirects to the sign-in (and /login, /subscribe).
+      const host = ('' + window.location.hostname).toLowerCase();
+      if (host.indexOf('gene.clinic') >= 0) return;
 
       this.newsIsSplash = true;
       this.openNews();
@@ -412,11 +416,21 @@ export class AppComponent implements OnInit {
       // finishes in a way this cannot see, the paper still goes away rather than sitting over
       // a dead page.
       const t0 = Date.now();
+      const onSignInPage = () => {
+        try {
+          const pp = ('' + window.location.pathname).toLowerCase();
+          const hh = ('' + window.location.hostname).toLowerCase();
+          return /^\/(login|auth|subscribe|signup)(\/|$)/.test(pp) || hh.indexOf('gene.clinic') >= 0;
+        } catch (e) { return false; }
+      };
       const tick = () => {
         if (!this.newsIsSplash) return;              // the user took it over
+        // If the view has moved to sign-in or checkout (e.g. the root redirected to /login,
+        // or the user navigated there), take the paper down at once — "the presses are
+        // running" must never sit over the sign-in.
         let ready = false;
         try { ready = !!document.querySelector('canvas') || !!(window as any).__bajaAppReady; } catch (e) { }
-        if (ready || (Date.now() - t0) > 12000) {
+        if (ready || onSignInPage() || (Date.now() - t0) > 12000) {
           this.newsIsSplash = false;
           this.zone.run(() => (this.showNews = false));
           return;

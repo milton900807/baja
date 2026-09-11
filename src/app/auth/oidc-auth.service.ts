@@ -24,6 +24,13 @@ export interface AuthSession {
 
 const TX_KEY = 'oidc.tx';           // in-flight authorize transaction (sessionStorage)
 const SESSION_KEY = 'oidc.session'; // persisted session (localStorage)
+const LAST_ACTIVE_KEY = 'oidc.lastActive'; // last user interaction, ms epoch (localStorage, shared by tabs)
+
+// Sign the user out after this long with no interaction. localStorage is shared across
+// tabs, so activity in any tab keeps every tab alive, and a tab that was closed still
+// counts down: reopening the app 90 minutes later lands on /login, not in the editor.
+export const IDLE_LOGOUT_MS = 60 * 60 * 1000;
+const IDLE_CHECK_MS = 30 * 1000;
 
 /**
  * Framework-agnostic OAuth2 / OIDC client implementing the Authorization Code flow with
@@ -133,6 +140,7 @@ export class OidcAuthService {
     session.user = await this.loadUser(p, session, tokens);
 
     localStorage.setItem(SESSION_KEY, JSON.stringify(session));
+    this.touchActivity();
     return session;
   }
 
@@ -250,7 +258,94 @@ export class OidcAuthService {
 
   logout(redirect = '/login'): void {
     localStorage.removeItem(SESSION_KEY);
+    localStorage.removeItem(LAST_ACTIVE_KEY);
     sessionStorage.removeItem(TX_KEY);
     if (redirect) window.location.assign(redirect);
+  }
+
+  // --- inactivity sign-out ---------------------------------------------------------------
+  //
+  // "Inactive" means no pointer, keyboard, touch or scroll input in ANY tab of this app for
+  // IDLE_LOGOUT_MS. A long-running design job or an open file is not activity: a person who
+  // walked away is still signed out, which is the point of the rule.
+  //
+  // Where the decision is made: in the browser, because that is the only place a session
+  // exists. The API has no session store -- it trusts the email each request carries -- so
+  // a server-side timer could only refuse requests, and would still leave the tab showing a
+  // signed-in editor. Clearing localStorage and going to /login is what a sign-out IS here.
+
+  private idleTimer: any = null;
+  private idleBound = false;
+  private lastTouchWrite = 0;
+
+  private lastActive(): number {
+    try { return +(localStorage.getItem(LAST_ACTIVE_KEY) || 0) || 0; } catch { return 0; }
+  }
+
+  /** Record that the user did something. Throttled: one localStorage write per 5 s at most. */
+  touchActivity(): void {
+    const now = Date.now();
+    if (now - this.lastTouchWrite < 5000) return;
+    this.lastTouchWrite = now;
+    try { localStorage.setItem(LAST_ACTIVE_KEY, String(now)); } catch { /* ignore */ }
+  }
+
+  /** True when a signed-in session has gone longer than IDLE_LOGOUT_MS without input. */
+  idleExpired(): boolean {
+    if (!this.isAuthenticated()) return false;
+    const last = this.lastActive();
+    if (!last) {
+      // A session from before this rule shipped has no timestamp. Start its clock now rather
+      // than signing everyone out on the first deploy.
+      try { localStorage.setItem(LAST_ACTIVE_KEY, String(Date.now())); } catch { /* ignore */ }
+      return false;
+    }
+    return Date.now() - last > IDLE_LOGOUT_MS;
+  }
+
+  /** Sign out for inactivity and come back to this page after the next sign-in. */
+  private idleLogout(): void {
+    try {
+      const here = window.location.pathname + window.location.search;
+      if (here && !/^\/(login|auth)(\/|\?|$)/.test(here)) sessionStorage.setItem('oidc.returnTo', here);
+    } catch { /* ignore */ }
+    this.logout('/login?reason=idle');
+  }
+
+  /**
+   * Start watching for inactivity. Safe to call more than once; only the first call binds.
+   * Checks every IDLE_CHECK_MS, and immediately when the tab regains focus or becomes
+   * visible, so a laptop woken after lunch is bounced at once rather than up to 30 s later.
+   */
+  startIdleWatch(): void {
+    if (this.idleBound || typeof window === 'undefined') return;
+    this.idleBound = true;
+
+    const touch = () => this.touchActivity();
+    for (const ev of ['mousedown', 'mousemove', 'keydown', 'wheel', 'touchstart', 'scroll', 'pointerdown']) {
+      window.addEventListener(ev, touch, { passive: true, capture: true });
+    }
+
+    const check = () => { if (this.idleExpired()) this.idleLogout(); };
+    window.addEventListener('focus', check);
+    document.addEventListener('visibilitychange', () => { if (!document.hidden) check(); });
+    // Another tab signed out, by hand or for idling: follow it. Plain /login here, because
+    // this tab cannot tell which it was and "inactivity" would be the wrong reason to give
+    // after a deliberate sign-out.
+    window.addEventListener('storage', (e: StorageEvent) => {
+      if (e.key !== SESSION_KEY || e.newValue !== null) return;
+      if (/^\/(login|auth)(\/|\?|$)/.test(window.location.pathname)) return;
+      this.logout('/login');
+    });
+
+    this.idleTimer = setInterval(check, IDLE_CHECK_MS);
+    // A session that was already stale when the page opened is not allowed to boot the app.
+    if (this.isAuthenticated()) { this.touchActivityIfFresh(); check(); }
+  }
+
+  /** On boot, only refresh the timestamp when the session is still within the window. */
+  private touchActivityIfFresh(): void {
+    const last = this.lastActive();
+    if (!last || Date.now() - last <= IDLE_LOGOUT_MS) { this.lastTouchWrite = 0; this.touchActivity(); }
   }
 }

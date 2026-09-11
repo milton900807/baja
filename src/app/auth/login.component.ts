@@ -127,6 +127,9 @@ import { b2cPolicies, rarePolicies } from '../onedrive/auth-config';
           (e.g. <code>oidc.google.clientId</code>).</p>
       </div>
 
+      <div class="notice" *ngIf="idleSignedOut && !error" role="status">
+        You were signed out after an hour of inactivity. Sign in again to continue.
+      </div>
       <div class="error" *ngIf="error">{{ error }}</div>
 
       <div class="signup">
@@ -292,6 +295,10 @@ import { b2cPolicies, rarePolicies } from '../onedrive/auth-config';
       margin-top:16px; padding:10px 12px; border-radius:9px; font-size:13px;
       color:#ffd9c2; background: rgba(255,90,40,0.14); border:1px solid rgba(255,140,26,0.4);
     }
+    .notice {
+      margin-top:16px; padding:10px 12px; border-radius:9px; font-size:13px;
+      color:#bfeef6; background: rgba(18,194,224,0.10); border:1px solid rgba(18,194,224,0.45);
+    }
     .signup { margin-top:20px; text-align:center; }
     .secure { font-size:11.5px; color:#7e97a6; }
     .su-row {
@@ -385,6 +392,13 @@ export class LoginComponent {
   }
 
   get hasConfigured(): boolean { return this.providers.length > 0; }
+
+  // /login?reason=idle: OidcAuthService.idleLogout sent us here. Say why, once, so an
+  // empty editor after lunch reads as a rule and not as a crash.
+  get idleSignedOut(): boolean {
+    try { return /(^|[?&])reason=idle(&|$)/.test('' + window.location.search); }
+    catch (e) { return false; }
+  }
 
   // Open a public, no-login feature tour: scientist carousel (index.html) or the
   // plain-language "for the curious" tour (for-you.html), in its own window.

@@ -316,6 +316,9 @@ export class AppComponent implements OnInit {
     this.host = window.location.hostname;
     IoniScriptEngine.app = this;
 
+    // Sign out after an hour without input, in every tab. See OidcAuthService.startIdleWatch.
+    try { this.oidc.startIdleWatch(); } catch (e) { console.warn('idle watch failed to start', e); }
+
     // Apply the saved/default theme and expose a global hook so lionscript
     // menus can switch themes, e.g. window.setTheme('dark').
     this.theme.init();

@@ -958,6 +958,16 @@ export class AppComponent implements OnInit {
   }
 
   get oidcUser(): AuthUser | null { return this.oidc.getUser(); }
+  // Signed in either through OIDC (a user with an email) or the MSAL path. Used to gate the
+  // toolbar menu: an anonymous visitor (the public IP viewer, a free/viewer link) sees the
+  // header but cannot open the app menu.
+  get isSignedIn(): boolean {
+    try {
+      const u = this.oidcUser;
+      if (u && (u as any).email) return true;
+      return !!(this.auth && (this.auth as any).authenticated);
+    } catch (e) { return false; }
+  }
   get oidcInitials(): string {
     const u = this.oidcUser;
     const s = (u?.name || u?.email || '').trim();

@@ -5,7 +5,9 @@
     <img src="assets/logos/baja-logo.png" class="baja-brand-logo"
       style="width:26px;height:26px;margin-right:8px;vertical-align:middle;flex:0 0 auto;" />
 
-    <button mat-icon-button [matMenuTriggerFor]="menu">
+    <button mat-icon-button [matMenuTriggerFor]="menu" [disabled]="!isSignedIn"
+      [title]="isSignedIn ? 'Menu' : 'Sign in to use the menu'"
+      [attr.aria-label]="isSignedIn ? 'Menu' : 'Menu (sign in to use)'">
       <mat-icon>menu</mat-icon>
     </button>
 

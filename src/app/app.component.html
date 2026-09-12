@@ -60,6 +60,14 @@
               title="Paste a recorded script and run it" aria-label="Play a recorded script">
         <mat-icon>play_arrow</mat-icon>
       </button>
+      <!-- The other kind of recording: the screen, to a video file. A script replays live
+           and stays current; a video is pixel-exact and includes every panel. Both, rather
+           than one standing in for the other. -->
+      <button mat-icon-button class="vid-btn" (click)="recordVideo()"
+              title="Record the screen to a video file (asks which tab to share)"
+              aria-label="Record the screen to a video file">
+        <mat-icon>videocam</mat-icon>
+      </button>
     </ng-container>
 
     <!-- Signed-in user (OIDC providers): chip + sign-out -->

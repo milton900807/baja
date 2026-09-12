@@ -1035,6 +1035,14 @@ export class AppComponent implements OnInit {
     }
     try { h.record(); } catch (e) { console.warn('record failed', e); }
   }
+  // VIDEO, which needs no graph at all. Unlike the two above it does not go through the
+  // screen's hook: getDisplayMedia records the TAB, so it works on any route, including
+  // ones with no canvas on them, and routing it through a hook would make it unavailable
+  // exactly where the header is the only thing present.
+  recordVideo() {
+    try { IoniScriptEngine.le.exec('manchester/screen-recorder.js'); }
+    catch (e) { console.warn('screen recorder failed', e); }
+  }
   playRecording() {
     const h = this.recorderHook();
     if (!h || typeof h.play !== 'function') {

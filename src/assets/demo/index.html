@@ -76,6 +76,19 @@
       background: linear-gradient(135deg,#16c47f,#12a7e8); box-shadow: 0 8px 22px rgba(18,167,232,0.4); }
     .cta:hover { filter: brightness(1.05); }
   </style>
+  <!-- Google tag (gtag.js) -- Google Ads AW-18447571090.
+       Last thing before </head> so it is in place before the app boots. This is an
+       ADS tag: it fires one page_view on load and is what conversion actions are
+       reported against. The app is a single-page Angular build, so a route change
+       inside it is not a new page load and will NOT send another page_view -- if
+       per-view reporting is ever wanted, it has to be sent from the router. -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=AW-18447571090"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'AW-18447571090');
+  </script>
 </head>
 
 <body>

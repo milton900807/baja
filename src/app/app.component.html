@@ -48,6 +48,20 @@
     </mat-menu>
     <span style="flex: 1 1 auto" class="flexExpand"></span>
 
+    <!-- Record and play, for the one account that authors demos. Immediately before the
+         account chip, so they read as belonging to that person rather than to the app. -->
+    <ng-container *ngIf="isRecorderUser">
+      <button mat-icon-button class="rec-btn" (click)="startRecording()"
+              title="Record what you do, then emit a script that replays it"
+              aria-label="Record a session">
+        <mat-icon>fiber_manual_record</mat-icon>
+      </button>
+      <button mat-icon-button class="play-btn" (click)="playRecording()"
+              title="Paste a recorded script and run it" aria-label="Play a recorded script">
+        <mat-icon>play_arrow</mat-icon>
+      </button>
+    </ng-container>
+
     <!-- Signed-in user (OIDC providers): chip + sign-out -->
     <ng-container *ngIf="oidcUser as u">
       <button mat-button class="oidc-chip" [matMenuTriggerFor]="oidcMenu" title="{{ u.email || u.name }}">

@@ -1000,6 +1000,50 @@ export class AppComponent implements OnInit {
     this.oidc.logout('/login');
   }
 
+  // ---- RECORD AND PLAY, IN THE HEADER, FOR ONE ACCOUNT ----------------------
+  //
+  // The editor already carries these, but they are authoring tools for building demos and
+  // they are wanted from wherever the app happens to be rather than only on the screen that
+  // owns them. The header is the one row present on every screen, so they go beside the
+  // account chip.
+  //
+  // Compared trimmed and case-insensitively: the token carries whatever the provider sent,
+  // and a stray capital would hide the buttons from the one person meant to see them with
+  // nothing on screen to explain why.
+  //
+  // This is a UI convenience and NOT a permission. Both scripts live in baja-apps and
+  // anyone who knows their names can run them; nothing here is a security control.
+  private static readonly RECORDER_USERS = ['jeffmilto@gmail.com'];
+  get isRecorderUser(): boolean {
+    try {
+      const e = ('' + (this.oidcUser?.email || '')).trim().toLowerCase();
+      return !!e && AppComponent.RECORDER_USERS.indexOf(e) >= 0;
+    } catch (e) { return false; }
+  }
+  // The screen that owns a graph registers these when it starts; the header only calls
+  // them. Without a registration there is nothing to record, which is the honest state on
+  // a route with no canvas on it, and the button says so rather than failing silently.
+  private recorderHook(): any {
+    try { return (window as any).__bajaRecordHook || null; } catch (e) { return null; }
+  }
+  get recorderReady(): boolean { return !!this.recorderHook(); }
+  startRecording() {
+    const h = this.recorderHook();
+    if (!h || typeof h.record !== 'function') {
+      window.alert('Open the editor or the genome viewer first: recording follows what happens on a canvas.');
+      return;
+    }
+    try { h.record(); } catch (e) { console.warn('record failed', e); }
+  }
+  playRecording() {
+    const h = this.recorderHook();
+    if (!h || typeof h.play !== 'function') {
+      window.alert('Open the editor first: a recorded script is played back there.');
+      return;
+    }
+    try { h.play(); } catch (e) { console.warn('play failed', e); }
+  }
+
   // Account menu → show today's Claude-search count (runs the self-contained lionscript, which
   // reads py/usage/claude-usage-report.py for the signed-in user and pops a summary modal).
   showClaudeUsage() {

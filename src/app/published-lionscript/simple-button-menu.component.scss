@@ -1,7 +1,34 @@
+/* NAVY, LIKE EVERY OTHER BAR IN THE APP. A Material toolbar defaults to the theme's
+   light surface with dark text, which left this row reading as part of the browser
+   chrome while the genome viewer's own toolbar directly below it was navy. Two bars
+   stacked in two different colour schemes look like two applications. Same navy, same
+   hairline, same soft shadow as the button-menu panel; the foreground is set on the
+   host and inherited, and the icons and labels are forced because Material sets its
+   own colour on both. */
 .toolbar {
   display: flex;
   align-items: center;
   padding: 0 8px;
+
+  background: #0b2545;
+  color: #ffffff;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.35);
+
+  button {
+    color: #ffffff;
+  }
+
+  mat-icon,
+  .mat-icon {
+    color: #ffffff;
+  }
+
+  /* The ripple and hover wash Material paints are tuned for a light surface and
+     disappear on navy; a white overlay is the same gesture the other navy buttons use. */
+  button:hover {
+    background: rgba(255, 255, 255, 0.12);
+  }
 
   .left-buttons {
     display: flex;

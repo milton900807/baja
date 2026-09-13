@@ -28,8 +28,15 @@ import { PubComponentListener } from '../pub-component-listener';
     </div>
     `,
     styles: [
-        'canvas { border: 0px solid black; }',
-        '.baja-progress-wrap { display: flex; flex-direction: column; align-items: center; gap: 12px; }',
+        // CENTRED WHATEVER IS AROUND IT. The wrapper centres its children, which only
+        // centres the bar when the wrapper itself spans the panel -- and a custom element
+        // with no display of its own does not, so the bar drifted left of the text above
+        // it. The host is a block at full width, the wrapper fills it, and the canvas
+        // carries `margin: 0 auto` as well, so it lands in the middle under any of the
+        // layouts that host it (a card row, a flex column, a bare div).
+        ':host { display: block; width: 100%; }',
+        'canvas { border: 0px solid black; display: block; margin: 0 auto; }',
+        '.baja-progress-wrap { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; gap: 12px; }',
         '.baja-news { width: 100%; display: flex; justify-content: center; }',
         `.baja-news-card {
             width: min(560px, 86vw);

@@ -61,9 +61,55 @@ import { PubComponentListener } from "./pub-component-listener";
             display: none;
           }`,
 
-        // Slimmer separators + tropical button text.
+        // Slimmer separators.
         `hr { border: 0; border-top: 1px solid rgba(26,163,189,0.25); margin: 6px 0; }`,
-        `:host ::ng-deep .btn-group button { color: #0a2540; }`
+
+        // BUTTONS THAT LOOK LIKE BUTTONS.
+        //
+        // These were mat-button: text on the background, no edge, no fill. In a panel that
+        // is already a column of labels and prose the only thing marking the one thing you
+        // can PRESS was that it happened to be in capitals, and people were reading past
+        // it. They are filled and edged now, with room around them, so the action is the
+        // most visible thing in the widget rather than the least.
+        //
+        // A button carrying kind: 'secondary' is outlined instead of filled -- the way out
+        // of a panel should be as easy to find as the way on, and not as loud.
+        `.btn-group { display: flex; flex-wrap: wrap; gap: 8px; padding: 2px 0 4px; }`,
+        `:host ::ng-deep .btn-group button.ip-btn.mat-mdc-button,
+         :host ::ng-deep .btn-group button.ip-btn {
+            min-width: 96px;
+            height: 32px;
+            padding: 0 18px;
+            border-radius: 6px;
+            border: 1px solid #0b2545;
+            background: #0b2545;
+            color: #ffffff;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.2px;
+            line-height: 30px;
+            box-shadow: 0 2px 6px rgba(11,37,69,0.28);
+            cursor: pointer;
+          }`,
+        `:host ::ng-deep .btn-group button.ip-btn .mdc-button__label { color: inherit; }`,
+        `:host ::ng-deep .btn-group button.ip-btn:hover {
+            background: #143a63;
+            border-color: #143a63;
+            box-shadow: 0 4px 10px rgba(11,37,69,0.34);
+          }`,
+        `:host ::ng-deep .btn-group button.ip-btn:active { box-shadow: 0 1px 3px rgba(11,37,69,0.34); }`,
+        `:host ::ng-deep .btn-group button.ip-btn:focus-visible { outline: 2px solid #1aa3bd; outline-offset: 2px; }`,
+        `:host ::ng-deep .btn-group button.ip-btn.ip-btn-secondary,
+         :host ::ng-deep .btn-group button.ip-btn-secondary.mat-mdc-button {
+            background: #ffffff;
+            color: #0b2545;
+            border: 1px solid #b7c4d2;
+            box-shadow: none;
+          }`,
+        `:host ::ng-deep .btn-group button.ip-btn.ip-btn-secondary:hover {
+            background: #eef3f8;
+            border-color: #0b2545;
+          }`
     ]
 
 

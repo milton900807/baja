@@ -60,14 +60,9 @@
               title="Paste a recorded script and run it" aria-label="Play a recorded script">
         <mat-icon>play_arrow</mat-icon>
       </button>
-      <!-- The other kind of recording: the screen, to a video file. A script replays live
-           and stays current; a video is pixel-exact and includes every panel. Both, rather
-           than one standing in for the other. -->
-      <button mat-icon-button class="vid-btn" (click)="recordVideo()"
-              title="Record the screen to a video file (asks which tab to share)"
-              aria-label="Record the screen to a video file">
-        <mat-icon>videocam</mat-icon>
-      </button>
+      <!-- The other kind of recording -- the screen, to a video file -- is in the account
+           menu below rather than here. Its controls were sitting on top of the application
+           they were recording, which is the one place they must never be. -->
     </ng-container>
 
     <!-- TUTORIALS, for anyone signed in. A saved recording plays back on the screen in
@@ -95,6 +90,15 @@
         </div>
         <button mat-menu-item (click)="showClaudeUsage()">
           <mat-icon>insights</mat-icon><span>Credits usage</span>
+        </button>
+        <!-- SCREEN RECORDING, START AND STOP, IN A MENU. It was a header button with a
+             floating badge carrying its own Stop, both of which sat over the part of the
+             application being recorded. A menu item covers nothing: it is only on screen
+             while the menu is open, and the menu is not what anyone is demonstrating. The
+             label says which of the two it will do, read when the menu opens. -->
+        <button mat-menu-item *ngIf="isRecorderUser" (click)="recordVideo()">
+          <mat-icon>{{ videoRecording ? 'stop_circle' : 'videocam' }}</mat-icon>
+          <span>{{ videoRecording ? 'Stop screen recording' : 'Record screen to video' }}</span>
         </button>
         <button mat-menu-item (click)="oidcSignOut()">
           <mat-icon>logout</mat-icon><span>Sign out</span>

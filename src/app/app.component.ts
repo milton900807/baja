@@ -1043,6 +1043,13 @@ export class AppComponent implements OnInit {
     try { IoniScriptEngine.le.exec('manchester/screen-recorder.js'); }
     catch (e) { console.warn('screen recorder failed', e); }
   }
+  // Which of the two the menu item is about to do. The recorder publishes its own state,
+  // and a menu is built when it opens, so reading it here is enough -- there is nothing to
+  // subscribe to and nothing to keep in step.
+  get videoRecording(): boolean {
+    try { return !!((window as any).__bajaVideoRec && (window as any).__bajaVideoRec.on); }
+    catch (e) { return false; }
+  }
   playRecording() {
     const h = this.recorderHook();
     if (!h || typeof h.play !== 'function') {

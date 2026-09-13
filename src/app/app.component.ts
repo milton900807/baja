@@ -1052,6 +1052,17 @@ export class AppComponent implements OnInit {
     try { h.play(); } catch (e) { console.warn('play failed', e); }
   }
 
+  // TUTORIALS. Everything about which tutorials to offer depends on what is on screen,
+  // and the header does not know what that is -- the screen does, through the same hook
+  // the Record button uses. So this opens the library and lets it ask.
+  // NOT the video page above: those are recordings of a screen, made once and watched.
+  // These are recordings of the APPLICATION, saved by whoever did the work, and they play
+  // back on the live screen in front of you.
+  openSavedTutorials() {
+    try { IoniScriptEngine.le.exec('manchester/tutorials.js', { mode: 'browse' }); }
+    catch (e) { console.warn('tutorials failed', e); }
+  }
+
   // Account menu → show today's Claude-search count (runs the self-contained lionscript, which
   // reads py/usage/claude-usage-report.py for the signed-in user and pops a summary modal).
   showClaudeUsage() {

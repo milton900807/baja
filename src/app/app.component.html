@@ -70,6 +70,16 @@
       </button>
     </ng-container>
 
+    <!-- TUTORIALS, for anyone signed in. A saved recording plays back on the screen in
+         front of you, and the library ranks by what that screen currently is -- so the
+         button is in the header rather than inside one screen's menus: it is the same
+         question wherever it is asked, and the answer is different in each place. -->
+    <button *ngIf="oidcUser" mat-icon-button class="tut-btn" (click)="openSavedTutorials()"
+            title="Tutorials for what is on screen — they play back here"
+            aria-label="Tutorials for this screen">
+      <mat-icon>school</mat-icon>
+    </button>
+
     <!-- Signed-in user (OIDC providers): chip + sign-out -->
     <ng-container *ngIf="oidcUser as u">
       <button mat-button class="oidc-chip" [matMenuTriggerFor]="oidcMenu" title="{{ u.email || u.name }}">

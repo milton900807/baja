@@ -22,6 +22,10 @@ export class SimpleFileDropComponent implements OnInit, OnChanges, PubComponent 
     resolveFunction: any;
     title: string;
     fileFunction;
+    // Set only when the panel that opened this said what leaving means. Without it there
+    // is no Cancel, because a Cancel that does nothing is worse than no Cancel at all.
+    cancelFunction;
+    showCancel = false;
 
 
     init(ionEngine: IoniScriptManager): string {
@@ -40,6 +44,10 @@ export class SimpleFileDropComponent implements OnInit, OnChanges, PubComponent 
             if (this.data['fileFunction']) {
                 this.fileFunction = LionEngine.ionfunctions[this.data['fileFunction']]
             }
+            if (this.data['cancelFunction']) {
+                this.cancelFunction = LionEngine.ionfunctions[this.data['cancelFunction']]
+                this.showCancel = !!this.cancelFunction;
+            }
         }
     }
 
@@ -52,9 +60,16 @@ export class SimpleFileDropComponent implements OnInit, OnChanges, PubComponent 
         }
     }
 
+    onCancel(): void {
+        if (this.cancelFunction) {
+            this.cancelFunction();
+        }
+    }
+
     onUpload(): void {
         if (!this.selectedFile) {
-            alert('Please select a file before uploading.');
+            // The button is disabled until a file is chosen, so this is a guard rather
+            // than a message anyone should ever see.
             return;
         }
 

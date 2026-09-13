@@ -28,3 +28,93 @@
     width: 100%;
   }
   
+/* BUTTONS THAT LOOK LIKE BUTTONS, AND A WAY OUT BESIDE THE WAY ON.
+   Upload was a bare <button>: the browser's default chrome, the same grey as the panel
+   it sat on, full width and unmarked, so the one thing to press in this window was the
+   hardest thing in it to find. It is filled navy with a cyan edge now -- the same button
+   every other panel in the application uses -- and it is disabled until a file has
+   actually been chosen, so pressing it can no longer raise an alert saying so.
+
+   Cancel appears only where the panel that opened this said what leaving means
+   (data.cancelFunction); a window with no way back is worse than one with none offered. */
+.file-upload-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.file-upload-container button.fu-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: auto;
+  min-width: 110px;
+  min-height: 35px;
+  margin-top: 0;
+  padding: 6px 18px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  color: #eaf6f9;
+  background: #0a2540;
+  border: 1px solid #1aa3bd;
+  border-radius: 6px;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.18);
+  cursor: pointer;
+}
+
+.file-upload-container button.fu-btn:hover:not(:disabled) {
+  background-color: #12395a;
+  border-color: #4fd0e6;
+}
+
+.file-upload-container button.fu-btn:active:not(:disabled) {
+  transform: translateY(0.5px);
+}
+
+.file-upload-container button.fu-btn:focus-visible {
+  outline: 2px solid #1aa3bd;
+  outline-offset: 2px;
+}
+
+.file-upload-container button.fu-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+  box-shadow: none;
+}
+
+.file-upload-container button.fu-btn.fu-btn-secondary {
+  color: #0a2540;
+  background: #ffffff;
+  border: 1px solid #b7c4d2;
+  box-shadow: none;
+}
+
+.file-upload-container button.fu-btn.fu-btn-secondary:hover {
+  background: #eef3f8;
+  border-color: #0a2540;
+}
+
+/* The file chooser is a button too, and the browser's default one is invisible against
+   the panel for the same reason. */
+.file-upload-input::file-selector-button {
+  min-height: 30px;
+  padding: 4px 14px;
+  margin-right: 10px;
+  font-weight: 600;
+  color: #0a2540;
+  background: #ffffff;
+  border: 1px solid #1aa3bd;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.file-upload-input::file-selector-button:hover {
+  background: #eef3f8;
+}
+
+.file-upload-selected {
+  font-weight: 600;
+  color: #0a2540;
+}

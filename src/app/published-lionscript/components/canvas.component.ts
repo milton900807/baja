@@ -268,10 +268,29 @@ export class CanvasComponent implements PubComponent, AfterViewInit, OnDestroy {
         if (editor.buttons) {
             this.buttons = editor.buttons;
         }
+        // The Monaco child is created by the *ngIf on the container, which only renders after
+        // this change-detection pass. On every fresh open it did not exist yet here, so the
+        // editor's text (a cell's value or formula) was never handed over and the window came
+        // up empty. Hand it over before the pass when the child exists, after the pass when it
+        // has just been created, and on the next tick as a last resort.
+        let handedOver = false;
         if (this.textEditor) {
-            this.textEditor.setEditor(editor)
+            this.textEditor.setEditor(editor);
+            handedOver = true;
         }
         this.cdr.detectChanges();
+        if (!handedOver && this.textEditor) {
+            this.textEditor.setEditor(editor);
+            handedOver = true;
+        }
+        if (!handedOver) {
+            setTimeout(() => {
+                if (this.textEditor && this.editor === editor) {
+                    this.textEditor.setEditor(editor);
+                    this.cdr.detectChanges();
+                }
+            }, 0);
+        }
         return this;
     }
 

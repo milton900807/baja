@@ -169,3 +169,12 @@ canvas {
 .ed-btn--danger:hover {
 	background: #fee2e2;
 }
+/* The canvas is focusable (tabindex=0) so it can take key presses, and it is focused
+   programmatically after clicks and after a menubar tool runs. Browsers then paint their
+   keyboard focus ring — a blue rounded rectangle hugging the canvas — which is noise on a
+   drawing surface. Keyboard handling is unaffected: focus still lands here. */
+.canvas-surface:focus,
+.canvas-surface:focus-visible {
+	outline: none;
+	box-shadow: none;
+}

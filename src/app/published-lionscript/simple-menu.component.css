@@ -1111,3 +1111,146 @@ simple-menu mat-toolbar.mat-default,
     zoom: 0.85;
   }
 }
+
+/* ============================================================
+   COMMAND INPUT VISIBILITY (final override)
+   The toolbar text field used to be transparent with a thin
+   gray outline and light text, so it vanished against the
+   sunset gradient. Give it a solid light pill, dark text, a
+   white border and a cyan focus ring so it reads at a glance.
+   Placed after the sunset block so it wins.
+   ============================================================ */
+simple-menu .span-container {
+  padding: 0 8px 0 12px;
+}
+
+simple-menu .compact-text-field {
+  min-width: 220px;
+}
+
+/* Solid light surface behind the field */
+simple-menu .compact-text-field .mat-mdc-text-field-wrapper {
+  background: rgba(255, 255, 255, 0.94) !important;
+  border-radius: 6px !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
+  transition: box-shadow 0.15s ease, background 0.15s ease;
+}
+
+/* No MDC hover/focus darkening on top of the light surface */
+simple-menu .compact-text-field .mat-mdc-form-field-focus-overlay {
+  background: transparent !important;
+}
+
+/* Crisp white border that separates the pill from the gradient */
+simple-menu .compact-text-field .mdc-notched-outline__leading,
+simple-menu .compact-text-field .mdc-notched-outline__notch,
+simple-menu .compact-text-field .mdc-notched-outline__trailing {
+  border-color: rgba(255, 255, 255, 0.95) !important;
+  border-width: 1.5px !important;
+}
+
+/* Focus: cyan ring + brighter surface */
+simple-menu .compact-text-field.mat-focused .mat-mdc-text-field-wrapper {
+  background: #ffffff !important;
+  box-shadow: 0 0 0 3px rgba(26, 163, 189, 0.55), 0 1px 3px rgba(0, 0, 0, 0.35) !important;
+}
+
+simple-menu .compact-text-field.mat-focused .mdc-notched-outline__leading,
+simple-menu .compact-text-field.mat-focused .mdc-notched-outline__notch,
+simple-menu .compact-text-field.mat-focused .mdc-notched-outline__trailing {
+  border-color: #1aa3bd !important;
+}
+
+/* Dark text and caret on the light surface */
+simple-menu .compact-text-field .highlight-display {
+  color: #0a2540 !important;
+  font-weight: 500;
+}
+
+simple-menu .compact-text-field .highlight-display.is-empty {
+  color: #4a5a70 !important;
+  opacity: 1;
+  font-style: italic;
+}
+
+simple-menu .compact-text-field .mat-input-element,
+simple-menu .compact-text-field .mat-mdc-input-element {
+  caret-color: #0a2540 !important;
+}
+
+/* Inline save (thumb) button: navy on the light surface */
+simple-menu .compact-text-field .mat-mdc-form-field-icon-suffix .mat-mdc-icon-button,
+simple-menu .compact-text-field .mat-mdc-form-field-icon-suffix .mat-icon {
+  color: #0a2540 !important;
+}
+
+/* ============================================================
+   TOOL LOOKUP DROPDOWN (data.toolLookup)
+   Each option is a tool name with its menu path as a muted
+   breadcrumb on the right. Rendered in the cdk overlay, so the
+   rules are global (ViewEncapsulation.None).
+   ============================================================ */
+.cmd-panel .cmd-tool-option .mdc-list-item__primary-text,
+.cmd-panel .cmd-tool-option .mat-mdc-option-text {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+}
+
+.cmd-panel .cmd-opt-label {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: #0a2540;
+  white-space: nowrap;
+}
+
+.cmd-panel .cmd-opt-hint {
+  font-size: 10.5px;
+  color: #6b7a90;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cmd-panel.mat-mdc-autocomplete-panel {
+  min-width: 320px;
+  max-height: 360px;
+}
+
+/* ============================================================
+   MENUBAR LAYOUT PRIORITY (final override)
+   The menus and icon buttons on the left must never be clipped
+   to make room for the command field. The left section used to
+   shrink (min-width: 0 + overflow hidden), so in a narrow panel
+   the 220px field pushed the navigation buttons out of view.
+   Now the left section keeps its size and the field takes only
+   what is left, shrinking as far as it must.
+   ============================================================ */
+simple-menu .left-section {
+  flex: 0 0 auto;
+  min-width: 0;
+  max-width: 100%;
+}
+
+simple-menu .span-container {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+simple-menu .compact-text-field {
+  min-width: 0;
+  width: 100%;
+}
+
+/* Below ~90px of room the field is unusable; hide it rather than show a sliver,
+   the menus and buttons stay. */
+simple-menu .span-container:has(.compact-text-field) {
+  container-type: inline-size;
+}
+@container (max-width: 90px) {
+  simple-menu .compact-text-field {
+    display: none !important;
+  }
+}

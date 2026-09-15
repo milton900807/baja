@@ -85,6 +85,13 @@
           "blurb": "Load compounds like Spinraza and see them in the context of their genomics and chemical modifications.",
           "ready": true,
           "video": "https://youtube.com/shorts/XcVpYWMBez8"
+        },
+        {
+          "title": "How to create a splicing ASO for Spinal Muscular Atrophy",
+          "badge": "Video",
+          "blurb": "Design a splice-modulating ASO against SMN2 — the Spinraza approach: find the splicing element, choose the chemistry, and tile the compound across it.",
+          "ready": true,
+          "video": "https://youtu.be/4zM2CaOzRpI"
         }
       ]
     },

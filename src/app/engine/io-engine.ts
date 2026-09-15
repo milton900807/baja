@@ -1545,6 +1545,16 @@ export class LionEngine {
                     let waiting = false;
                     let lineindex = 0;
                     let counter = 100;
+                    // HOW MANY TIMES THE ANSWER MAY BE UNREADABLE BEFORE IT IS CALLED A FAILURE.
+                    //
+                    // The job's last line can be in the file before its final bytes are, so an
+                    // unparseable resolution at EXIT_CODE is worth re-reading a few times. What
+                    // it is NOT worth is resolving with the raw poll object -- { lines: [...] }
+                    // -- which is what used to happen: the caller got an object with none of
+                    // the fields it asked for, reported "nothing came back", and the failure
+                    // looked like a button that did nothing.
+                    let parseTries = 0;
+                    const PARSE_TRIES = 8;
                     // Lines already dispatched as message / progress / object on an earlier
                     // poll. See the loop below.
                     let handled = 0;
@@ -1586,25 +1596,50 @@ export class LionEngine {
                                     // jumped back to the start on every tick, which read as the
                                     // job restarting from scratch.
                                     for (let li = 0; li < lines.length; li++) {
-                                        let l = decodeURI(lines[li]).trim();
+                                        // A LINE THAT CANNOT BE DECODED IS STILL A LINE. The server
+                                        // percent-encodes each one; decodeURI throws on a malformed
+                                        // escape, and an exception here escapes this async function
+                                        // as a rejection nobody is listening for, so the caller waits
+                                        // for a result that can no longer arrive.
+                                        let l: string;
+                                        try { l = decodeURI(lines[li]).trim(); }
+                                        catch (decodeFailed) { l = ('' + lines[li]).trim(); }
                                         const fresh = li >= handled;
 
                                         if (l.startsWith('EXIT_CODE:')) {
+                                            waiting = false;
+                                            const body = collectedString.trim();
+                                            console.log(" end sr " + body.substring(Math.max(0, body.length - 100)));
                                             try {
-                                                waiting = false;
-                                                console.log(" end sr " + collectedString.substring(collectedString.length - 100))
-                                                let jobj = JSON.parse(collectedString.trim());
-                                                return resolve(jobj)
+                                                return resolve(JSON.parse(body));
                                             } catch (exception) {
-                                                // console.log('Failed to parse collected JSON:', exception);
-                                                counter = 0;
-                                                setTimeout(processLines, counter)
-
+                                                // Re-read: the resolution may still be arriving. After
+                                                // that, say so -- with the reason and what was read --
+                                                // rather than handing back something that only looks
+                                                // like an answer.
+                                                if (++parseTries < PARSE_TRIES) {
+                                                    counter = 60;
+                                                    setTimeout(processLines, counter);
+                                                    return;
+                                                }
+                                                const why = (exception && (exception as any).message) ? (exception as any).message : exception;
+                                                console.log('The python answer could not be read: ' + why, body.substring(0, 400));
+                                                return reject(new Error('The server answered but the answer could not be read ('
+                                                    + why + ') from ' + path));
                                             }
-                                            return resolve(out);
                                         } else
                                             if (isResolutionSection) {
-                                                collectedString += l.trim();
+                                                // Only the resolution's own continuation lines belong to
+                                                // it. A message the job printed after resolving -- or
+                                                // anything on stderr -- used to be appended INTO the
+                                                // JSON, which is one way a perfectly good answer becomes
+                                                // unparseable.
+                                                if (l.startsWith('IONWORKS:')) {
+                                                    isResolutionSection = false;
+                                                    li--;               // read this line as itself
+                                                    continue;
+                                                }
+                                                collectedString += l;
                                             } else
                                                 if (l.startsWith('IONWORKS:RESOLUTION:')) {
                                                     isResolutionSection = true;

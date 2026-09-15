@@ -116,6 +116,7 @@ export class CanvasProgressComponent implements PubComponent, AfterViewInit {
                     this.redraw();
                 })
             }
+            this._armStale();
             if (this.data['buttons']) {
                 this.icons = this.data['buttons']
             }
@@ -161,6 +162,14 @@ export class CanvasProgressComponent implements PubComponent, AfterViewInit {
             // full blue bar sat at the top of the canvas for the rest of the session.
             this._completeTimer = setTimeout(() => this._removeSelf(), 800);
         }
+        // A loader that stops reporting is finished as far as the user is concerned: a
+        // stalled or abandoned load must not leave the bar on screen either.
+        this._armStale();
+    }
+    private _staleTimer: any = null;
+    private _armStale() {
+        if (this._staleTimer) { clearTimeout(this._staleTimer); this._staleTimer = null; }
+        this._staleTimer = setTimeout(() => { this._staleTimer = null; this._removeSelf(); }, 12000);
     }
 
     private _hideHost() {

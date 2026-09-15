@@ -1164,13 +1164,11 @@ simple-menu .compact-text-field.mat-focused .mdc-notched-outline__trailing {
 /* Dark text and caret on the light surface */
 simple-menu .compact-text-field .highlight-display {
   color: #0a2540 !important;
-  font-weight: 500;
 }
 
 simple-menu .compact-text-field .highlight-display.is-empty {
   color: #4a5a70 !important;
   opacity: 1;
-  font-style: italic;
 }
 
 simple-menu .compact-text-field .mat-input-element,
@@ -1253,4 +1251,38 @@ simple-menu .span-container:has(.compact-text-field) {
   simple-menu .compact-text-field {
     display: none !important;
   }
+}
+
+/* ============================================================
+   CARET AND SELECTION ALIGNMENT (final override)
+   The visible text is an overlay that mirrors the (transparent)
+   input; the caret and the selection highlight are drawn by the
+   input itself. They only line up if both elements shape text
+   identically, so every metric that changes glyph width is
+   pinned to the same value here. A medium weight on the overlay
+   alone had put the caret a few pixels off the displayed text.
+   ============================================================ */
+simple-menu .compact-text-field .highlight-display,
+simple-menu .compact-text-field .mat-mdc-input-element,
+simple-menu .compact-text-field .mat-input-element {
+  font-family: var(--cmd-font-family) !important;
+  font-size: var(--cmd-font-size) !important;
+  font-weight: 400 !important;
+  font-style: normal !important;
+  font-stretch: normal !important;
+  letter-spacing: var(--cmd-letter-spacing) !important;
+  word-spacing: normal !important;
+  font-kerning: none !important;
+  font-variant-ligatures: none !important;
+  font-feature-settings: normal !important;
+  text-rendering: geometricPrecision;
+  text-transform: none !important;
+  text-align: left !important;
+  text-indent: 0 !important;
+  padding: 0 8px !important;
+  margin: 0 !important;
+  border: 0 !important;
+  box-sizing: border-box !important;
+  height: 18px !important;
+  line-height: 18px !important;
 }

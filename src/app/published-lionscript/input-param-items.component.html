@@ -23,12 +23,14 @@
 <div *ngIf="buttons != null && buttons.length > 0"
      class="btn-group"
      role="group"
-     aria-label="Basic example">
+     aria-label="Actions">
     <button
         mat-button
-        color="primary"
         *ngFor="let button of buttons"
         type="button"
+        class="ip-btn"
+        [class.ip-btn-secondary]="button['kind'] === 'secondary'"
+        [title]="button['tooltip'] || button['label']"
         (click)="exec(button); $event.stopPropagation()">
         {{ button['label'] }}
     </button>

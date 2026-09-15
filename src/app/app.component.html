@@ -48,6 +48,33 @@
     </mat-menu>
     <span style="flex: 1 1 auto" class="flexExpand"></span>
 
+    <!-- Record and play, for the one account that authors demos. Immediately before the
+         account chip, so they read as belonging to that person rather than to the app. -->
+    <ng-container *ngIf="isRecorderUser">
+      <button mat-icon-button class="rec-btn" (click)="startRecording()"
+              title="Record what you do, then emit a script that replays it"
+              aria-label="Record a session">
+        <mat-icon>fiber_manual_record</mat-icon>
+      </button>
+      <button mat-icon-button class="play-btn" (click)="playRecording()"
+              title="Paste a recorded script and run it" aria-label="Play a recorded script">
+        <mat-icon>play_arrow</mat-icon>
+      </button>
+      <!-- The other kind of recording -- the screen, to a video file -- is in the account
+           menu below rather than here. Its controls were sitting on top of the application
+           they were recording, which is the one place they must never be. -->
+    </ng-container>
+
+    <!-- TUTORIALS, for anyone signed in. A saved recording plays back on the screen in
+         front of you, and the library ranks by what that screen currently is -- so the
+         button is in the header rather than inside one screen's menus: it is the same
+         question wherever it is asked, and the answer is different in each place. -->
+    <button *ngIf="oidcUser" mat-icon-button class="tut-btn" (click)="openSavedTutorials()"
+            title="Tutorials for what is on screen — they play back here"
+            aria-label="Tutorials for this screen">
+      <mat-icon>school</mat-icon>
+    </button>
+
     <!-- Signed-in user (OIDC providers): chip + sign-out -->
     <ng-container *ngIf="oidcUser as u">
       <button mat-button class="oidc-chip" [matMenuTriggerFor]="oidcMenu" title="{{ u.email || u.name }}">
@@ -63,6 +90,15 @@
         </div>
         <button mat-menu-item (click)="showClaudeUsage()">
           <mat-icon>insights</mat-icon><span>Credits usage</span>
+        </button>
+        <!-- SCREEN RECORDING, START AND STOP, IN A MENU. It was a header button with a
+             floating badge carrying its own Stop, both of which sat over the part of the
+             application being recorded. A menu item covers nothing: it is only on screen
+             while the menu is open, and the menu is not what anyone is demonstrating. The
+             label says which of the two it will do, read when the menu opens. -->
+        <button mat-menu-item *ngIf="isRecorderUser" (click)="recordVideo()">
+          <mat-icon>{{ videoRecording ? 'stop_circle' : 'videocam' }}</mat-icon>
+          <span>{{ videoRecording ? 'Stop screen recording' : 'Record screen to video' }}</span>
         </button>
         <button mat-menu-item (click)="oidcSignOut()">
           <mat-icon>logout</mat-icon><span>Sign out</span>

@@ -4,6 +4,10 @@
     <ng-container *ngFor="let button of buttons">
       <button
         mat-button
+        class="bar-btn"
+        [class.bar-hint]="button.static"
+        [disabled]="button.static"
+        [attr.title]="button.tooltip || button.label"
         [ngStyle]="{ 'font-size.px': buttonSize }"
         (click)="onButtonClick(button)"
       >

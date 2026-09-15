@@ -1000,6 +1000,76 @@ export class AppComponent implements OnInit {
     this.oidc.logout('/login');
   }
 
+  // ---- RECORD AND PLAY, IN THE HEADER, FOR ONE ACCOUNT ----------------------
+  //
+  // The editor already carries these, but they are authoring tools for building demos and
+  // they are wanted from wherever the app happens to be rather than only on the screen that
+  // owns them. The header is the one row present on every screen, so they go beside the
+  // account chip.
+  //
+  // Compared trimmed and case-insensitively: the token carries whatever the provider sent,
+  // and a stray capital would hide the buttons from the one person meant to see them with
+  // nothing on screen to explain why.
+  //
+  // This is a UI convenience and NOT a permission. Both scripts live in baja-apps and
+  // anyone who knows their names can run them; nothing here is a security control.
+  private static readonly RECORDER_USERS = ['jeffmilto@gmail.com'];
+  get isRecorderUser(): boolean {
+    try {
+      const e = ('' + (this.oidcUser?.email || '')).trim().toLowerCase();
+      return !!e && AppComponent.RECORDER_USERS.indexOf(e) >= 0;
+    } catch (e) { return false; }
+  }
+  // The screen that owns a graph registers these when it starts; the header only calls
+  // them. Without a registration there is nothing to record, which is the honest state on
+  // a route with no canvas on it, and the button says so rather than failing silently.
+  private recorderHook(): any {
+    try { return (window as any).__bajaRecordHook || null; } catch (e) { return null; }
+  }
+  get recorderReady(): boolean { return !!this.recorderHook(); }
+  startRecording() {
+    const h = this.recorderHook();
+    if (!h || typeof h.record !== 'function') {
+      window.alert('Open the editor or the genome viewer first: recording follows what happens on a canvas.');
+      return;
+    }
+    try { h.record(); } catch (e) { console.warn('record failed', e); }
+  }
+  // VIDEO, which needs no graph at all. Unlike the two above it does not go through the
+  // screen's hook: getDisplayMedia records the TAB, so it works on any route, including
+  // ones with no canvas on them, and routing it through a hook would make it unavailable
+  // exactly where the header is the only thing present.
+  recordVideo() {
+    try { IoniScriptEngine.le.exec('manchester/screen-recorder.js'); }
+    catch (e) { console.warn('screen recorder failed', e); }
+  }
+  // Which of the two the menu item is about to do. The recorder publishes its own state,
+  // and a menu is built when it opens, so reading it here is enough -- there is nothing to
+  // subscribe to and nothing to keep in step.
+  get videoRecording(): boolean {
+    try { return !!((window as any).__bajaVideoRec && (window as any).__bajaVideoRec.on); }
+    catch (e) { return false; }
+  }
+  playRecording() {
+    const h = this.recorderHook();
+    if (!h || typeof h.play !== 'function') {
+      window.alert('Open the editor first: a recorded script is played back there.');
+      return;
+    }
+    try { h.play(); } catch (e) { console.warn('play failed', e); }
+  }
+
+  // TUTORIALS. Everything about which tutorials to offer depends on what is on screen,
+  // and the header does not know what that is -- the screen does, through the same hook
+  // the Record button uses. So this opens the library and lets it ask.
+  // NOT the video page above: those are recordings of a screen, made once and watched.
+  // These are recordings of the APPLICATION, saved by whoever did the work, and they play
+  // back on the live screen in front of you.
+  openSavedTutorials() {
+    try { IoniScriptEngine.le.exec('manchester/tutorials.js', { mode: 'browse' }); }
+    catch (e) { console.warn('tutorials failed', e); }
+  }
+
   // Account menu → show today's Claude-search count (runs the self-contained lionscript, which
   // reads py/usage/claude-usage-report.py for the signed-in user and pops a summary modal).
   showClaudeUsage() {

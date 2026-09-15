@@ -2,9 +2,20 @@
     <h2>File Upload</h2>
 
     <div class="file-upload-row">
-      <input type="file" (change)="onFileSelected($event)">
+      <input type="file" class="file-upload-input" (change)="onFileSelected($event)">
       <span *ngIf="selectedFileName" class="file-upload-selected">Selected file: {{ selectedFileName }}</span>
     </div>
 
-    <button (click)="onUpload()">Upload</button>
+    <div class="file-upload-actions">
+      <button type="button"
+              class="fu-btn"
+              [disabled]="!selectedFile"
+              [title]="selectedFile ? 'Upload ' + selectedFileName : 'Choose a file first'"
+              (click)="onUpload()">Upload</button>
+      <button type="button"
+              *ngIf="showCancel"
+              class="fu-btn fu-btn-secondary"
+              title="Leave without uploading anything"
+              (click)="onCancel()">Cancel</button>
+    </div>
   </div>

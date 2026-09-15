@@ -1,7 +1,80 @@
+/* NAVY, LIKE EVERY OTHER BAR IN THE APP. A Material toolbar defaults to the theme's
+   light surface with dark text, which left this row reading as part of the browser
+   chrome while the genome viewer's own toolbar directly below it was navy. Two bars
+   stacked in two different colour schemes look like two applications. Same navy, same
+   hairline, same soft shadow as the button-menu panel; the foreground is set on the
+   host and inherited, and the icons and labels are forced because Material sets its
+   own colour on both. */
 .toolbar {
   display: flex;
   align-items: center;
   padding: 0 8px;
+
+  background: #0b2545;
+  color: #ffffff;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.35);
+
+  /* BUTTONS THAT LOOK LIKE BUTTONS. White text on navy with no edge and no fill left
+     these reading as a row of headings: the bar was obviously a bar, and the things in
+     it were not obviously pressable. Each one is a chip now -- a faint white fill, a
+     hairline edge, room around the label -- so where to press is visible before the
+     pointer gets there. */
+  button.bar-btn {
+    color: #ffffff;
+    height: 32px;
+    padding: 0 14px;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.30);
+    background: rgba(255, 255, 255, 0.10);
+    font-weight: 600;
+    letter-spacing: 0.2px;
+  }
+
+  /* A HINT IS NOT A CONTROL. Some bars carry a line of text in the button row -- "click
+     a file to open it" -- which pressing does nothing at all. Given the same chip as the
+     real buttons it becomes the most misleading thing on the panel, so it is drawn flat
+     and dimmed, with no edge to press. */
+  button.bar-hint,
+  button.bar-hint[disabled] {
+    /* Material paints its own disabled colour on the button and on the label inside it,
+       so both are named here and forced; without it the hint greys out to near-invisible
+       against the navy. */
+    color: rgba(255, 255, 255, 0.72) !important;
+    background: transparent;
+    border: 0;
+    font-weight: 400;
+    cursor: default;
+    opacity: 1;
+  }
+
+  button.bar-hint .mdc-button__label,
+  button.bar-hint span,
+  button.bar-hint mat-icon,
+  button.bar-hint .mat-icon {
+    color: rgba(255, 255, 255, 0.72) !important;
+  }
+
+  button {
+    color: #ffffff;
+  }
+
+  mat-icon,
+  .mat-icon {
+    color: #ffffff;
+  }
+
+  /* The ripple and hover wash Material paints are tuned for a light surface and
+     disappear on navy; a white overlay is the same gesture the other navy buttons use. */
+  button.bar-btn:hover {
+    background: rgba(255, 255, 255, 0.22);
+    border-color: rgba(255, 255, 255, 0.55);
+  }
+
+  button.bar-hint:hover {
+    background: transparent;
+    border: 0;
+  }
 
   .left-buttons {
     display: flex;

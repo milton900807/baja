@@ -20,7 +20,7 @@
   font-weight: 700;
   font-size: 0.82rem;
   letter-spacing: 0.2px;
-  color: #9fb3c8;
+  color: #ffffff;
   margin-right: 4px;
 }
 
@@ -46,7 +46,7 @@
   padding: 0;
   box-sizing: border-box;
 
-  color: #e8f0fb;
+  color: #ffffff;
   background: #0a1e3a;                      /* dialog input fill — reads against the navy bar */
   border: 1px solid rgba(255, 255, 255, 0.16);
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.30);

@@ -51,6 +51,11 @@ export class FBComponent implements OnInit, PubComponent {
   // from and is read by the tools, not opened by hand, so showing it only adds noise
   // to the folder. Lower-case, no leading dot; set per browser from lionscript.
   hideExtensions: string[] = [];
+  // Exceptions to the above, matched the same way and tested FIRST. A suffix rule is
+  // blunt: hiding 'json' also hides the .karyotype.json files saved before that
+  // extension was shortened, and those are still openable from here. The exception is
+  // the longer, more specific suffix, which is how it should win.
+  keepExtensions: string[] = [];
   folderDialogFunction;
   folderPath;
   fileclickFunction;
@@ -127,6 +132,12 @@ export class FBComponent implements OnInit, PubComponent {
       // Accepts 'vcf', '.vcf', or a list of either.
       const raw = this.data['hideExtensions'];
       this.hideExtensions = (Array.isArray(raw) ? raw : [raw])
+        .map((e: any) => String(e == null ? '' : e).trim().toLowerCase().replace(/^\./, ''))
+        .filter((e: string) => e.length > 0);
+    }
+    if (this.data['keepExtensions']) {
+      const rawK = this.data['keepExtensions'];
+      this.keepExtensions = (Array.isArray(rawK) ? rawK : [rawK])
         .map((e: any) => String(e == null ? '' : e).trim().toLowerCase().replace(/^\./, ''))
         .filter((e: string) => e.length > 0);
     }
@@ -220,6 +231,12 @@ export class FBComponent implements OnInit, PubComponent {
   isHidden(name: string): boolean {
     if (!this.hideExtensions || this.hideExtensions.length === 0) { return false; }
     const n = String(name == null ? '' : name).toLowerCase();
+    const ends = (suffix: string) => n.length > suffix.length && n.substring(n.length - suffix.length) === suffix;
+    // An exception wins over a hide rule, because it is the more specific statement about
+    // the same name: '.karyotype.json' is kept even though 'json' is hidden.
+    for (const keep of (this.keepExtensions || [])) {
+      if (ends('.' + keep)) { return false; }
+    }
     // Matched as a SUFFIX, not as the text after the last dot, so a compound extension
     // works: 'vcf.gz' has to hide variants.vcf.gz, and the last dot there only says 'gz'.
     // The length test is what keeps a dotfile out of it -- '.vcf' ends with '.vcf' but is

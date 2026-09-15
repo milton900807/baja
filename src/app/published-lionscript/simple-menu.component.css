@@ -1286,3 +1286,21 @@ simple-menu .compact-text-field .mat-input-element {
   height: 18px !important;
   line-height: 18px !important;
 }
+
+/* ============================================================
+   SELECTION COLOUR (final override)
+   Selected text in the command field: a translucent red instead
+   of the opaque yellow. The text itself stays transparent here
+   because the visible glyphs are painted by the overlay above.
+   ============================================================ */
+simple-menu .compact-text-field .mat-input-element::selection,
+simple-menu .compact-text-field .mat-mdc-input-element::selection {
+  background: rgba(220, 38, 38, 0.35) !important;
+  color: transparent !important;
+}
+
+simple-menu .compact-text-field .mat-input-element::-moz-selection,
+simple-menu .compact-text-field .mat-mdc-input-element::-moz-selection {
+  background: rgba(220, 38, 38, 0.35) !important;
+  color: transparent !important;
+}

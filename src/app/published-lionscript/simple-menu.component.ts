@@ -25,6 +25,7 @@ import { QueryList, ViewChildren } from "@angular/core";
 
 type Cmd = {
     label: string;
+    table?: string;   // a row label's table (formula completion after "[")
     insert?: string;
     args?: string;
     hint?: string;
@@ -195,8 +196,39 @@ export class SimpleMenuComponent
             insert: c.insert ?? `${label} `,
             args: c.args ?? "",
             hint: c.hint ?? "",
+            table: (c as any).table ?? undefined,
         };
     };
+
+    // ---------- Formula-aware candidate pool ----------
+    // After "[" the candidates are row LABELS, and only those of the table written just
+    // before the bracket (Project_Assumptions[Seq → the Assumptions' labels); after any
+    // other trigger they are the tables and tags. Matches that START with the typed text
+    // come first, so Tab lands on the obvious one, then the ones that merely contain it.
+    private candidatePool(text: string, span: TriggerSpan): Cmd[] {
+        const all = this.commands;
+        const isLabel = (c: Cmd) => !!(c as any).table;
+        if (span.ch === "[") {
+            const m = /([A-Za-z_][\w.-]*)\s*$/.exec((text ?? "").slice(0, span.start));
+            const ctx = m ? m[1].toLowerCase() : "";
+            const scoped = ctx ? all.filter((c) => isLabel(c) && ((c as any).table as string).toLowerCase() === ctx) : [];
+            if (scoped.length) return scoped;
+            const labels = all.filter(isLabel);
+            return labels.length ? labels : all;
+        }
+        const tables = all.filter((c) => !isLabel(c));
+        return tables.length ? tables : all;
+    }
+    private rankMatches(pool: Cmd[], needle: string): Cmd[] {
+        if (!needle) return pool.slice();
+        const starts: Cmd[] = [], contains: Cmd[] = [];
+        for (const c of pool) {
+            const l = c.label.toLowerCase();
+            if (l.startsWith(needle)) starts.push(c);
+            else if (l.includes(needle)) contains.push(c);
+        }
+        return starts.concat(contains);
+    }
 
     private handleFocus = () => {
         const el = this.textInput?.nativeElement;
@@ -429,7 +461,7 @@ export class SimpleMenuComponent
                 if (this.justTriggered) {
                     this.justTriggered = false;
 
-                    const all = this.commands.slice();
+                    const all = this.candidatePool(text, span);
 
                     // ✅ NEW: if there are no commands, close the panel
                     if (all.length === 0) {
@@ -455,12 +487,10 @@ export class SimpleMenuComponent
                     return [];
                 }
 
-                const results =
-                    needle.length === 0
-                        ? this.commands.slice()
-                        : this.commands.filter((c) => c.label.toLowerCase().includes(needle));
+                const results = this.rankMatches(this.candidatePool(text, span), needle);
 
-                // Reverse the sorting before returning
+                // The list opens upward from the input: reversed, so the best match sits
+                // nearest the caret.
                 const reversedResults = results.reverse();
 
                 // ✅ NEW: If no matches, close the dropdown
@@ -661,10 +691,7 @@ export class SimpleMenuComponent
         const span = this.getLastTriggerSpan(text, caret);
         if (!span) return undefined;
         const needle = span.term.toLowerCase();
-        const list =
-            needle.length === 0
-                ? this.commands.slice()
-                : this.commands.filter((c) => c.label.toLowerCase().includes(needle));
+        const list = this.rankMatches(this.candidatePool(text, span), needle);
         return list[0];
     }
 

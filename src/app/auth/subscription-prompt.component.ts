@@ -9,7 +9,7 @@ import { SubscriptionService } from './subscription.service';
   standalone: true,
   imports: [CommonModule],
   template: `
-  <div class="sub-wrap">
+  <div class="sub-wrap" [class.mobile]="mobile">
     <div class="sub-card">
       <div class="brandline"></div>
 
@@ -67,6 +67,18 @@ import { SubscriptionService } from './subscription.service';
   </div>
   `,
   styles: [`
+
+    /* ---- Phone: the plan, the price and the buttons. Feature lists, demo links, the
+       early-access note and the small print are hidden so the page fits one screen. ---- */
+    .sub-wrap.mobile { padding: 12px; min-height: 100vh; align-items: flex-start; }
+    .sub-wrap.mobile .sub-card { padding: 16px 14px; width: 100%; max-width: 420px; margin-top: 6vh; }
+    .sub-wrap.mobile .beta-note, .sub-wrap.mobile .feats, .sub-wrap.mobile .demo-row,
+    .sub-wrap.mobile .pay-note, .sub-wrap.mobile .free-note, .sub-wrap.mobile .enterprise-btn { display: none !important; }
+    .sub-wrap.mobile .head h1 { font-size: 18px; margin: 6px 0 2px; }
+    .sub-wrap.mobile .logo img { width: 48px; height: 48px; }
+    .sub-wrap.mobile .plan { padding: 12px; margin: 8px 0; }
+    .sub-wrap.mobile .cta, .sub-wrap.mobile .free-btn { padding: 12px 14px; }
+    .sub-wrap.mobile .or-row { margin: 8px 0; }
     :host { display:block; width:100%; height:100%; }
     .sub-wrap {
       position:relative; overflow:hidden; min-height:100vh;
@@ -144,6 +156,17 @@ import { SubscriptionService } from './subscription.service';
   `],
 })
 export class SubscriptionPromptComponent implements OnInit {
+
+  // A phone (or an iPad reporting a desktop UA but with touch): the page is trimmed to what
+  // fits on a small screen. Same rule as the lionscript isMobile().
+  mobile: boolean = (() => {
+    try {
+      const ua = navigator.userAgent || '';
+      if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|Windows Phone|Mobile/i.test(ua)) return true;
+      if (/Macintosh/i.test(ua) && (navigator.maxTouchPoints || 0) > 1) return true;
+      return Math.min(window.innerWidth || 9999, window.innerHeight || 9999) <= 480;
+    } catch (e) { return false; }
+  })();
   userEmail: string | null = null;
   busy = false;
   checking = true;

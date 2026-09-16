@@ -12,7 +12,7 @@ import { b2cPolicies, rarePolicies } from '../onedrive/auth-config';
   standalone: true,
   imports: [CommonModule],
   template: `
-  <div class="login-wrap">
+  <div class="login-wrap" [class.mobile]="mobile">
     <div class="palm-bg" aria-hidden="true">
       <svg viewBox="0 0 400 520" preserveAspectRatio="xMidYMax slice">
         <path d="M198 520 C196 390 190 300 206 232 C209 216 215 206 221 201 L233 206 C225 216 221 242 219 302 C217 384 215 452 215 520 Z" fill="#0a3b2e"/>
@@ -154,6 +154,23 @@ import { b2cPolicies, rarePolicies } from '../onedrive/auth-config';
   </div>
   `,
   styles: [`
+
+    /* ---- Phone: icons and actions only. The product copy, the tier lists, the demo
+       links and the small print are hidden so the whole page fits one screen. ---- */
+    .login-wrap.mobile { padding: 12px; min-height: 100vh; align-items: flex-start; }
+    .login-wrap.mobile .login-card { padding: 16px 14px; width: 100%; max-width: 420px; margin-top: 8vh; }
+    .login-wrap.mobile .palm-bg { opacity: .35; }
+    .login-wrap.mobile .beta-text, .login-wrap.mobile .features, .login-wrap.mobile .freeuse,
+    .login-wrap.mobile .clinic, .login-wrap.mobile .demo-row, .login-wrap.mobile .secure,
+    .login-wrap.mobile .enterprise-btn, .login-wrap.mobile .cl-tag, .login-wrap.mobile .hint { display: none !important; }
+    .login-wrap.mobile .head { margin-bottom: 10px; }
+    .login-wrap.mobile .logo img { width: 56px; height: 56px; }
+    .login-wrap.mobile .providers { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
+    .login-wrap.mobile .pbtn { width: 64px; height: 64px; padding: 0; border-radius: 16px; display: flex; align-items: center; justify-content: center; }
+    .login-wrap.mobile .pbtn .glyph { display: block; transform: scale(1.5); }
+    .login-wrap.mobile .pbtn .glyph + .ptext { display: none; }     /* icon only when there is an icon */
+    .login-wrap.mobile .pbtn .ptext { font-size: 12px; }
+    .login-wrap.mobile .signup { margin-top: 14px; }
     :host { display:block; width:100%; height:100%; }
     .login-wrap {
       position:relative; overflow:hidden;
@@ -319,6 +336,17 @@ import { b2cPolicies, rarePolicies } from '../onedrive/auth-config';
   `],
 })
 export class LoginComponent {
+
+  // A phone (or an iPad reporting a desktop UA but with touch): the page is trimmed to what
+  // fits on a small screen. Same rule as the lionscript isMobile().
+  mobile: boolean = (() => {
+    try {
+      const ua = navigator.userAgent || '';
+      if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|Windows Phone|Mobile/i.test(ua)) return true;
+      if (/Macintosh/i.test(ua) && (navigator.maxTouchPoints || 0) > 1) return true;
+      return Math.min(window.innerWidth || 9999, window.innerHeight || 9999) <= 480;
+    } catch (e) { return false; }
+  })();
   providers: OidcProvider[] = [];
   busy = false;
   error = '';

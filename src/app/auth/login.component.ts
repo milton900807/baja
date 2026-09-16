@@ -157,20 +157,22 @@ import { b2cPolicies, rarePolicies } from '../onedrive/auth-config';
 
     /* ---- Phone: icons and actions only. The product copy, the tier lists, the demo
        links and the small print are hidden so the whole page fits one screen. ---- */
-    .login-wrap.mobile { padding: 12px; min-height: 100vh; align-items: flex-start; }
-    .login-wrap.mobile .login-card { padding: 16px 14px; width: 100%; max-width: 420px; margin-top: 8vh; }
+    .login-wrap.mobile { padding: 16px; min-height: 100vh; min-height: 100dvh; align-items: center; justify-content: center; }
+    .login-wrap.mobile .login-card { padding: 22px 18px; width: 100%; max-width: 440px; margin: 0 auto; }
     .login-wrap.mobile .palm-bg { opacity: .35; }
     .login-wrap.mobile .beta-text, .login-wrap.mobile .features, .login-wrap.mobile .freeuse,
     .login-wrap.mobile .clinic, .login-wrap.mobile .demo-row, .login-wrap.mobile .secure,
     .login-wrap.mobile .enterprise-btn, .login-wrap.mobile .cl-tag, .login-wrap.mobile .hint { display: none !important; }
-    .login-wrap.mobile .head { margin-bottom: 10px; }
-    .login-wrap.mobile .logo img { width: 56px; height: 56px; }
-    .login-wrap.mobile .providers { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
-    .login-wrap.mobile .pbtn { width: 64px; height: 64px; padding: 0; border-radius: 16px; display: flex; align-items: center; justify-content: center; }
-    .login-wrap.mobile .pbtn .glyph { display: block; transform: scale(1.5); }
-    .login-wrap.mobile .pbtn .glyph + .ptext { display: none; }     /* icon only when there is an icon */
-    .login-wrap.mobile .pbtn .ptext { font-size: 12px; }
-    .login-wrap.mobile .signup { margin-top: 14px; }
+    .login-wrap.mobile .head { margin-bottom: 14px; text-align: center; }
+    .login-wrap.mobile .logo img { width: 60px; height: 60px; }
+    /* Wide, full-width sign-in buttons: the icon and the "Login with ..." label on one row,
+       tall enough for a thumb. (Icon-only squares were too small to tap reliably.) */
+    .login-wrap.mobile .providers { display: flex; flex-direction: column; gap: 12px; width: 100%; }
+    .login-wrap.mobile .pbtn { width: 100%; min-height: 52px; padding: 0 16px; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 12px; font-size: 15px; -webkit-tap-highlight-color: rgba(26,163,189,0.25); touch-action: manipulation; }
+    .login-wrap.mobile .pbtn .glyph { display: inline-flex; align-items: center; transform: none; pointer-events: none; }
+    .login-wrap.mobile .pbtn .ptext { display: inline; font-size: 15px; font-weight: 600; pointer-events: none; }
+    .login-wrap.mobile .signup { margin-top: 18px; text-align: center; }
+    .login-wrap.mobile .su-link { font-size: 15px; padding: 10px 6px; }
     :host { display:block; width:100%; height:100%; }
     .login-wrap {
       position:relative; overflow:hidden;

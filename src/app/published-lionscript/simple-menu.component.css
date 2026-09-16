@@ -1304,3 +1304,52 @@ simple-menu .compact-text-field .mat-mdc-input-element::-moz-selection {
   background: rgba(220, 38, 38, 0.35) !important;
   color: transparent !important;
 }
+
+
+/* ============================================================
+   APPLICATION LOOK (final override)
+   The menubar in the same flat navy as the toolbars, the free-
+   plan bar and the button canvases: white labels and icons,
+   cyan on hover, sunset orange while pressed, white title. The
+   command field keeps its solid light pill, which reads on navy.
+   Placed last so it wins over the earlier gradient blocks.
+   ============================================================ */
+simple-menu mat-toolbar.white-toolbar,
+simple-menu .white-toolbar,
+simple-menu mat-toolbar.menu-bar,
+simple-menu mat-toolbar.blue-grey-bg {
+  background: linear-gradient(90deg, #0b2545, #123a63) !important;
+  color: #eaf6f9 !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.14) !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25) !important;
+}
+simple-menu .toolbar-title,
+simple-menu .toolbar-title .title-text { color: #eaf6f9 !important; }
+
+simple-menu .menu-wrapper button[mat-button],
+simple-menu .menu-wrapper .mat-mdc-button,
+simple-menu .menu-buttons button[mat-button],
+simple-menu .menu-buttons .mat-mdc-button,
+simple-menu .menu-wrapper button[mat-icon-button],
+simple-menu .menu-buttons button[mat-icon-button],
+simple-menu .menu-wrapper .mat-mdc-icon-button,
+simple-menu .menu-buttons .mat-mdc-icon-button {
+  color: #eaf6f9 !important;
+  border-radius: 8px !important;
+  transition: background-color .12s ease !important;
+}
+simple-menu .menu-wrapper button .mat-icon,
+simple-menu .menu-buttons button .mat-icon,
+simple-menu .menu-wrapper button .menu-btn-icon,
+simple-menu .menu-buttons button .menu-btn-icon,
+simple-menu .menu-wrapper button .menu-btn-label,
+simple-menu .menu-buttons button .menu-btn-label { color: #eaf6f9 !important; }
+
+simple-menu .menu-wrapper button:hover,
+simple-menu .menu-buttons button:hover { background-color: rgba(26, 163, 189, 0.45) !important; }
+simple-menu .menu-wrapper button:active,
+simple-menu .menu-buttons button:active { background-color: #FD5E53 !important; }
+simple-menu .menu-wrapper button[aria-expanded="true"] { background-color: #1aa3bd !important; }
+
+simple-menu .menu-btn-sep { background: rgba(255, 255, 255, 0.22) !important; }
+simple-menu .menu-btn-img { filter: brightness(0) invert(1); }

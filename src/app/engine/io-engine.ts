@@ -1545,6 +1545,12 @@ export class LionEngine {
                     let waiting = false;
                     let lineindex = 0;
                     let counter = 100;
+                    // When the poll itself started failing (0 = it is not), and how long a
+                    // failing poll is tolerated before the call is rejected. A service restart
+                    // is a few seconds of 502; this is well past that.
+                    let pollFailedSince = 0;
+                    const POLL_DOWN_LIMIT_SEC = 120;
+                    let fileGoneCount = 0;
                     // HOW MANY TIMES THE ANSWER MAY BE UNREADABLE BEFORE IT IS CALLED A FAILURE.
                     //
                     // The job's last line can be in the file before its final bytes are, so an
@@ -1580,7 +1586,39 @@ export class LionEngine {
                             }
                             let url = host + '/py-out/read?path=' + r['path'] + '&start=' + lineindex;
 
-                            let out = await FunctionUtil.GETJSON(url);
+                            // A POLL THAT FAILS IS NOT THE END OF THE JOB. GETJSON throws on a
+                            // non-2xx answer; an uncaught throw here left `waiting` true and never
+                            // rescheduled this function, so one 502 from nginx while the server
+                            // restarted stopped the polling for good: the job's answer sat on
+                            // disk, the work badge spun until the 16-minute cap, and the build
+                            // looked as if the model had never finished. Keep polling through
+                            // the outage, slower, and only give up after a long silence.
+                            let out: any = null;
+                            try {
+                                out = await FunctionUtil.GETJSON(url);
+                                pollFailedSince = 0;
+                                counter = 100;
+                            } catch (pollError) {
+                                const status = (pollError && (pollError as any).status) || 0;
+                                if (!pollFailedSince) pollFailedSince = Date.now();
+                                const downFor = (Date.now() - pollFailedSince) / 1000;
+                                if (downFor > POLL_DOWN_LIMIT_SEC) {
+                                    console.log('FAILED TO COMPLETE: the server has not answered the poll for ' + Math.round(downFor) + 's (HTTP ' + status + '): ' + path);
+                                    return reject(new Error('The server stopped answering (HTTP ' + status + ') while running ' + path + '. It may have restarted; run it again.'));
+                                }
+                                waiting = false;
+                                counter = 1000;         // ease off while it is down
+                                setTimeout(processLines, counter);
+                                return;
+                            }
+                            if (out && out['msg'] === 'undefined file') {
+                                // The output file is gone (a cleaned /tmp): nothing will ever arrive.
+                                if (++fileGoneCount > 10) {
+                                    return reject(new Error('The server lost the output of ' + path + '. It may have restarted; run it again.'));
+                                }
+                            } else {
+                                fileGoneCount = 0;
+                            }
                             if (out && out['lines'] && out['lines'].length > 0) {
                                 if (prev == null || prev != out['lines']) {
                                     let lines = out['lines'];
@@ -1769,6 +1807,7 @@ export class LionEngine {
                     let index = 0;
                     let previousIndex = 0;
                     let counter = 100;
+                    let pollFailedSince = 0;
                     let c = async () => {
                         let endDate = new Date();
                         seconds = (endDate.getTime() - startDate.getTime()) / 1000;
@@ -1785,8 +1824,22 @@ export class LionEngine {
                             let url = host + '/py-out/read?path=' + r['path'] + '&start=' + previousIndex
                             // console.log(index + "reading from host " + host + " reading url " + url)
 
-
-                            let out = await FunctionUtil.GETJSON(url);
+                            // Same guard as the loop above: a failed poll reschedules, it does
+                            // not silently end the polling.
+                            let out: any = null;
+                            try {
+                                out = await FunctionUtil.GETJSON(url);
+                                pollFailedSince = 0;
+                            } catch (pollError) {
+                                if (!pollFailedSince) pollFailedSince = Date.now();
+                                if ((Date.now() - pollFailedSince) / 1000 > 120) {
+                                    console.log('FAILED TO COMPLETE: the server has not answered the poll for 120s: ' + path);
+                                    return reject(new Error('The server stopped answering while running ' + path + '. It may have restarted; run it again.'));
+                                }
+                                waiting = false;
+                                setTimeout(c, 1000);
+                                return;
+                            }
 
 
 

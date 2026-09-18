@@ -623,6 +623,10 @@ export class LionEngine {
     }
     popHistory() {
         let stringData = LionEngine.history.pop();
+        // Nothing left to undo: every caller already handles a null (handleUndo returns),
+        // whereas reading .length off an empty pop threw, so Ctrl+Z on a canvas with no
+        // history raised a TypeError instead of doing nothing.
+        if (typeof stringData !== 'string' || !stringData.length) return null;
         const byteValues = [];
         for (let i = 0; i < stringData.length; i += 0x8000) {
             const chunk = stringData.substring(i, i + 0x8000);

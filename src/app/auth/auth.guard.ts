@@ -28,6 +28,9 @@ export const authGuard: CanActivateFn = async (route, state): Promise<boolean | 
     // public IP genome viewer, /public/ip -> /app/manchester/viewer?ip=1). Everything else
     // requires login and is bounced to /login on the same host by the checks below.
     if (u.includes('/manchester/viewer') || u.includes('manchester%2fviewer')) return true;
+    // The Analytics viewer: public links (/v/<code>) open a timeline for anyone, no sign-in.
+    // A person-to-person share on the same route still asks for sign-in inside the app.
+    if (u.includes('/cpd/baja-analytics-viewer') || u.includes('cpd%2fbaja-analytics-viewer')) return true;
     // The clinical-library-public exemption is gone: the library is subscribers-only, and a
     // route that skipped sign-in was a way around that gate rather than a separate product.
     //

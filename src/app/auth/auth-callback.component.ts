@@ -66,7 +66,14 @@ export class AuthCallbackComponent implements OnInit {
       sessionStorage.removeItem('oidc.returnTo');
       // Clean the URL of the auth params before navigating.
       window.history.replaceState({}, document.title, window.location.pathname);
-      this.router.navigateByUrl(dest);
+      // A FULL navigation, not a router one. The shell reads the session into the identity
+      // the whole app keys on (OAuthSettings.access_token -> getUser(), the x-user-id header)
+      // once, when it boots -- and it booted on this callback page, before the session
+      // existed. Routing on inside the same page left that identity empty, so the first
+      // file list after signing in came back "Missing user id" and only a manual refresh
+      // fixed it. Loading the destination afresh boots the shell with the session in place.
+      const safe = (typeof dest === 'string' && dest.startsWith('/') && !dest.startsWith('//')) ? dest : '/';
+      window.location.replace(window.location.origin + safe);
     } catch (e: any) {
       this.error = e?.message || String(e);
     }

@@ -268,10 +268,29 @@ export class CanvasComponent implements PubComponent, AfterViewInit, OnDestroy {
         if (editor.buttons) {
             this.buttons = editor.buttons;
         }
+        // The Monaco child is created by the *ngIf on the container, which only renders after
+        // this change-detection pass. On every fresh open it did not exist yet here, so the
+        // editor's text (a cell's value or formula) was never handed over and the window came
+        // up empty. Hand it over before the pass when the child exists, after the pass when it
+        // has just been created, and on the next tick as a last resort.
+        let handedOver = false;
         if (this.textEditor) {
-            this.textEditor.setEditor(editor)
+            this.textEditor.setEditor(editor);
+            handedOver = true;
         }
         this.cdr.detectChanges();
+        if (!handedOver && this.textEditor) {
+            this.textEditor.setEditor(editor);
+            handedOver = true;
+        }
+        if (!handedOver) {
+            setTimeout(() => {
+                if (this.textEditor && this.editor === editor) {
+                    this.textEditor.setEditor(editor);
+                    this.cdr.detectChanges();
+                }
+            }, 0);
+        }
         return this;
     }
 
@@ -673,13 +692,13 @@ export class CanvasComponent implements PubComponent, AfterViewInit, OnDestroy {
 
 
                 if (this.mouseUpListener && evt && evt.changedTouches && evt.changedTouches.length > 0 && evt.changedTouches[0]) {
-                    if (evt && evt.changedTouches && evt.changedTouches[0].clientX) {
+                    if (evt && evt.changedTouches && evt.changedTouches[0].clientX != null) {
                         const ct = this.toCanvasXY(canvasEl, evt.changedTouches[0].clientX, evt.changedTouches[0].clientY);
                         if (ct)
                             this.mouseUpListener(ct.x, ct.y);
                     }
                 } else
-                    if (this.mouseUpListener && evt && rect && rect.x && rect.y && evt.touches[0]) {
+                    if (this.mouseUpListener && evt && rect && evt.touches[0]) {
                         const ct = this.toCanvasXY(canvasEl, evt.touches[0].clientX, evt.touches[0].clientY);
                         if (ct.x && ct.y) {
                             this.mouseUpListener(ct.x, ct.y);
@@ -706,7 +725,10 @@ export class CanvasComponent implements PubComponent, AfterViewInit, OnDestroy {
                 // navigate/pan is only engaged once movement passes the threshold (see below).
                 this._touchStartPt = { x: ct.x, y: ct.y };
                 this._touchNavStarted = false;
-                if (this.mouseMoveListener && evt && rect && rect.x && rect.y && evt.touches[0] && evt.touches[0].clientX) {
+                // No test on rect.x / rect.y: on a phone the canvas starts at the left edge, so
+                // rect.x is 0 and that test dropped every press, and with it the finger pan
+                // (which waits for a press). A touch at x = 0 is a touch too.
+                if (this.mouseMoveListener && evt && rect && evt.touches[0] && evt.touches[0].clientX != null) {
                     this.mouseDownListener(ct.x, ct.y);
                 }
             }
@@ -741,7 +763,7 @@ export class CanvasComponent implements PubComponent, AfterViewInit, OnDestroy {
             if (this.mouseUpListener) {
                 const rect = canvasEl.getBoundingClientRect();
 
-                if (evt && rect && rect.x && rect.y && evt.touches[0] && evt.touches[0].clientX) {
+                if (evt && rect && evt.touches[0] && evt.touches[0].clientX != null) {
 
                     const ct = {
                         x: evt.touches[0].clientX - rect.left,

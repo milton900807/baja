@@ -107,8 +107,9 @@
 
       <mat-autocomplete #auto="matAutocomplete" class="cmd-panel" [displayWith]="displayCmd" (opened)="onPanelOpened()"
         (optionSelected)="onOptionSelected($event)">
-        <mat-option *ngFor="let opt of (filteredCmds$ | async) || []" [value]="opt">
-          {{ opt.label }}
+        <mat-option *ngFor="let opt of (filteredCmds$ | async) || []" [value]="opt" [class.cmd-tool-option]="!!opt.tool">
+          <span class="cmd-opt-label">{{ opt.label }}</span>
+          <span *ngIf="opt.tool && opt.hint" class="cmd-opt-hint">{{ opt.hint }}</span>
         </mat-option>
         <mat-option *ngIf="((filteredCmds$ | async) || []).length === 0" disabled>
           No matches

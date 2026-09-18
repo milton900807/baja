@@ -294,8 +294,10 @@ export class TextEditorComponent implements OnInit, PubComponent, OnDestroy {
 
   setEditor(editor) {
     this.editor = editor;
-    if (editor.code)
-      this.code = editor.code
+    // A cell whose text is "0" or "" must still replace whatever the editor showed last;
+    // only an absent `code` leaves the current text alone.
+    if (editor.code != null)
+      this.code = '' + editor.code
 
     if (this.completionProvider) {
       this.completionProvider.dispose();

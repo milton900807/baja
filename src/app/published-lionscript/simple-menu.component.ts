@@ -23,7 +23,16 @@ import { map, startWith } from "rxjs/operators";
 import { QueryList, ViewChildren } from "@angular/core";
 
 
-type Cmd = { label: string; insert?: string; args?: string; hint?: string };
+type Cmd = {
+    label: string;
+    table?: string;   // a row label's table (formula completion after "[")
+    insert?: string;
+    args?: string;
+    hint?: string;
+    // Tool lookup: the menu item this entry runs, and the top-level menu it lives under.
+    tool?: any;
+    top?: string;
+};
 
 type TriggerSpan = {
     kind: "trigger"; // unified for all trigger chars
@@ -76,6 +85,17 @@ export class SimpleMenuComponent
     textFieldValue = "";
     placeholder = "...";
     isPrimaryCommandInput = true;
+
+    // ---------- Tool lookup ----------
+    // When data.toolLookup is set, every leaf item of `menus` (any depth) becomes a
+    // searchable entry: typing part of a tool's name lists the matches, Tab completes
+    // the name, Enter (or picking from the list) runs the tool. This works with no
+    // trigger character, unlike the formula completion below, which needs one.
+    toolLookup = false;
+    private tools: Cmd[] = [];
+    private listAllTools = false;
+    private lastToolRun: { label: string; at: number } | null = null;
+    readonly TOOL_LIST_MAX = 14;
 
     @ViewChildren("textInput") textInputs!: QueryList<ElementRef<HTMLInputElement>>;
     // All top-level dropdown triggers, so opening one can close the rest.
@@ -176,8 +196,39 @@ export class SimpleMenuComponent
             insert: c.insert ?? `${label} `,
             args: c.args ?? "",
             hint: c.hint ?? "",
+            table: (c as any).table ?? undefined,
         };
     };
+
+    // ---------- Formula-aware candidate pool ----------
+    // After "[" the candidates are row LABELS, and only those of the table written just
+    // before the bracket (Project_Assumptions[Seq → the Assumptions' labels); after any
+    // other trigger they are the tables and tags. Matches that START with the typed text
+    // come first, so Tab lands on the obvious one, then the ones that merely contain it.
+    private candidatePool(text: string, span: TriggerSpan): Cmd[] {
+        const all = this.commands;
+        const isLabel = (c: Cmd) => !!(c as any).table;
+        if (span.ch === "[") {
+            const m = /([A-Za-z_][\w.-]*)\s*$/.exec((text ?? "").slice(0, span.start));
+            const ctx = m ? m[1].toLowerCase() : "";
+            const scoped = ctx ? all.filter((c) => isLabel(c) && ((c as any).table as string).toLowerCase() === ctx) : [];
+            if (scoped.length) return scoped;
+            const labels = all.filter(isLabel);
+            return labels.length ? labels : all;
+        }
+        const tables = all.filter((c) => !isLabel(c));
+        return tables.length ? tables : all;
+    }
+    private rankMatches(pool: Cmd[], needle: string): Cmd[] {
+        if (!needle) return pool.slice();
+        const starts: Cmd[] = [], contains: Cmd[] = [];
+        for (const c of pool) {
+            const l = c.label.toLowerCase();
+            if (l.startsWith(needle)) starts.push(c);
+            else if (l.includes(needle)) contains.push(c);
+        }
+        return starts.concat(contains);
+    }
 
     private handleFocus = () => {
         const el = this.textInput?.nativeElement;
@@ -195,6 +246,7 @@ export class SimpleMenuComponent
         // Do NOT blindly preventDefault(), or typing/autocomplete may break.
         if (event.key === 'Enter') {
             event.preventDefault();
+            if (this.toolLookup && this.runToolFromInput()) return;
             this.submitText();
             return;
         }
@@ -373,6 +425,25 @@ export class SimpleMenuComponent
                 if (!span) {
                     this.lastTriggerStart = null;
                     this.lastTriggerKind = null;
+                    if (this.toolLookup) {
+                        const listAll = this.listAllTools;
+                        this.listAllTools = false;
+                        const res = listAll ? this.allTools() : this.toolMatches(text);
+                        this.shouldAutocomplete = res.length > 0;
+                        if (res.length === 0) {
+                            if (this.autoTrigger?.panelOpen) this.autoTrigger.closePanel();
+                            return [];
+                        }
+                        // matAutocompleteDisabled flips on the next change-detection pass, so
+                        // the open has to wait a tick or the trigger refuses it.
+                        this.cdr.markForCheck();
+                        setTimeout(() => {
+                            if (this.shouldAutocomplete && this.autoTrigger?.autocomplete && !this.autoTrigger.panelOpen) {
+                                try { this.autoTrigger.openPanel(); } catch (e) { }
+                            }
+                        }, 0);
+                        return res;
+                    }
                     if (this.autoTrigger?.panelOpen) this.autoTrigger.closePanel();
                     return [];
                 }
@@ -390,7 +461,7 @@ export class SimpleMenuComponent
                 if (this.justTriggered) {
                     this.justTriggered = false;
 
-                    const all = this.commands.slice();
+                    const all = this.candidatePool(text, span);
 
                     // ✅ NEW: if there are no commands, close the panel
                     if (all.length === 0) {
@@ -416,12 +487,10 @@ export class SimpleMenuComponent
                     return [];
                 }
 
-                const results =
-                    needle.length === 0
-                        ? this.commands.slice()
-                        : this.commands.filter((c) => c.label.toLowerCase().includes(needle));
+                const results = this.rankMatches(this.candidatePool(text, span), needle);
 
-                // Reverse the sorting before returning
+                // The list opens upward from the input: reversed, so the best match sits
+                // nearest the caret.
                 const reversedResults = results.reverse();
 
                 // ✅ NEW: If no matches, close the dropdown
@@ -459,6 +528,11 @@ export class SimpleMenuComponent
             }
 
             if (this.data["cmd"]) this.cmd = LionEngine.ionfunctions[this.data["cmd"]];
+            if (this.data["placeholder"]) this.placeholder = this.data["placeholder"];
+            if (this.data["toolLookup"]) {
+                this.toolLookup = true;
+                this.tools = this.collectTools(this.menus);
+            }
             if (this.data["text"]) {
                 this.textFieldValue = this.data["text"];
                 this.cmdCtrl.setValue(this.textFieldValue, { emitEvent: true });
@@ -581,6 +655,10 @@ export class SimpleMenuComponent
         const caret = el?.selectionStart ?? this.caretPos ?? text.length;
 
         const span = this.getLastTriggerSpan(text, caret);
+        if (!span && this.toolLookup) {
+            this.tabCompleteTool(text);
+            return;
+        }
         if (span) {
             const first = this.firstFiltered(text, caret);
             if (first) {
@@ -613,10 +691,7 @@ export class SimpleMenuComponent
         const span = this.getLastTriggerSpan(text, caret);
         if (!span) return undefined;
         const needle = span.term.toLowerCase();
-        const list =
-            needle.length === 0
-                ? this.commands.slice()
-                : this.commands.filter((c) => c.label.toLowerCase().includes(needle));
+        const list = this.rankMatches(this.candidatePool(text, span), needle);
         return list[0];
     }
 
@@ -641,6 +716,14 @@ export class SimpleMenuComponent
         // TAB → complete (keep your behavior)
         if (e.key === "Tab") {
             this.onTabComplete(e);
+            return;
+        }
+
+        // Tool lookup: ArrowDown on an empty field lists every tool.
+        if (this.toolLookup && e.key === "ArrowDown" && !(this.currentInputString() ?? "").trim()) {
+            e.preventDefault();
+            this.listAllTools = true;
+            this.cmdCtrl.setValue("", { emitEvent: true });
             return;
         }
 
@@ -700,7 +783,7 @@ export class SimpleMenuComponent
 
         const text = el?.value ?? "";
         const span = this.getLastTriggerSpan(text, this.caretPos);
-        this.shouldAutocomplete = !!span;
+        this.shouldAutocomplete = !!span || (this.toolLookup && !span && this.toolMatches(text).length > 0);
 
 
 
@@ -768,6 +851,11 @@ export class SimpleMenuComponent
     onOptionSelected(e: MatAutocompleteSelectedEvent): void {
         const picked = e.option.value as string | Cmd;
 
+        if (typeof picked !== "string" && picked?.tool) {
+            this.runTool(picked);
+            return;
+        }
+
         // Resolve text to insert (no trailing spaces)
         const raw =
             typeof picked === "string" ? picked : picked?.insert ?? picked?.label ?? "";
@@ -817,6 +905,131 @@ export class SimpleMenuComponent
             this.shouldAutocomplete = false;
             if (this.autoTrigger?.panelOpen) this.autoTrigger.closePanel();
         }, 0);
+    }
+
+    // ---------- Tool lookup helpers ----------
+
+    /** Flatten `menus` (any depth) into runnable leaf entries with a breadcrumb hint. */
+    private collectTools(menus: any[], path: string[] = [], out: Cmd[] = []): Cmd[] {
+        for (const m of menus ?? []) {
+            if (!m || typeof m !== "object") continue;
+            const label = ("" + (m.label ?? "")).trim();
+            const kids = m.items ?? m.children;
+            if (Array.isArray(kids) && kids.length > 0) {
+                this.collectTools(kids, label ? [...path, label] : path, out);
+            } else if (label && (m.ionfunction || m.ionFunction || m.click)) {
+                out.push({ label, insert: label, hint: path.join(" › "), tool: m, top: path[0] ?? label });
+            }
+        }
+        return out;
+    }
+
+    /** Public API: replace the lookup list (e.g. after the menus are rebuilt). */
+    setTools(menus?: any[]): void {
+        if (menus) this.menus = menus;
+        this.tools = this.collectTools(this.menus);
+        this.cdr.markForCheck();
+    }
+
+    private allTools(): Cmd[] {
+        if (this.tools.length === 0) this.tools = this.collectTools(this.menus);
+        return this.tools.slice();
+    }
+
+    /** True when every character of q appears in s, in order (fuzzy match). */
+    private isSubsequence(q: string, s: string): boolean {
+        let i = 0;
+        for (const ch of s) { if (ch === q[i]) i++; if (i === q.length) return true; }
+        return q.length === 0;
+    }
+
+    /** Ranked matches for the typed text: exact, prefix, word-start, substring, path, fuzzy. */
+    private toolMatches(text: string): Cmd[] {
+        const q = (text ?? "").trim().toLowerCase();
+        if (!q) return [];
+        const scored: Array<{ s: number; t: Cmd }> = [];
+        for (const t of this.allTools()) {
+            const l = t.label.toLowerCase();
+            const p = (t.hint ?? "").toLowerCase();
+            let s = -1;
+            if (l === q) s = 0;
+            else if (l.startsWith(q)) s = 1;
+            else if (l.split(/[\s/(),.-]+/).some((w) => w.startsWith(q))) s = 2;
+            else if (l.includes(q)) s = 3;
+            else if (p.includes(q)) s = 4;
+            else if (q.length >= 3 && this.isSubsequence(q, l)) s = 5;
+            if (s >= 0) scored.push({ s, t });
+        }
+        scored.sort((a, b) => a.s - b.s || a.t.label.localeCompare(b.t.label));
+        return scored.slice(0, this.TOOL_LIST_MAX).map((x) => x.t);
+    }
+
+    private commonPrefix(labels: string[]): string {
+        if (labels.length === 0) return "";
+        let prefix = labels[0];
+        for (const l of labels.slice(1)) {
+            let i = 0;
+            while (i < prefix.length && i < l.length && prefix[i].toLowerCase() === l[i].toLowerCase()) i++;
+            prefix = prefix.slice(0, i);
+            if (!prefix) break;
+        }
+        return prefix;
+    }
+
+    /** Tab in tool mode: extend the typed text to the matches' common prefix, or to the
+     *  first match when nothing longer is shared. The list stays open while ambiguous. */
+    private tabCompleteTool(text: string): void {
+        const typed = (text ?? "").trim();
+        const matches = typed ? this.toolMatches(typed) : this.allTools();
+        if (matches.length === 0) return;
+        let target = this.commonPrefix(matches.map((m) => m.label));
+        if (target.length <= typed.length || !target.toLowerCase().startsWith(typed.toLowerCase())) {
+            target = matches[0].label;
+        }
+        this.cmdCtrl.setValue(target, { emitEvent: true });
+        this.textFieldValue = target;
+        this.setCaret(target.length);
+    }
+
+    /** Enter in tool mode: run the highlighted option, an exact label match, or the only
+     *  match. Returns false when nothing applies so the caller can fall back to cmd. */
+    private runToolFromInput(): boolean {
+        const active = this.autoTrigger?.panelOpen ? (this.autoTrigger.activeOption?.value as Cmd | undefined) : undefined;
+        if (active && typeof active !== "string" && active.tool) { this.runTool(active); return true; }
+        const text = (this.currentInputString() ?? "").trim();
+        if (!text) return false;
+        const q = text.toLowerCase();
+        const exact = this.allTools().find((t) => t.label.toLowerCase() === q);
+        if (exact) { this.runTool(exact); return true; }
+        const matches = this.toolMatches(text);
+        if (matches.length === 1) { this.runTool(matches[0]); return true; }
+        return false;
+    }
+
+    /** Fire a tool's ion-function the way a menu click would, then clear the field.
+     *  Guarded against the double fire that Enter can produce when mat-autocomplete also
+     *  commits the active option. */
+    runTool(entry: Cmd): void {
+        const item = entry?.tool;
+        if (!item) return;
+        const now = Date.now();
+        if (this.lastToolRun && this.lastToolRun.label === entry.label && now - this.lastToolRun.at < 400) return;
+        this.lastToolRun = { label: entry.label, at: now };
+
+        this.shouldAutocomplete = false;
+        if (this.autoTrigger?.panelOpen) { try { this.autoTrigger.closePanel(); } catch (e) { } }
+        this.cmdCtrl.setValue("", { emitEvent: false });
+        this.textFieldValue = "";
+        this.cdr.markForCheck();
+
+        if (this.guardActive() && this.guardAllow.indexOf(entry.top ?? "") < 0) { this.notifyBlocked(); return; }
+        try {
+            if (typeof item.click === "function") { item.click(); return; }
+            const func = item["ionfunction"] ?? item["ionFunction"];
+            if (func != null && LionEngine.ionfunctions[func]) LionEngine.ionfunctions[func](item);
+        } catch (e) {
+            console.error("tool lookup: failed to run " + entry.label, e);
+        }
     }
 
     onPanelOpened() {

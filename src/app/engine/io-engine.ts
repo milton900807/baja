@@ -854,7 +854,7 @@ export class LionEngine {
             return null;
         }
 
-        console.log(' wid ' + wid['wid'])
+        // (debug log removed: this fired on every widget and modal the app mounted)
         let type = wid["wid"];
         if (type == null) type = wid["type"];
         let line = wid["input"];
@@ -1545,6 +1545,22 @@ export class LionEngine {
                     let waiting = false;
                     let lineindex = 0;
                     let counter = 100;
+                    // When the poll itself started failing (0 = it is not), and how long a
+                    // failing poll is tolerated before the call is rejected. A service restart
+                    // is a few seconds of 502; this is well past that.
+                    let pollFailedSince = 0;
+                    const POLL_DOWN_LIMIT_SEC = 120;
+                    let fileGoneCount = 0;
+                    // HOW MANY TIMES THE ANSWER MAY BE UNREADABLE BEFORE IT IS CALLED A FAILURE.
+                    //
+                    // The job's last line can be in the file before its final bytes are, so an
+                    // unparseable resolution at EXIT_CODE is worth re-reading a few times. What
+                    // it is NOT worth is resolving with the raw poll object -- { lines: [...] }
+                    // -- which is what used to happen: the caller got an object with none of
+                    // the fields it asked for, reported "nothing came back", and the failure
+                    // looked like a button that did nothing.
+                    let parseTries = 0;
+                    const PARSE_TRIES = 8;
                     // Lines already dispatched as message / progress / object on an earlier
                     // poll. See the loop below.
                     let handled = 0;
@@ -1570,7 +1586,39 @@ export class LionEngine {
                             }
                             let url = host + '/py-out/read?path=' + r['path'] + '&start=' + lineindex;
 
-                            let out = await FunctionUtil.GETJSON(url);
+                            // A POLL THAT FAILS IS NOT THE END OF THE JOB. GETJSON throws on a
+                            // non-2xx answer; an uncaught throw here left `waiting` true and never
+                            // rescheduled this function, so one 502 from nginx while the server
+                            // restarted stopped the polling for good: the job's answer sat on
+                            // disk, the work badge spun until the 16-minute cap, and the build
+                            // looked as if the model had never finished. Keep polling through
+                            // the outage, slower, and only give up after a long silence.
+                            let out: any = null;
+                            try {
+                                out = await FunctionUtil.GETJSON(url);
+                                pollFailedSince = 0;
+                                counter = 100;
+                            } catch (pollError) {
+                                const status = (pollError && (pollError as any).status) || 0;
+                                if (!pollFailedSince) pollFailedSince = Date.now();
+                                const downFor = (Date.now() - pollFailedSince) / 1000;
+                                if (downFor > POLL_DOWN_LIMIT_SEC) {
+                                    console.log('FAILED TO COMPLETE: the server has not answered the poll for ' + Math.round(downFor) + 's (HTTP ' + status + '): ' + path);
+                                    return reject(new Error('The server stopped answering (HTTP ' + status + ') while running ' + path + '. It may have restarted; run it again.'));
+                                }
+                                waiting = false;
+                                counter = 1000;         // ease off while it is down
+                                setTimeout(processLines, counter);
+                                return;
+                            }
+                            if (out && out['msg'] === 'undefined file') {
+                                // The output file is gone (a cleaned /tmp): nothing will ever arrive.
+                                if (++fileGoneCount > 10) {
+                                    return reject(new Error('The server lost the output of ' + path + '. It may have restarted; run it again.'));
+                                }
+                            } else {
+                                fileGoneCount = 0;
+                            }
                             if (out && out['lines'] && out['lines'].length > 0) {
                                 if (prev == null || prev != out['lines']) {
                                     let lines = out['lines'];
@@ -1586,25 +1634,50 @@ export class LionEngine {
                                     // jumped back to the start on every tick, which read as the
                                     // job restarting from scratch.
                                     for (let li = 0; li < lines.length; li++) {
-                                        let l = decodeURI(lines[li]).trim();
+                                        // A LINE THAT CANNOT BE DECODED IS STILL A LINE. The server
+                                        // percent-encodes each one; decodeURI throws on a malformed
+                                        // escape, and an exception here escapes this async function
+                                        // as a rejection nobody is listening for, so the caller waits
+                                        // for a result that can no longer arrive.
+                                        let l: string;
+                                        try { l = decodeURI(lines[li]).trim(); }
+                                        catch (decodeFailed) { l = ('' + lines[li]).trim(); }
                                         const fresh = li >= handled;
 
                                         if (l.startsWith('EXIT_CODE:')) {
+                                            waiting = false;
+                                            const body = collectedString.trim();
+                                            console.log(" end sr " + body.substring(Math.max(0, body.length - 100)));
                                             try {
-                                                waiting = false;
-                                                console.log(" end sr " + collectedString.substring(collectedString.length - 100))
-                                                let jobj = JSON.parse(collectedString.trim());
-                                                return resolve(jobj)
+                                                return resolve(JSON.parse(body));
                                             } catch (exception) {
-                                                // console.log('Failed to parse collected JSON:', exception);
-                                                counter = 0;
-                                                setTimeout(processLines, counter)
-
+                                                // Re-read: the resolution may still be arriving. After
+                                                // that, say so -- with the reason and what was read --
+                                                // rather than handing back something that only looks
+                                                // like an answer.
+                                                if (++parseTries < PARSE_TRIES) {
+                                                    counter = 60;
+                                                    setTimeout(processLines, counter);
+                                                    return;
+                                                }
+                                                const why = (exception && (exception as any).message) ? (exception as any).message : exception;
+                                                console.log('The python answer could not be read: ' + why, body.substring(0, 400));
+                                                return reject(new Error('The server answered but the answer could not be read ('
+                                                    + why + ') from ' + path));
                                             }
-                                            return resolve(out);
                                         } else
                                             if (isResolutionSection) {
-                                                collectedString += l.trim();
+                                                // Only the resolution's own continuation lines belong to
+                                                // it. A message the job printed after resolving -- or
+                                                // anything on stderr -- used to be appended INTO the
+                                                // JSON, which is one way a perfectly good answer becomes
+                                                // unparseable.
+                                                if (l.startsWith('IONWORKS:')) {
+                                                    isResolutionSection = false;
+                                                    li--;               // read this line as itself
+                                                    continue;
+                                                }
+                                                collectedString += l;
                                             } else
                                                 if (l.startsWith('IONWORKS:RESOLUTION:')) {
                                                     isResolutionSection = true;
@@ -1734,6 +1807,7 @@ export class LionEngine {
                     let index = 0;
                     let previousIndex = 0;
                     let counter = 100;
+                    let pollFailedSince = 0;
                     let c = async () => {
                         let endDate = new Date();
                         seconds = (endDate.getTime() - startDate.getTime()) / 1000;
@@ -1750,8 +1824,22 @@ export class LionEngine {
                             let url = host + '/py-out/read?path=' + r['path'] + '&start=' + previousIndex
                             // console.log(index + "reading from host " + host + " reading url " + url)
 
-
-                            let out = await FunctionUtil.GETJSON(url);
+                            // Same guard as the loop above: a failed poll reschedules, it does
+                            // not silently end the polling.
+                            let out: any = null;
+                            try {
+                                out = await FunctionUtil.GETJSON(url);
+                                pollFailedSince = 0;
+                            } catch (pollError) {
+                                if (!pollFailedSince) pollFailedSince = Date.now();
+                                if ((Date.now() - pollFailedSince) / 1000 > 120) {
+                                    console.log('FAILED TO COMPLETE: the server has not answered the poll for 120s: ' + path);
+                                    return reject(new Error('The server stopped answering while running ' + path + '. It may have restarted; run it again.'));
+                                }
+                                waiting = false;
+                                setTimeout(c, 1000);
+                                return;
+                            }
 
 
 

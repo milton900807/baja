@@ -1111,3 +1111,245 @@ simple-menu mat-toolbar.mat-default,
     zoom: 0.85;
   }
 }
+
+/* ============================================================
+   COMMAND INPUT VISIBILITY (final override)
+   The toolbar text field used to be transparent with a thin
+   gray outline and light text, so it vanished against the
+   sunset gradient. Give it a solid light pill, dark text, a
+   white border and a cyan focus ring so it reads at a glance.
+   Placed after the sunset block so it wins.
+   ============================================================ */
+simple-menu .span-container {
+  padding: 0 8px 0 12px;
+}
+
+simple-menu .compact-text-field {
+  min-width: 220px;
+}
+
+/* Solid light surface behind the field */
+simple-menu .compact-text-field .mat-mdc-text-field-wrapper {
+  background: rgba(255, 255, 255, 0.94) !important;
+  border-radius: 6px !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
+  transition: box-shadow 0.15s ease, background 0.15s ease;
+}
+
+/* No MDC hover/focus darkening on top of the light surface */
+simple-menu .compact-text-field .mat-mdc-form-field-focus-overlay {
+  background: transparent !important;
+}
+
+/* Crisp white border that separates the pill from the gradient */
+simple-menu .compact-text-field .mdc-notched-outline__leading,
+simple-menu .compact-text-field .mdc-notched-outline__notch,
+simple-menu .compact-text-field .mdc-notched-outline__trailing {
+  border-color: rgba(255, 255, 255, 0.95) !important;
+  border-width: 1.5px !important;
+}
+
+/* Focus: cyan ring + brighter surface */
+simple-menu .compact-text-field.mat-focused .mat-mdc-text-field-wrapper {
+  background: #ffffff !important;
+  box-shadow: 0 0 0 3px rgba(26, 163, 189, 0.55), 0 1px 3px rgba(0, 0, 0, 0.35) !important;
+}
+
+simple-menu .compact-text-field.mat-focused .mdc-notched-outline__leading,
+simple-menu .compact-text-field.mat-focused .mdc-notched-outline__notch,
+simple-menu .compact-text-field.mat-focused .mdc-notched-outline__trailing {
+  border-color: #1aa3bd !important;
+}
+
+/* Dark text and caret on the light surface */
+simple-menu .compact-text-field .highlight-display {
+  color: #0a2540 !important;
+}
+
+simple-menu .compact-text-field .highlight-display.is-empty {
+  color: #4a5a70 !important;
+  opacity: 1;
+}
+
+simple-menu .compact-text-field .mat-input-element,
+simple-menu .compact-text-field .mat-mdc-input-element {
+  caret-color: #0a2540 !important;
+}
+
+/* Inline save (thumb) button: navy on the light surface */
+simple-menu .compact-text-field .mat-mdc-form-field-icon-suffix .mat-mdc-icon-button,
+simple-menu .compact-text-field .mat-mdc-form-field-icon-suffix .mat-icon {
+  color: #0a2540 !important;
+}
+
+/* ============================================================
+   TOOL LOOKUP DROPDOWN (data.toolLookup)
+   Each option is a tool name with its menu path as a muted
+   breadcrumb on the right. Rendered in the cdk overlay, so the
+   rules are global (ViewEncapsulation.None).
+   ============================================================ */
+.cmd-panel .cmd-tool-option .mdc-list-item__primary-text,
+.cmd-panel .cmd-tool-option .mat-mdc-option-text {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+}
+
+.cmd-panel .cmd-opt-label {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: #0a2540;
+  white-space: nowrap;
+}
+
+.cmd-panel .cmd-opt-hint {
+  font-size: 10.5px;
+  color: #6b7a90;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cmd-panel.mat-mdc-autocomplete-panel {
+  min-width: 320px;
+  max-height: 360px;
+}
+
+/* ============================================================
+   MENUBAR LAYOUT PRIORITY (final override)
+   The menus and icon buttons on the left must never be clipped
+   to make room for the command field. The left section used to
+   shrink (min-width: 0 + overflow hidden), so in a narrow panel
+   the 220px field pushed the navigation buttons out of view.
+   Now the left section keeps its size and the field takes only
+   what is left, shrinking as far as it must.
+   ============================================================ */
+simple-menu .left-section {
+  flex: 0 0 auto;
+  min-width: 0;
+  max-width: 100%;
+}
+
+simple-menu .span-container {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+simple-menu .compact-text-field {
+  min-width: 0;
+  width: 100%;
+}
+
+/* Below ~90px of room the field is unusable; hide it rather than show a sliver,
+   the menus and buttons stay. */
+simple-menu .span-container:has(.compact-text-field) {
+  container-type: inline-size;
+}
+@container (max-width: 90px) {
+  simple-menu .compact-text-field {
+    display: none !important;
+  }
+}
+
+/* ============================================================
+   CARET AND SELECTION ALIGNMENT (final override)
+   The visible text is an overlay that mirrors the (transparent)
+   input; the caret and the selection highlight are drawn by the
+   input itself. They only line up if both elements shape text
+   identically, so every metric that changes glyph width is
+   pinned to the same value here. A medium weight on the overlay
+   alone had put the caret a few pixels off the displayed text.
+   ============================================================ */
+simple-menu .compact-text-field .highlight-display,
+simple-menu .compact-text-field .mat-mdc-input-element,
+simple-menu .compact-text-field .mat-input-element {
+  font-family: var(--cmd-font-family) !important;
+  font-size: var(--cmd-font-size) !important;
+  font-weight: 400 !important;
+  font-style: normal !important;
+  font-stretch: normal !important;
+  letter-spacing: var(--cmd-letter-spacing) !important;
+  word-spacing: normal !important;
+  font-kerning: none !important;
+  font-variant-ligatures: none !important;
+  font-feature-settings: normal !important;
+  text-rendering: geometricPrecision;
+  text-transform: none !important;
+  text-align: left !important;
+  text-indent: 0 !important;
+  padding: 0 8px !important;
+  margin: 0 !important;
+  border: 0 !important;
+  box-sizing: border-box !important;
+  height: 18px !important;
+  line-height: 18px !important;
+}
+
+/* ============================================================
+   SELECTION COLOUR (final override)
+   Selected text in the command field: a translucent red instead
+   of the opaque yellow. The text itself stays transparent here
+   because the visible glyphs are painted by the overlay above.
+   ============================================================ */
+simple-menu .compact-text-field .mat-input-element::selection,
+simple-menu .compact-text-field .mat-mdc-input-element::selection {
+  background: rgba(220, 38, 38, 0.35) !important;
+  color: transparent !important;
+}
+
+simple-menu .compact-text-field .mat-input-element::-moz-selection,
+simple-menu .compact-text-field .mat-mdc-input-element::-moz-selection {
+  background: rgba(220, 38, 38, 0.35) !important;
+  color: transparent !important;
+}
+
+
+/* ============================================================
+   APPLICATION LOOK (final override)
+   The menubar in the same flat navy as the toolbars, the free-
+   plan bar and the button canvases: white labels and icons,
+   cyan on hover, sunset orange while pressed, white title. The
+   command field keeps its solid light pill, which reads on navy.
+   Placed last so it wins over the earlier gradient blocks.
+   ============================================================ */
+simple-menu mat-toolbar.white-toolbar,
+simple-menu .white-toolbar,
+simple-menu mat-toolbar.menu-bar,
+simple-menu mat-toolbar.blue-grey-bg {
+  background: linear-gradient(90deg, #0b2545, #123a63) !important;
+  color: #eaf6f9 !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.14) !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25) !important;
+}
+simple-menu .toolbar-title,
+simple-menu .toolbar-title .title-text { color: #eaf6f9 !important; }
+
+simple-menu .menu-wrapper button[mat-button],
+simple-menu .menu-wrapper .mat-mdc-button,
+simple-menu .menu-buttons button[mat-button],
+simple-menu .menu-buttons .mat-mdc-button,
+simple-menu .menu-wrapper button[mat-icon-button],
+simple-menu .menu-buttons button[mat-icon-button],
+simple-menu .menu-wrapper .mat-mdc-icon-button,
+simple-menu .menu-buttons .mat-mdc-icon-button {
+  color: #eaf6f9 !important;
+  border-radius: 8px !important;
+  transition: background-color .12s ease !important;
+}
+simple-menu .menu-wrapper button .mat-icon,
+simple-menu .menu-buttons button .mat-icon,
+simple-menu .menu-wrapper button .menu-btn-icon,
+simple-menu .menu-buttons button .menu-btn-icon,
+simple-menu .menu-wrapper button .menu-btn-label,
+simple-menu .menu-buttons button .menu-btn-label { color: #eaf6f9 !important; }
+
+simple-menu .menu-wrapper button:hover,
+simple-menu .menu-buttons button:hover { background-color: rgba(26, 163, 189, 0.45) !important; }
+simple-menu .menu-wrapper button:active,
+simple-menu .menu-buttons button:active { background-color: #FD5E53 !important; }
+simple-menu .menu-wrapper button[aria-expanded="true"] { background-color: #1aa3bd !important; }
+
+simple-menu .menu-btn-sep { background: rgba(255, 255, 255, 0.22) !important; }
+simple-menu .menu-btn-img { filter: brightness(0) invert(1); }

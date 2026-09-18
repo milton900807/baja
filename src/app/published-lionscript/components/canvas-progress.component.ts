@@ -116,6 +116,7 @@ export class CanvasProgressComponent implements PubComponent, AfterViewInit {
                     this.redraw();
                 })
             }
+            this._armStale();
             if (this.data['buttons']) {
                 this.icons = this.data['buttons']
             }
@@ -156,24 +157,44 @@ export class CanvasProgressComponent implements PubComponent, AfterViewInit {
         // 10s after reaching 100% with no further updates, remove the bar.
         if (this._completeTimer) { clearTimeout(this._completeTimer); this._completeTimer = null; }
         if (v != null && v >= 1) {
-            this._completeTimer = setTimeout(() => this._removeSelf(), 10000);
+            // The bar has done its job: blank it now and take it out of the page shortly
+            // after. It used to wait 10s and then clear a layout slot it was not in, so a
+            // full blue bar sat at the top of the canvas for the rest of the session.
+            this._completeTimer = setTimeout(() => this._removeSelf(), 800);
         }
+        // A loader that stops reporting is finished as far as the user is concerned: a
+        // stalled or abandoned load must not leave the bar on screen either.
+        this._armStale();
+    }
+    private _staleTimer: any = null;
+    private _armStale() {
+        if (this._staleTimer) { clearTimeout(this._staleTimer); this._staleTimer = null; }
+        this._staleTimer = setTimeout(() => { this._staleTimer = null; this._removeSelf(); }, 12000);
+    }
+
+    private _hideHost() {
+        try {
+            const el = this.canvas && this.canvas.nativeElement;
+            const host = el && el.closest ? (el.closest('progress-canvas') || el.closest('app-progress')) : null;
+            if (host) { (host as HTMLElement).style.display = 'none'; return; }
+            if (el && el.parentElement) el.parentElement.style.display = 'none';
+        } catch (e) { }
     }
 
     private _removeSelf() {
         this._completeTimer = null;
-        // Preferred: clear the progress bar's layout slot (lionscript global).
+        // Clear the layout slot only when the caller named it; guessing a slot could empty
+        // someone else's panel. Either way the host element is hidden.
         try {
             const CL = (window as any).CurrentLayout;
-            const panel = (this.data && this.data['panel']) || 'buttonMenuPanel';
-            if (CL && typeof CL.clearComponent === 'function') { CL.clearComponent(panel); return; }
+            const panel = this.data && this.data['panel'];
+            if (panel && CL && typeof CL.clearComponent === 'function') CL.clearComponent(panel);
         } catch (e) { }
-        // Fallback: remove/hide our own host element.
+        this._hideHost();
         try {
             const el = this.canvas && this.canvas.nativeElement;
-            const host = el && el.closest ? el.closest('progress-canvas') : (el && el.parentElement);
+            const host = el && el.closest ? (el.closest('progress-canvas') || el.closest('app-progress')) : null;
             if (host && host.parentElement) host.parentElement.removeChild(host);
-            else if (el && el.parentElement) el.parentElement.style.display = 'none';
         } catch (e) { }
     }
 
@@ -731,6 +752,12 @@ export class CanvasProgressComponent implements PubComponent, AfterViewInit {
             this.cx = canvasEl.getContext('2d')!;
         }
         const ctx = this.cx;
+        // Finished: draw nothing. The full bar is not a state worth showing.
+        if (this._progress != null && this._progress >= 1) {
+            try { ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height); ctx.restore(); } catch (e) { }
+            this._hideHost();
+            return;
+        }
 
         // Grid sizing
         this.grid.setHeight(this.height);

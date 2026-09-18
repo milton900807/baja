@@ -854,7 +854,7 @@ export class LionEngine {
             return null;
         }
 
-        console.log(' wid ' + wid['wid'])
+        // (debug log removed: this fired on every widget and modal the app mounted)
         let type = wid["wid"];
         if (type == null) type = wid["type"];
         let line = wid["input"];

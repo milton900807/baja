@@ -319,7 +319,7 @@ export class LionAppComponent
       if (raw) {
         const dl = JSON.parse(raw);
         const hasDeep = (temp.indexOf('manchester/editor') >= 0
-          || temp.indexOf('manchester/karyotype') >= 0) && temp.indexOf('path=') >= 0;
+          || temp.indexOf('manchester/karyotype') >= 0 || temp.indexOf('manchester/design-viewer') >= 0) && temp.indexOf('path=') >= 0;
         const fresh = dl && dl.url && (Date.now() - dl.t) < 20000;
         sessionStorage.removeItem('deep.editor');
         if (fresh && !hasDeep) {

@@ -18,9 +18,10 @@ try {
   // The karyotype view opens a saved file by URL the same way the editor does, so it
   // needs the same recovery -- otherwise reloading /app/manchester/karyotype?path=…
   // on prod loses the file for exactly the reason described above.
-  // And the Design Viewer, which opens a saved .design file the same way.
+  // And the Design Viewer (.design) and the matrix viewer (.mutmax), which open a saved file
+  // the same way.
   const deepView = loc.indexOf('manchester/editor') >= 0 || loc.indexOf('manchester/karyotype') >= 0
-    || loc.indexOf('manchester/design-viewer') >= 0;
+    || loc.indexOf('manchester/design-viewer') >= 0 || loc.indexOf('manchester/mutmatrix-viewer') >= 0;
   if (deepView && loc.indexOf('path=') >= 0) {
     sessionStorage.setItem('deep.editor', JSON.stringify({ url: loc, t: Date.now() }));
   }

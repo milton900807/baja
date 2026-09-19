@@ -59,7 +59,7 @@ export class FileManagerComponent implements OnChanges {
   // Longest first, so ".karyotype.json" is matched before ".karyotype" would be. A Genome
   // Viewer file is saved as .genome; .karyotype and .karyotype.json are its legacy names.
   static readonly UNIQUE_ICON_EXTENSIONS: string[] = [
-    '.karyotype.json', '.karyotype', '.genome', '.design', '.baja',
+    '.karyotype.json', '.karyotype', '.genome', '.design', '.mutmax', '.baja',
     '.timeline', '.ljlpx', '.layout', '.screen',
     '.ljp', '.ljt', '.ljl', '.pdf'
   ];

@@ -61,6 +61,17 @@
                 <path d="M24 17 V19.5 M24 28.5 V31 M17 24 H19.5 M28.5 24 H31"/>
               </g>
             </svg>
+            <!-- .mutmax — a differential mutational matrix: a grid of cells, two columns marked
+                 for the two samples being compared. -->
+            <svg *ngIf="element.name.endsWith('.mutmax')" class="file-type-icon" viewBox="0 0 32 32" role="img" aria-label="Mutational matrix">
+              <g fill="none" stroke="currentColor" stroke-width="1.4">
+                <rect x="4" y="6" width="24" height="21" rx="2"/>
+                <path d="M12 6 V27 M20 6 V27 M4 13 H28 M4 20 H28"/>
+              </g>
+              <rect x="4.9" y="13.9" width="6.2" height="5.2" fill="currentColor" opacity="0.85"/>
+              <rect x="20.9" y="6.9" width="6.2" height="5.2" fill="currentColor" opacity="0.85"/>
+              <rect x="12.9" y="20.9" width="6.2" height="5.2" fill="currentColor" opacity="0.5"/>
+            </svg>
             <svg *ngIf="element.name.endsWith('.baja')" class="file-type-icon" viewBox="0 0 32 32"
               role="img" aria-label="GeneTx design">
               <g fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">

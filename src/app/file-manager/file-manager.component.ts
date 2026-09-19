@@ -56,9 +56,10 @@ export class FileManagerComponent implements OnChanges {
   // .bigwig and .bam, which share the storage icon. Those keep their extensions and are
   // listed separately below so they still get an icon.
   //
-  // Longest first, so ".karyotype.json" is matched before ".karyotype" would be.
+  // Longest first, so ".karyotype.json" is matched before ".karyotype" would be. A Genome
+  // Viewer file is saved as .genome; .karyotype and .karyotype.json are its legacy names.
   static readonly UNIQUE_ICON_EXTENSIONS: string[] = [
-    '.karyotype.json', '.karyotype', '.baja',
+    '.karyotype.json', '.karyotype', '.genome', '.baja',
     '.timeline', '.ljlpx', '.layout', '.screen',
     '.ljp', '.ljt', '.ljl', '.pdf'
   ];

@@ -66,10 +66,10 @@
               </g>
             </svg>
 
-            <!-- .karyotype — banded ideograms at ascending heights, the same picture the
-                 chromosome view draws. -->
-            <svg *ngIf="element.name.endsWith('.karyotype') || element.name.endsWith('.karyotype.json')"
-              class="file-type-icon" viewBox="0 0 32 32" role="img" aria-label="Karyotype">
+            <!-- .genome (and the legacy .karyotype / .karyotype.json) — banded ideograms at
+                 ascending heights, the same picture the chromosome view draws. -->
+            <svg *ngIf="element.name.endsWith('.genome') || element.name.endsWith('.karyotype') || element.name.endsWith('.karyotype.json')"
+              class="file-type-icon" viewBox="0 0 32 32" role="img" aria-label="Genome">
               <g stroke="currentColor" stroke-width="1.4" fill="none">
                 <rect x="4"  y="10" width="6" height="14" rx="3"/>
                 <rect x="13" y="7"  width="6" height="19" rx="3"/>

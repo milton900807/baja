@@ -220,6 +220,8 @@ export class SuggestList {
     private flat: SuggestItem[] = [];
     private index = 0;
     private ctx: SuggestContext | null = null;
+    /** How many of `flat` are lead rows (Go to) rather than completions. */
+    private leadCount = 0;
     private shown = false;
     private blurTimer: any = null;
     private bound: Array<[string, any]> = [];
@@ -275,6 +277,12 @@ export class SuggestList {
             case "Tab":
             case "Enter":
                 if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) return false;  // save, not pick
+                // NOTHING TO COMPLETE, ONLY SOMEWHERE TO GO. Past the "]" of a finished
+                // reference there is no candidate, so the list is open for the Go to row
+                // alone -- and Enter taking that row meant a finished formula could never
+                // be committed: it navigated instead. Enter is the field's in that case.
+                // Tab still takes the row, and so does clicking it.
+                if (e.key === "Enter" && this.flat.length === this.leadCount) return false;
                 e.preventDefault(); e.stopPropagation(); this.accept(); return true;
             case "Escape": e.preventDefault(); e.stopPropagation(); this.close(); return true;
         }
@@ -446,7 +454,9 @@ export class SuggestList {
 
     /** Rows the caller wants first, above every section. */
     private lead(items: SuggestItem[]): void {
+        this.leadCount = 0;
         if (!items || !items.length) return;
+        this.leadCount = items.length;
         const norm = items.map((c) => this.normalize(c));
         this.groups = [{ title: this.o.groupTitles ? "Go to" : "", items: norm }].concat(this.groups);
         this.flat = norm.concat(this.flat);
@@ -454,7 +464,10 @@ export class SuggestList {
 
     private after(): void {
         if (!this.flat.length) { this.close(); return; }
-        this.index = 0;
+        // Enter completes; it does not navigate. So the highlight starts on the first
+        // real candidate, and a lead row is reached deliberately -- Tab, an arrow or a
+        // click -- rather than by being what Enter happens to land on.
+        this.index = this.leadCount < this.flat.length ? this.leadCount : 0;
         this.shown = true;
         this.render();
     }
@@ -462,7 +475,7 @@ export class SuggestList {
     close(): void {
         if (!this.shown && !this.el) return;
         this.shown = false;
-        this.groups = []; this.flat = []; this.index = 0;
+        this.groups = []; this.flat = []; this.index = 0; this.leadCount = 0;
         if (this.el) {
             try { this.el.parentNode?.removeChild(this.el); } catch (e) { }
             this.el = null;

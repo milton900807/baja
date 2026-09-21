@@ -152,6 +152,18 @@ export function suggestContext(text: string, caret: number, mode?: "formula" | "
             const m = /([A-Za-z_][\w.-]*)\s*$/.exec(t.slice(0, span.start));
             return { scope: "bracket", table: m ? m[1] : "", term: span.term, from, to: end };
         }
+        if (span.ch === ",") {
+            // A COMMA INSIDE A REFERENCE IS STILL THAT REFERENCE. "T[Budget,ro" wants the
+            // rows of T -- the other half of the pair -- and it used to be treated like any
+            // other trigger, so the list offered TABLES and Tab turned it into
+            // "T[Budget,T[ro". The bracket is only open if there is a "[" after the last "]".
+            const before = t.slice(0, span.start);
+            const open = before.lastIndexOf("[");
+            if (open > before.lastIndexOf("]")) {
+                const m = /([A-Za-z_][\w.-]*)\s*$/.exec(t.slice(0, open));
+                return { scope: "bracket", table: m ? m[1] : "", term: span.term, from, to: end };
+            }
+        }
         return { scope: "trigger", table: "", term: span.term, from, to: end };
     }
     const w = /([A-Za-z_][A-Za-z0-9_.]*)$/.exec(t.slice(0, c));

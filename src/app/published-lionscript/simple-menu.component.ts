@@ -407,7 +407,22 @@ export class SimpleMenuComponent
             startWith(""),
             map((v) => (typeof v === "string" ? v : v?.label ?? "")),
             map((text) => {
-                const caret = this.caretPos ?? (text?.length ?? 0);
+                // WHERE THE CARET ACTUALLY IS. caretPos is refreshed by onKeyUp, which the
+                // template binds to (input) -- the same event that drives valueChanges, and
+                // it runs after this. So on the keystroke that types a trigger, caretPos is
+                // still one short: for "=" it reads 0, the span search looks at "" before
+                // the caret, finds no trigger, and the panel is emptied. The keydown handler
+                // then opens it on the trigger it CAN see, which is why a bare "=" showed an
+                // open panel saying "No matches" while "=B" -- and even backspacing from
+                // "=B" to the very same "=" -- listed everything. Read the live caret when
+                // the element still holds the text this emission is for, and fall back to
+                // the cached one for a value set from code, where the DOM caret means
+                // nothing.
+                const el = this.textInput?.nativeElement;
+                const caret =
+                    el && el.value === text && typeof el.selectionStart === "number"
+                        ? el.selectionStart
+                        : this.caretPos ?? (text?.length ?? 0);
 
                 const span = this.getLastTriggerSpan(text, caret);
                 this.shouldAutocomplete = !!span;

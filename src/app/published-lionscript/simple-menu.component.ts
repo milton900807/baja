@@ -478,12 +478,24 @@ export class SimpleMenuComponent
     private acPrependGoto(text: string, caret: number): void {
         if (typeof this.gotoRef !== "function") return;
 
-        const before = (text ?? "").slice(0, Math.max(0, caret));
-        const m = /([A-Za-z_][A-Za-z0-9_.]*)\s*\[\s*([^\[\]]+?)\s*\]$/.exec(before);
-        if (!m) return;
+        // WHEREVER THE CARET IS IN IT. It used to want the reference to END exactly at the
+        // caret, so it was offered just past the closing bracket and nowhere else -- not
+        // with the caret in the table's name, not between the brackets, not on the bracket
+        // itself. Every reference in the field is looked at, and the one the caret is
+        // standing in (or at either end of) is the one offered.
+        const t = text ?? "";
+        const pos = Math.max(0, Math.min(caret, t.length));
+        const re = /([A-Za-z_][A-Za-z0-9_.]*)\s*\[\s*([^\[\]]+?)\s*\]/g;
+        let m: RegExpExecArray | null = null, hit: RegExpExecArray | null = null;
+        while ((m = re.exec(t)) !== null) {
+            const from = m.index, to = from + m[0].length;
+            if (pos >= from && pos <= to) { hit = m; break; }
+            if (from > pos) break;                 // past the caret: the rest cannot contain it
+        }
+        if (!hit) return;
 
-        const table = m[1];
-        const tags = m[2].split(",").map((t) => t.trim()).filter(Boolean);
+        const table = hit[1];
+        const tags = hit[2].split(",").map((x) => x.trim()).filter(Boolean);
         if (!tags.length) return;
 
         const item: Cmd = {

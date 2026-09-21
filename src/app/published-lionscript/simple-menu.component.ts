@@ -415,16 +415,29 @@ export class SimpleMenuComponent
         const text = this.currentInputString();
         const caret = el?.selectionStart ?? this.caretPos ?? text.length;
 
-        // Ctrl+Space on an empty field: everything there is.
-        if (opts.all && !text.trim()) {
+        // NOTHING TYPED, AND THE CARET IS IN THE FIELD -- on focus, on a click into it, or
+        // when the last character has just been deleted. There is no word to go on, so
+        // offer everything, which is what Ctrl+Space asks for anyway. Guarded on the field
+        // really holding focus, so the list does not show itself when the page merely
+        // loads and something else puts the caret there.
+        const focused =
+            !!el && typeof document !== "undefined" && document.activeElement === el;
+        const everything = () => {
             this.acCtx = { scope: "word", table: "", term: "", from: caret, to: caret };
             this.acBuild(this.acCtx, this.acRank(this.acPool(this.acCtx), ""));
             this.acAfterBuild();
-            return;
-        }
+        };
+
+        if (focused && !text.trim()) { everything(); return; }
 
         const ctx = this.acContext(text, caret);
-        if (!ctx) { this.acClose(); return; }
+        if (!ctx) {
+            // Asked for outright, at a spot with no word to go on -- a number, a bracket,
+            // an operator. Offer the lot rather than nothing.
+            if (opts.all) { everything(); return; }
+            this.acClose();
+            return;
+        }
 
         // A bare word is only worth completing once it is a real start, and never when it
         // already names the thing exactly -- nothing left to say.

@@ -86,7 +86,6 @@ import { PDBViewerComponent } from './components/pdb/viewer.component';
 import { TextEditorComponent } from './components/texteditor-component';
 import { YoutubeComponent } from './youtube.component';
 import { SafeUrlPipe } from './SafeUrlPipe';
-import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { ColorSketchModule } from 'ngx-color/sketch';
 import { NgxColorsModule } from 'ngx-colors';
 import { AppCheckoutComponent } from '../app-checkout.component';
@@ -143,7 +142,6 @@ import { TitleWidgetComponent } from './components/title/title-widget.component'
     MatButtonModule,
     WebcamModule,
     NgxFileDropModule,
-    MatAutocompleteModule,
     MatInputModule,
     MatFormFieldModule,
     DragDropModule,

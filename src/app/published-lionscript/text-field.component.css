@@ -20,3 +20,48 @@
 /* drop the default fill underline so the navy border reads cleanly */
 .nt-field ::ng-deep .mdc-line-ripple::before,
 .nt-field ::ng-deep .mdc-line-ripple::after { display: none !important; }
+
+/* The suggestion list, matching the menubar's own panel. Fixed to the viewport: a
+   dialog's overflow used to clip the Material overlay this replaced. */
+.tf-ac {
+    position: fixed;
+    z-index: 2147482500;
+    overflow-y: auto;
+    overflow-x: hidden;
+    background: #ffffff;
+    color: #0a2540;
+    border: 1px solid #cfe0e6;
+    border-radius: 10px;
+    box-shadow: 0 12px 34px rgba(10, 37, 64, 0.26), 0 2px 6px rgba(10, 37, 64, 0.12);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    padding: 4px 0;
+    scrollbar-width: thin;
+    -webkit-overflow-scrolling: touch;
+}
+
+.tf-ac-row {
+    display: flex;
+    align-items: baseline;
+    padding: 5px 12px;
+    cursor: pointer;
+    line-height: 1.35;
+}
+
+.tf-ac-row.is-on {
+    background: #e8f6fa;
+    box-shadow: inset 2px 0 0 #1aa3bd;
+}
+
+.tf-ac-label {
+    font: 500 13px system-ui, sans-serif;
+    color: #0a2540;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* A finger needs a bigger target than a mouse pointer does. */
+@media (pointer: coarse) {
+    .tf-ac-row { padding: 11px 14px; }
+    .tf-ac-label { font-size: 15px; }
+}

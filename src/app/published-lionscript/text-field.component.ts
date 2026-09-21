@@ -8,9 +8,6 @@ import { LionEngine } from "../engine/io-engine";
 import { HookFunctionComponent } from "./hook-function-comp";
 import { PubComponent } from "./pub-component";
 import { PubComponentListener } from "./pub-component-listener";
-import { Observable } from 'rxjs';
-import { FormControl } from '@angular/forms';
-import { map, startWith } from 'rxjs/operators';
 import { FunctionUtil } from "../functions/function-util";
 
 @Component({
@@ -28,8 +25,16 @@ export class TextFieldComponent implements OnInit, PubComponent, HookFunctionCom
     value = '';
     listenerFunction;
     options: string[] = [];
-    filteredOptions: Observable<string[]>;
-    myControl = new FormControl();
+
+    // ---- the suggestion list (see the panel in the template) ----------------------
+    @ViewChild('tfInput') tfInput: ElementRef<HTMLInputElement>;
+    acOpen = false;
+    acItems: string[] = [];
+    acIndex = 0;
+    acAbove = false;
+    acStyle: { [k: string]: string } = {};
+    /** Bumped per keystroke: a slow /gene-lookup must not overwrite a newer one. */
+    private acSeq = 0;
 
     button_label = "Ok";
     blocking: boolean = false;
@@ -43,18 +48,90 @@ export class TextFieldComponent implements OnInit, PubComponent, HookFunctionCom
             this.listenerFunction(this.value);
         }
         if (this.updateMeth) {
-            this.options = await this.updateMeth(value);
+            const seq = ++this.acSeq;
+            const got = await this.updateMeth(value);
+            // A reply that arrives after a later keystroke is stale: showing it would
+            // offer suggestions for text the field no longer holds.
+            if (seq !== this.acSeq) { return; }
+            this.options = Array.isArray(got) ? got : [];
         }
-
-        this.filteredOptions = this.myControl.valueChanges.pipe(
-            startWith(value),
-            map(value => this._filter(value))
-        );
-
+        this.acRefresh();
     }
+
     private _filter(value: string): string[] {
-        const filterValue = value.toLowerCase();
-        return this.options.filter(option => option.toLowerCase().includes(filterValue));
+        const filterValue = ('' + (value || '')).toLowerCase();
+        const out = this.options.filter(option => ('' + option).toLowerCase().includes(filterValue));
+        // The endpoint already ranks best-match first; cap the list rather than scroll
+        // through hundreds of rows on a phone.
+        return out.slice(0, 60);
+    }
+
+    /** Rebuild the list from what is in the field, and open it if anything matches. */
+    acRefresh(): void {
+        if (!this.options || !this.options.length) { this.acOpen = false; return; }
+        const items = this._filter(this.value);
+        // One option identical to what is typed is not a choice, it is what you have.
+        if (!items.length || (items.length === 1 && items[0].toLowerCase() === ('' + (this.value || '')).toLowerCase())) {
+            this.acOpen = false;
+            return;
+        }
+        this.acItems = items;
+        this.acIndex = 0;
+        this.acOpen = true;
+        this.acPlace();
+    }
+
+    /** Where the panel goes: under the field, or above it when the room is below. */
+    private acPlace(): void {
+        const el = this.tfInput?.nativeElement;
+        if (!el) { return; }
+        const r = el.getBoundingClientRect();
+        const longest = this.acItems.reduce((n, o) => Math.max(n, ('' + o).length), 12);
+        const width = Math.max(240, Math.min(560, Math.min(longest * 7.2 + 32, window.innerWidth - 16)));
+        const below = window.innerHeight - r.bottom;
+        this.acAbove = below < 220 && r.top > below;
+        this.acStyle = {
+            left: Math.round(Math.max(8, Math.min(r.left, window.innerWidth - width - 8))) + 'px',
+            width: Math.round(width) + 'px',
+            top: this.acAbove ? '' : Math.round(r.bottom + 4) + 'px',
+            bottom: this.acAbove ? Math.round(window.innerHeight - r.top + 4) + 'px' : '',
+            maxHeight: Math.round(Math.max(160, Math.min(360, this.acAbove ? r.top - 16 : below - 16))) + 'px',
+        };
+    }
+
+    /** Take a suggestion: it fills the field, exactly as picking a mat-option did. */
+    acAccept(option: string): void {
+        this.acOpen = false;
+        this.init_text_value = option;
+        this.value = option;
+        // Assigning through [(ngModel)] does not fire ngModelChange, so the listener has
+        // to be called here -- the Material option used to reach it through the view.
+        if (this.listenerFunction) { this.listenerFunction(this.value); }
+        if (this.optionSelected) { this.optionSelected(option); }
+        try { this.tfInput?.nativeElement?.focus(); } catch (e) { }
+    }
+
+    acKey(e: KeyboardEvent): void {
+        if (!this.acOpen || !this.acItems.length) {
+            if (e.key === 'ArrowDown') { this.acRefresh(); }
+            return;
+        }
+        if (e.key === 'ArrowDown') {
+            e.preventDefault(); this.acIndex = Math.min(this.acItems.length - 1, this.acIndex + 1);
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault(); this.acIndex = Math.max(0, this.acIndex - 1);
+        } else if (e.key === 'Enter' || e.key === 'Tab') {
+            e.preventDefault(); this.acAccept(this.acItems[this.acIndex]);
+        } else if (e.key === 'Escape') {
+            // Only the list closes: the dialog around it stays open.
+            e.preventDefault(); e.stopPropagation(); this.acOpen = false;
+        }
+    }
+
+    acBlur(): void {
+        // A pick is a mousedown with preventDefault, so focus never leaves and this does
+        // not race it; the delay is only for a tap that lands outside the panel.
+        setTimeout(() => { this.acOpen = false; }, 120);
     }
 
     ngOnInit(): void {
@@ -147,12 +224,6 @@ export class TextFieldComponent implements OnInit, PubComponent, HookFunctionCom
     }
     getWidgetValue(param: any) {
         return this.value;
-    }
-
-    onOptionSelected(event) {
-        if (this.optionSelected && event.option && event.option.value) {
-            this.optionSelected(event.option.value)
-        }
     }
 
     init(): string {

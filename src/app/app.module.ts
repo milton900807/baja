@@ -20,7 +20,6 @@ import { MatToolbarModule } from "@angular/material/toolbar";
 import { MatIconModule } from "@angular/material/icon";
 import { MatMenuModule } from "@angular/material/menu";
 import { MatCardModule } from "@angular/material/card"
-import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { SpeechService } from './speech.service';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { DragDropModule } from '@angular/cdk/drag-drop';
@@ -184,7 +183,6 @@ export const protectedResourceMap: [string, string[]][] = [
     DataImportModule,
     NgxFileDropModule,
     ReactiveFormsModule,
-    MatAutocompleteModule,
     MatInputModule,
     MatDatepickerModule,
     MatInputModule,

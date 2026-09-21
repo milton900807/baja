@@ -1,13 +1,26 @@
 <div class="nt-field" style="padding-top:3px">
     <mat-form-field class="ex">
-        <input matInput type="text" [(ngModel)]="init_text_value" (ngModelChange)="updateValue($event)" [matAutocomplete]="auto">
-        <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onOptionSelected($event)">
-            <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
-              {{ option }}
-            </mat-option>
-          </mat-autocomplete>
+        <input matInput type="text" #tfInput [(ngModel)]="init_text_value" (ngModelChange)="updateValue($event)"
+            autocomplete="off" spellcheck="false" autocorrect="off" autocapitalize="off"
+            (keydown)="acKey($event)" (click)="acRefresh()" (focus)="acRefresh()" (blur)="acBlur()">
     </mat-form-field>
 </div>
+
+<!-- THE SUGGESTION LIST. Its own panel rather than mat-autocomplete: the Material one
+     rendered into an overlay this component could not size or place, so inside a dialog
+     it was clipped and on a phone the rows were too small to hit. Fixed to the viewport
+     and placed from the field's own rect, so nothing above it can clip it.
+     mousedown, not click: the field must not lose focus before the pick lands. -->
+<div class="tf-ac" *ngIf="acOpen" [style.left]="acStyle.left" [style.top]="acStyle.top"
+    [style.bottom]="acStyle.bottom" [style.width]="acStyle.width" [style.maxHeight]="acStyle.maxHeight"
+    [class.is-above]="acAbove" role="listbox" (mousedown)="$event.preventDefault()">
+    <div class="tf-ac-row" *ngFor="let o of acItems; let i = index" [class.is-on]="i === acIndex" role="option"
+        [attr.aria-selected]="i === acIndex" (mousedown)="$event.preventDefault(); acAccept(o)"
+        (mouseenter)="acIndex = i">
+        <span class="tf-ac-label">{{ o }}</span>
+    </div>
+</div>
+
 <div *ngIf="showButton" class="panel panel-default" style="align-items: right; border: NONE; padding: 2px;">
     <button *ngIf="showButton" type="button" class="btn btn-outline-secondary btn-sm" (click)="apply( taparam.value )">
         {{button_label}}

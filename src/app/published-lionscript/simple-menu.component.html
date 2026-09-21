@@ -90,9 +90,12 @@
         [innerHTML]="cmdCtrl?.value ? (cmdCtrl.value | highlightBrackets) : placeholder" aria-hidden="true"></div>
 
       <input matInput #textInput [formControl]="cmdCtrl" [placeholder]="placeholder" autocomplete="off"
-        (input)="onKeyUp($event); $event.stopPropagation()" (click)="onKeyUp($event); $event.stopPropagation()"
-        (keydown)="onCmdKeyDown($event)" (keyup)="$event.stopPropagation()" (keypress)="$event.stopPropagation()"
-        (focus)="caretInWindow = true" (blur)="caretInWindow = false; acBlur()" spellcheck="false" autocorrect="off"
+        (input)="onKeyUp($event); $event.stopPropagation()"
+        (click)="onKeyUp($event); $event.stopPropagation(); acCaretMoved()"
+        (keydown)="onCmdKeyDown($event)" (keyup)="$event.stopPropagation(); acCaretMoved($event)"
+        (keypress)="$event.stopPropagation()" (select)="acCaretMoved()"
+        (focus)="caretInWindow = true; acCaretMoved()" (blur)="caretInWindow = false; acBlur()"
+        spellcheck="false" autocorrect="off"
         autocapitalize="off" />
 
 

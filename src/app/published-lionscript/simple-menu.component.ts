@@ -260,30 +260,39 @@ export class SimpleMenuComponent
     // row any more. Ctrl+Space opens it on demand, and on an empty field lists everything.
     // ============================================================================
 
-    /** What is being completed at the caret, and the text typed so far. */
+    /** The end of the word the caret is standing in, so a pick replaces all of it. */
+    private acTokenEnd(text: string, caret: number): number {
+        let i = Math.max(0, Math.min(caret ?? 0, text.length));
+        while (i < text.length && /[A-Za-z0-9_.]/.test(text[i])) i++;
+        return i;
+    }
+
+    /**
+     * What is being completed AT THE CARET, wherever that is. What has been typed is what
+     * lies between the start of the word and the caret -- so clicking into the middle of
+     * "Budget" and completing offers the things that start with what is to the left of the
+     * caret -- while the range a pick replaces runs to the END of that word, so the rest of
+     * it is not left behind as "Budgetget".
+     */
     private acContext(text: string, caret: number): AcContext | null {
         const t = text ?? "";
         const c = Math.max(0, Math.min(caret ?? 0, t.length));
+        const end = this.acTokenEnd(t, c);
         const span = this.getLastTriggerSpan(t, c);
 
         if (span) {
+            const from = c - span.term.length;
             // "Budget[Re" -- the bracket scopes the list to that one table.
             if (span.ch === "[") {
                 const m = /([A-Za-z_][\w.-]*)\s*$/.exec(t.slice(0, span.start));
-                return {
-                    scope: "bracket",
-                    table: m ? m[1] : "",
-                    term: span.term,
-                    from: span.insertStart,
-                    to: c,
-                };
+                return { scope: "bracket", table: m ? m[1] : "", term: span.term, from, to: end };
             }
-            return { scope: "trigger", table: "", term: span.term, from: span.insertStart, to: c };
+            return { scope: "trigger", table: "", term: span.term, from, to: end };
         }
 
-        // No trigger: complete the bare word the caret sits at the end of.
+        // No trigger: complete the bare word the caret is in.
         const w = /([A-Za-z_][A-Za-z0-9_.]*)$/.exec(t.slice(0, c));
-        if (w) return { scope: "word", table: "", term: w[1], from: c - w[1].length, to: c };
+        if (w) return { scope: "word", table: "", term: w[1], from: c - w[1].length, to: end };
         return null;
     }
 
@@ -487,7 +496,13 @@ export class SimpleMenuComponent
         const insert = (c.insert ?? c.label ?? "").trim();
         if (!ctx) return;
 
-        const next = text.slice(0, ctx.from) + insert + text.slice(ctx.to);
+        // Picking in the middle of a finished reference must not double its bracket:
+        // "=Budget[Re|nt]" taking Rent (which inserts "Rent]") would leave "Rent]]".
+        let to = ctx.to;
+        const close = insert.slice(-1);
+        if ((close === "]" || close === ")" || close === "[") && text.charAt(to) === close) to += 1;
+
+        const next = text.slice(0, ctx.from) + insert + text.slice(to);
         const pos = ctx.from + insert.length;
 
         this.setValueStripWS(next, pos, true);
@@ -539,6 +554,21 @@ export class SimpleMenuComponent
         }
 
         this.onKeyDown(event);
+    }
+
+    /**
+     * THE CARET MOVED WITHOUT THE TEXT CHANGING -- clicked into, arrowed across, focused,
+     * selected. The list follows it: it asks again for wherever the caret now is, so it is
+     * offered in the middle of a line as readily as at the end of one. Typing is not routed
+     * through here; that already comes round on the field's value changing.
+     */
+    acCaretMoved(ev?: any): void {
+        // From a key, only the ones that MOVE the caret. Up and Down belong to the list
+        // while it is open, and Enter, Tab and Escape have already been dealt with.
+        if (ev && typeof ev.key === "string") {
+            if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(ev.key)) return;
+        }
+        setTimeout(() => { try { this.acRefresh(); } catch (e) { } }, 0);
     }
 
     /** Hovering a row moves the highlight to it, so the mouse and keys agree. */

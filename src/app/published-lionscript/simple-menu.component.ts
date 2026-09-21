@@ -12,10 +12,6 @@ import {
 import { PubComponent } from "./pub-component";
 import { LionEngine } from "../engine/io-engine";
 import { PubComponentListener } from "./pub-component-listener";
-import {
-    MatAutocompleteTrigger,
-    MatAutocompleteSelectedEvent,
-} from "@angular/material/autocomplete";
 import { MatMenuTrigger } from "@angular/material/menu";
 import { FormControl } from "@angular/forms";
 import { Observable, of, Subscription } from "rxjs";
@@ -23,16 +19,33 @@ import { map, startWith } from "rxjs/operators";
 import { QueryList, ViewChildren } from "@angular/core";
 
 
+// What a candidate IS, which decides the section it is listed under. The lionscript side
+// may say so outright (plate-track's getFormulaCompletions); when it does not, it is read
+// off the older shape -- hint "table"/"tag", or a `table` for a row of one.
+type CmdKind = "table" | "row" | "column" | "tag" | "tool";
+
 type Cmd = {
     label: string;
     table?: string;   // a row label's table (formula completion after "[")
     insert?: string;
     args?: string;
     hint?: string;
+    kind?: CmdKind;
     // Tool lookup: the menu item this entry runs, and the top-level menu it lives under.
     tool?: any;
     top?: string;
 };
+
+/** What the caret is in the middle of completing. */
+type AcContext = {
+    scope: "trigger" | "bracket" | "word";
+    table: string;   // for "bracket": the table named before it
+    term: string;    // what has been typed of the candidate
+    from: number;    // the slice of the field that a pick replaces
+    to: number;
+};
+type AcScored = { cmd: Cmd; score: number };
+type AcGroup = { title: string; items: Cmd[] };
 
 type TriggerSpan = {
     kind: "trigger"; // unified for all trigger chars
@@ -120,7 +133,6 @@ export class SimpleMenuComponent
 
 
     caretInWindow = false;
-    @ViewChild(MatAutocompleteTrigger) autoTrigger?: MatAutocompleteTrigger;
 
     commands: Cmd[] = [];
     cmdCtrl = new FormControl<string | Cmd>("");
@@ -130,10 +142,19 @@ export class SimpleMenuComponent
     private snapText = "";
     private snapCaret = 0;
 
+    // ---- the completion panel (see "THE COMPLETION LIST" below) ----
+    acOpen = false;
+    acGroups: AcGroup[] = [];
+    acFlat: Cmd[] = [];          // the sections flattened, which is what Up/Down walks
+    acIndex = 0;
+    acAbove = false;
+    acStyle: { [k: string]: string } = {};
+    private acCtx: AcContext | null = null;
+
     private lastTriggerStart: number | null = null;
     private lastTriggerKind: TriggerSpan["kind"] | null = null;
 
-    private panelSub?: Subscription;
+    private acSub?: Subscription;
 
     shouldAutocomplete = false;
     userTxt = "";
@@ -188,15 +209,27 @@ export class SimpleMenuComponent
     }
 
     private normalizeCmd = (c: string | Partial<Cmd>): Cmd => {
-        if (typeof c === "string") return { label: c, insert: `${c} ` };
+        if (typeof c === "string") return { label: c, insert: `${c} `, kind: "tag" };
         const label = (c.label ?? "").trim();
         if (!label) throw new Error('Each command must have a non-empty "label".');
+        const table = (c as any).table ?? undefined;
+        const hint = c.hint ?? "";
+        const kind: CmdKind =
+            (c as any).kind ??
+            ((c as any).tool ? "tool"
+                : hint === "table" ? "table"
+                    : hint === "tag" ? "tag"
+                        : table ? "row"
+                            : "tag");
         return {
             label,
             insert: c.insert ?? `${label} `,
             args: c.args ?? "",
-            hint: c.hint ?? "",
-            table: (c as any).table ?? undefined,
+            hint,
+            table,
+            kind,
+            tool: (c as any).tool,
+            top: (c as any).top,
         };
     };
 
@@ -206,28 +239,262 @@ export class SimpleMenuComponent
     // other trigger they are the tables and tags. Matches that START with the typed text
     // come first, so Tab lands on the obvious one, then the ones that merely contain it.
     private candidatePool(text: string, span: TriggerSpan): Cmd[] {
-        const all = this.commands;
-        const isLabel = (c: Cmd) => !!(c as any).table;
-        if (span.ch === "[") {
-            const m = /([A-Za-z_][\w.-]*)\s*$/.exec((text ?? "").slice(0, span.start));
-            const ctx = m ? m[1].toLowerCase() : "";
-            const scoped = ctx ? all.filter((c) => isLabel(c) && ((c as any).table as string).toLowerCase() === ctx) : [];
-            if (scoped.length) return scoped;
-            const labels = all.filter(isLabel);
-            return labels.length ? labels : all;
-        }
-        const tables = all.filter((c) => !isLabel(c));
-        return tables.length ? tables : all;
+        const ctx = this.acContext(text, span.insertStart + span.term.length);
+        return ctx ? this.acPool(ctx) : [];
     }
     private rankMatches(pool: Cmd[], needle: string): Cmd[] {
-        if (!needle) return pool.slice();
-        const starts: Cmd[] = [], contains: Cmd[] = [];
-        for (const c of pool) {
-            const l = c.label.toLowerCase();
-            if (l.startsWith(needle)) starts.push(c);
-            else if (l.includes(needle)) contains.push(c);
+        return this.acRank(pool, needle).map((s) => s.cmd);
+    }
+
+    // ============================================================================
+    // THE COMPLETION LIST
+    // Its own panel rather than mat-autocomplete: the Material one had to be opened and
+    // closed by hand from two dozen places that disagreed with each other, it ranked best
+    // match first and then REVERSED the list into a panel that opens downwards, and it
+    // could only say a candidate's name -- not whether that name is a table, a row of one,
+    // a column or a tag, which on this canvas is the thing you actually need to know.
+    //
+    // WHAT OPENS IT. A trigger character (= + - * / ^ % ! < > ( [ ,) as before, and now
+    // also a bare word, so "Bud" offers Budget without "=" in front of it. It never opens
+    // on nothing found, so an unmatched word simply stays quiet -- there is no "No matches"
+    // row any more. Ctrl+Space opens it on demand, and on an empty field lists everything.
+    // ============================================================================
+
+    /** What is being completed at the caret, and the text typed so far. */
+    private acContext(text: string, caret: number): AcContext | null {
+        const t = text ?? "";
+        const c = Math.max(0, Math.min(caret ?? 0, t.length));
+        const span = this.getLastTriggerSpan(t, c);
+
+        if (span) {
+            // "Budget[Re" -- the bracket scopes the list to that one table.
+            if (span.ch === "[") {
+                const m = /([A-Za-z_][\w.-]*)\s*$/.exec(t.slice(0, span.start));
+                return {
+                    scope: "bracket",
+                    table: m ? m[1] : "",
+                    term: span.term,
+                    from: span.insertStart,
+                    to: c,
+                };
+            }
+            return { scope: "trigger", table: "", term: span.term, from: span.insertStart, to: c };
         }
-        return starts.concat(contains);
+
+        // No trigger: complete the bare word the caret sits at the end of.
+        const w = /([A-Za-z_][A-Za-z0-9_.]*)$/.exec(t.slice(0, c));
+        if (w) return { scope: "word", table: "", term: w[1], from: c - w[1].length, to: c };
+        return null;
+    }
+
+    /** Everything that could be offered in this context, before matching. */
+    private acPool(ctx: AcContext): Cmd[] {
+        const all = this.commands;
+        if (ctx.scope === "bracket") {
+            const want = ctx.table.toLowerCase();
+            const scoped = want
+                ? all.filter((x) => (x.table ?? "").toLowerCase() === want)
+                : [];
+            // An unknown table name before the bracket: offer every row rather than nothing.
+            if (scoped.length) return scoped;
+            return all.filter((x) => x.kind === "row" || x.kind === "column");
+        }
+        // Anywhere else a row label cannot stand on its own -- it needs its table and a
+        // bracket around it -- so the list is the tables and the tags.
+        const base = all.filter((x) => x.kind !== "row" && x.kind !== "column");
+
+        // The editor's menubar runs on tool lookup: every leaf of every menu is something
+        // the field can find by name. Those never come through setCommands -- they are
+        // collected from the menus -- so they are added here, and ranked with the rest.
+        if (this.toolLookup) {
+            const tools = this.allTools().map((t) => ({ ...t, kind: "tool" as CmdKind }));
+            return base.concat(tools);
+        }
+        return base;
+    }
+
+    /**
+     * How well a candidate answers what has been typed. Lower is better, and the reasons
+     * are ordered the way a person would rank them: the whole word, then the start of it,
+     * then the start of a part of it (Peak_Share for "share"), then anywhere inside, then
+     * the letters in order but spread out. -1 means it does not answer at all.
+     */
+    private acScore(label: string, hint: string, needle: string): number {
+        if (!needle) return 6;
+        const l = label.toLowerCase();
+        const q = needle.toLowerCase();
+        if (l === q) return 0;
+        if (l.startsWith(q)) return 1;
+        if (l.split(/[_\s./()-]+/).some((w) => w && w.startsWith(q))) return 2;
+        if (l.includes(q)) return 3;
+        if ((hint ?? "").toLowerCase().includes(q)) return 4;
+        if (q.length >= 2 && this.isSubsequence(q, l)) return 5;
+        return -1;
+    }
+
+    private acRank(pool: Cmd[], needle: string): AcScored[] {
+        const out: AcScored[] = [];
+        for (const cmd of pool) {
+            const s = this.acScore(cmd.label, cmd.hint ?? "", needle);
+            if (s >= 0) out.push({ cmd, score: s });
+        }
+        out.sort(
+            (a, b) =>
+                a.score - b.score ||
+                a.cmd.label.length - b.cmd.label.length ||
+                a.cmd.label.localeCompare(b.cmd.label)
+        );
+        return out;
+    }
+
+    /** The sections, in the order they are shown, and the flat list Up/Down walks. */
+    private acBuild(ctx: AcContext, ranked: AcScored[]): void {
+        const order: CmdKind[] = ["table", "row", "column", "tag", "tool"];
+        const title = (k: CmdKind): string => {
+            const of = ctx.table ? " of " + ctx.table : "";
+            switch (k) {
+                case "table": return "Tables";
+                case "row": return "Rows" + of;
+                case "column": return "Columns" + of;
+                case "tag": return "Tags";
+                default: return "Tools";
+            }
+        };
+
+        const groups: AcGroup[] = [];
+        const flat: Cmd[] = [];
+        for (const k of order) {
+            const items = ranked.filter((r) => (r.cmd.kind ?? "tag") === k).map((r) => r.cmd);
+            if (!items.length) continue;
+            groups.push({ title: title(k), items });
+            for (const it of items) flat.push(it);
+        }
+        this.acGroups = groups;
+        this.acFlat = flat;
+    }
+
+    /** Where the panel goes: under the field, or above it when the room is below. */
+    private acPlace(): void {
+        const el = this.textInput?.nativeElement;
+        if (!el) return;
+        const r = el.getBoundingClientRect();
+        const longest = this.acFlat.reduce(
+            (n, c) => Math.max(n, (c.label ?? "").length + (this.acRight(c) ?? "").length),
+            12
+        );
+        const width = Math.max(240, Math.min(560, longest * 7.6 + 56));
+        const below = window.innerHeight - r.bottom;
+        this.acAbove = below < 220 && r.top > below;
+        this.acStyle = {
+            left: Math.round(Math.max(8, Math.min(r.left, window.innerWidth - width - 8))) + "px",
+            width: Math.round(width) + "px",
+            top: this.acAbove ? "" : Math.round(r.bottom + 4) + "px",
+            bottom: this.acAbove ? Math.round(window.innerHeight - r.top + 4) + "px" : "",
+            maxHeight: Math.round(Math.max(160, Math.min(360, this.acAbove ? r.top - 16 : below - 16))) + "px",
+        };
+    }
+
+    /** The grey text on the right of a row: what picking it will put in the field. */
+    acRight(c: Cmd): string {
+        const ins = (c.insert ?? c.label ?? "").trim();
+        return ins && ins !== c.label ? ins : "";
+    }
+
+    /** Recompute and show, or hide when there is nothing worth showing. */
+    acRefresh(opts: { all?: boolean } = {}): void {
+        const el = this.textInput?.nativeElement;
+        const text = this.currentInputString();
+        const caret = el?.selectionStart ?? this.caretPos ?? text.length;
+
+        // Ctrl+Space on an empty field: everything there is.
+        if (opts.all && !text.trim()) {
+            this.acCtx = { scope: "word", table: "", term: "", from: caret, to: caret };
+            this.acBuild(this.acCtx, this.acRank(this.acPool(this.acCtx), ""));
+            this.acAfterBuild();
+            return;
+        }
+
+        const ctx = this.acContext(text, caret);
+        if (!ctx) { this.acClose(); return; }
+
+        // A bare word is only worth completing once it is a real start, and never when it
+        // already names the thing exactly -- nothing left to say.
+        if (ctx.scope === "word" && !opts.all && ctx.term.length < 1) { this.acClose(); return; }
+
+        const ranked = this.acRank(this.acPool(ctx), ctx.term);
+        const exact = ctx.term && ranked.length === 1 && ranked[0].score === 0;
+        if (!ranked.length || exact) { this.acClose(); return; }
+
+        this.acCtx = ctx;
+        this.acBuild(ctx, ranked);
+        this.acAfterBuild();
+    }
+
+    private acAfterBuild(): void {
+        if (!this.acFlat.length) { this.acClose(); return; }
+        this.acIndex = 0;
+        this.acOpen = true;
+        this.shouldAutocomplete = true;
+        this.acPlace();
+        this.cdr.markForCheck();
+    }
+
+    acClose(): void {
+        if (!this.acOpen && !this.acGroups.length) return;
+        this.acOpen = false;
+        this.acGroups = [];
+        this.acFlat = [];
+        this.acIndex = 0;
+        this.shouldAutocomplete = false;
+        this.cdr.markForCheck();
+    }
+
+    /** Up/Down through the flat list, wrapping at both ends. */
+    acMove(step: number): void {
+        if (!this.acOpen || !this.acFlat.length) return;
+        const n = this.acFlat.length;
+        this.acIndex = (this.acIndex + step + n) % n;
+        this.cdr.markForCheck();
+        setTimeout(() => {
+            try {
+                const row = document.querySelector<HTMLElement>(".cmd-ac .cmd-ac-row.is-on");
+                row?.scrollIntoView({ block: "nearest" });
+            } catch (e) { }
+        }, 0);
+    }
+
+    /** True when this row is the highlighted one (the template asks per row). */
+    acIsOn(c: Cmd): boolean {
+        return this.acOpen && this.acFlat[this.acIndex] === c;
+    }
+
+    /** Put the candidate in the field, replacing exactly what was being completed. */
+    acAccept(pick?: Cmd): void {
+        const c = pick ?? this.acFlat[this.acIndex];
+        if (!c) return;
+
+        // A tool entry runs its menu item instead of being typed.
+        if (c.tool) {
+            this.acClose();
+            try { this.runTool(c); } catch (e) { console.warn("tool", e); }
+            return;
+        }
+
+        const el = this.textInput?.nativeElement;
+        const text = this.currentInputString();
+        const caret = el?.selectionStart ?? this.caretPos ?? text.length;
+        const ctx = this.acCtx ?? this.acContext(text, caret);
+        const insert = (c.insert ?? c.label ?? "").trim();
+        if (!ctx) return;
+
+        const next = text.slice(0, ctx.from) + insert + text.slice(ctx.to);
+        const pos = ctx.from + insert.length;
+
+        this.setValueStripWS(next, pos, true);
+        this.acClose();
+        // "Budget[" completes to a table and leaves the caret inside the bracket, where the
+        // rows of that table are what comes next: offer them straight away.
+        setTimeout(() => this.acRefresh(), 0);
     }
 
     private handleFocus = () => {
@@ -242,6 +509,26 @@ export class SimpleMenuComponent
         // Optional: block global handlers / hotkeys from seeing this first
         event.stopImmediatePropagation();
 
+        // THE LIST HAS THE KEYS WHILE IT IS OPEN. Up/Down walk it, Enter and Tab take the
+        // highlighted row, Escape puts it away without touching the text. Everything else
+        // falls through to typing, which re-asks what should be offered.
+        if (this.acOpen) {
+            if (event.key === "ArrowDown") { event.preventDefault(); this.acMove(1); return; }
+            if (event.key === "ArrowUp") { event.preventDefault(); this.acMove(-1); return; }
+            if (event.key === "Enter" || event.key === "Tab") { event.preventDefault(); this.acAccept(); return; }
+            if (event.key === "Escape") { event.preventDefault(); this.acClose(); return; }
+            if (event.key === "Home") { event.preventDefault(); this.acIndex = 0; this.cdr.markForCheck(); return; }
+            if (event.key === "End") { event.preventDefault(); this.acIndex = Math.max(0, this.acFlat.length - 1); this.cdr.markForCheck(); return; }
+        }
+
+        // Ctrl/Cmd+Space asks for the list wherever the caret is; on an empty field that is
+        // everything there is to offer.
+        if (event.code === "Space" && (event.ctrlKey || event.metaKey)) {
+            event.preventDefault();
+            this.acRefresh({ all: true });
+            return;
+        }
+
         // Only prevent default for keys you fully handle yourself.
         // Do NOT blindly preventDefault(), or typing/autocomplete may break.
         if (event.key === 'Enter') {
@@ -252,6 +539,17 @@ export class SimpleMenuComponent
         }
 
         this.onKeyDown(event);
+    }
+
+    /** Hovering a row moves the highlight to it, so the mouse and keys agree. */
+    acHover(c: Cmd): void {
+        const i = this.acFlat.indexOf(c);
+        if (i >= 0 && i !== this.acIndex) { this.acIndex = i; this.cdr.markForCheck(); }
+    }
+
+    /** Leaving the field closes the list -- after the click that may be picking from it. */
+    acBlur(): void {
+        setTimeout(() => this.acClose(), 150);
     }
 
     private handleMouseUp = (e: MouseEvent) => {
@@ -315,21 +613,15 @@ export class SimpleMenuComponent
             el.addEventListener("mouseup", this.handleMouseUp);
         }
 
-        if (this.autoTrigger?.autocomplete) {
-            this.panelSub = this.autoTrigger.panelClosingActions.subscribe(() => {
-                /* no-op */
-            });
-        }
     }
 
     ngOnDestroy(): void {
-        this.panelSub?.unsubscribe();
+        this.acSub?.unsubscribe();
         const el = this.textInput?.nativeElement;
         if (el) {
             el.removeEventListener("focus", this.handleFocus);
             el.removeEventListener("mouseup", this.handleMouseUp);
         }
-        this.panelSub?.unsubscribe();
     }
 
     // ---------- Trigger detection & commits ----------
@@ -388,9 +680,7 @@ export class SimpleMenuComponent
             this.setValueStripWS(next, pos, true);
             const span = this.getLastTriggerSpan(next, pos);
             this.shouldAutocomplete = !!span;
-            if (this.shouldAutocomplete && this.autoTrigger?.autocomplete) {
-                this.autoTrigger.openPanel();
-            }
+            this.acRefresh();
         }, 0);
     }
 
@@ -402,127 +692,13 @@ export class SimpleMenuComponent
 
 
 
-        // Reactive pipeline – active whenever there is ANY trigger before the caret
-        this.filteredCmds$ = this.cmdCtrl.valueChanges.pipe(
-            startWith(""),
-            map((v) => (typeof v === "string" ? v : v?.label ?? "")),
-            map((text) => {
-                // WHERE THE CARET ACTUALLY IS. caretPos is refreshed by onKeyUp, which the
-                // template binds to (input) -- the same event that drives valueChanges, and
-                // it runs after this. So on the keystroke that types a trigger, caretPos is
-                // still one short: for "=" it reads 0, the span search looks at "" before
-                // the caret, finds no trigger, and the panel is emptied. The keydown handler
-                // then opens it on the trigger it CAN see, which is why a bare "=" showed an
-                // open panel saying "No matches" while "=B" -- and even backspacing from
-                // "=B" to the very same "=" -- listed everything. Read the live caret when
-                // the element still holds the text this emission is for, and fall back to
-                // the cached one for a value set from code, where the DOM caret means
-                // nothing.
-                const el = this.textInput?.nativeElement;
-                const caret =
-                    el && el.value === text && typeof el.selectionStart === "number"
-                        ? el.selectionStart
-                        : this.caretPos ?? (text?.length ?? 0);
-
-                const span = this.getLastTriggerSpan(text, caret);
-                this.shouldAutocomplete = !!span;
-
-                // Close if last char is ) or ]
-                const lastChar =
-                    text && caret > 0 ? (text as string)[caret - 1] : null;
-                if (lastChar === ")" || lastChar === "]") {
-                    if (this.autoTrigger?.panelOpen) this.autoTrigger.closePanel();
-                    this.lastTriggerStart = null;
-                    this.lastTriggerKind = null;
-                    return [];
-                }
-
-                if (!span) {
-                    this.lastTriggerStart = null;
-                    this.lastTriggerKind = null;
-                    if (this.toolLookup) {
-                        const listAll = this.listAllTools;
-                        this.listAllTools = false;
-                        const res = listAll ? this.allTools() : this.toolMatches(text);
-                        this.shouldAutocomplete = res.length > 0;
-                        if (res.length === 0) {
-                            if (this.autoTrigger?.panelOpen) this.autoTrigger.closePanel();
-                            return [];
-                        }
-                        // matAutocompleteDisabled flips on the next change-detection pass, so
-                        // the open has to wait a tick or the trigger refuses it.
-                        this.cdr.markForCheck();
-                        setTimeout(() => {
-                            if (this.shouldAutocomplete && this.autoTrigger?.autocomplete && !this.autoTrigger.panelOpen) {
-                                try { this.autoTrigger.openPanel(); } catch (e) { }
-                            }
-                        }, 0);
-                        return res;
-                    }
-                    if (this.autoTrigger?.panelOpen) this.autoTrigger.closePanel();
-                    return [];
-                }
-
-                const spanChanged =
-                    span.start !== this.lastTriggerStart || this.lastTriggerKind !== "trigger";
-                if (spanChanged) {
-                    this.lastTriggerStart = span.start;
-                    this.lastTriggerKind = "trigger";
-                    this.snapText = text;
-                    this.snapCaret = caret;
-                }
-
-                // First pass after typing a trigger → show full list
-                if (this.justTriggered) {
-                    this.justTriggered = false;
-
-                    const all = this.candidatePool(text, span);
-
-                    // ✅ NEW: if there are no commands, close the panel
-                    if (all.length === 0) {
-                        this.shouldAutocomplete = false;
-                        if (this.autoTrigger?.panelOpen) this.autoTrigger.closePanel();
-                        return [];
-                    }
-
-                    if (this.autoTrigger?.autocomplete) this.autoTrigger.openPanel();
-                    return all;
-                }
-
-                // Filter by the text AFTER the trigger only
-                const needle = span.term.toLowerCase();
-
-                // If needle exactly matches any label (case-insensitive), close panel
-                if (
-                    needle.length > 0 &&
-                    this.commands.some((c) => c.label.toLowerCase() === needle)
-                ) {
-                    if (this.autoTrigger?.panelOpen) this.autoTrigger.closePanel();
-                    this.shouldAutocomplete = false;
-                    return [];
-                }
-
-                const results = this.rankMatches(this.candidatePool(text, span), needle);
-
-                // The list opens upward from the input: reversed, so the best match sits
-                // nearest the caret.
-                const reversedResults = results.reverse();
-
-                // ✅ NEW: If no matches, close the dropdown
-                if (reversedResults.length === 0) {
-                    this.shouldAutocomplete = false;
-                    if (this.autoTrigger?.panelOpen) this.autoTrigger.closePanel();
-                    return [];
-                }
-
-                // ✅ NEW: Only open when there are actually options
-                if (this.autoTrigger?.autocomplete && !this.autoTrigger.panelOpen) {
-                    this.autoTrigger.openPanel();
-                }
-
-                return reversedResults;
-            })
-        );
+        // Every change to the field re-asks what should be offered. One place decides,
+        // instead of two dozen calls to open and close a Material panel that disagreed
+        // with each other -- which is what made a bare "=" show an empty list.
+        this.acSub = this.cmdCtrl.valueChanges.subscribe(() => {
+            // After the value has landed in the DOM, so the caret is the real one.
+            setTimeout(() => { try { this.acRefresh(); } catch (e) { } }, 0);
+        });
 
         // init from inbound data
         if (this.data != null) {
@@ -692,11 +868,9 @@ export class SimpleMenuComponent
                 this.cmdCtrl.setValue(next, { emitEvent: true });
                 this.textFieldValue = next;
                 this.setCaret(pos);
-                if (this.autoTrigger?.panelOpen) this.autoTrigger.closePanel();
+                this.acClose();
             } else {
-                if (this.shouldAutocomplete && this.autoTrigger?.autocomplete) {
-                    this.autoTrigger.openPanel();
-                }
+                this.acRefresh();
             }
             return;
         }
@@ -721,10 +895,8 @@ export class SimpleMenuComponent
         const span = this.getLastTriggerSpan(text, caret);
         this.shouldAutocomplete = !!span;
         if (span) {
-            if (this.autoTrigger?.autocomplete) this.autoTrigger.openPanel();
-        } else if (this.autoTrigger?.panelOpen) {
-            this.autoTrigger.closePanel();
-        }
+            this.acRefresh();
+        } else this.acClose();
     }
 
     onKeyDown(e: KeyboardEvent) {
@@ -748,9 +920,7 @@ export class SimpleMenuComponent
             e.stopPropagation();    // stop option selection / active option commit
 
             // close dropdown if open
-            if (this.autoTrigger?.panelOpen) {
-                this.autoTrigger.closePanel();
-            }
+            this.acClose();
 
             // submit exactly what's in the input
             this.submitText();
@@ -770,7 +940,7 @@ export class SimpleMenuComponent
                     this.shouldAutocomplete = true;
                     this.cdr.markForCheck();
                     setTimeout(() => {
-                        if (this.autoTrigger?.autocomplete) this.autoTrigger.openPanel();
+                        this.acRefresh();
                     }, 0);
                 }
             }, 0);
@@ -816,7 +986,7 @@ export class SimpleMenuComponent
             text && this.caretPos > 0 ? text[this.caretPos - 1] : null;
         if (lastChar === ")" || lastChar === "]") {
             this.shouldAutocomplete = false;
-            if (this.autoTrigger?.panelOpen) this.autoTrigger.closePanel();
+            this.acClose();
             return;
         }
 
@@ -828,7 +998,7 @@ export class SimpleMenuComponent
             );
             if (hasExactMatch) {
                 this.shouldAutocomplete = false;
-                if (this.autoTrigger?.panelOpen) this.autoTrigger.closePanel();
+                this.acClose();
                 return;
             }
         }
@@ -863,64 +1033,7 @@ export class SimpleMenuComponent
     // Replace from the last trigger character through the caret/selection.
     // Insert/replace ONLY the text AFTER the LAST trigger char (keep the trigger itself)
     // Keep [0 .. lastTriggerChar] and append the selected value (trimmed).
-    onOptionSelected(e: MatAutocompleteSelectedEvent): void {
-        const picked = e.option.value as string | Cmd;
-
-        if (typeof picked !== "string" && picked?.tool) {
-            this.runTool(picked);
-            return;
-        }
-
-        // Resolve text to insert (no trailing spaces)
-        const raw =
-            typeof picked === "string" ? picked : picked?.insert ?? picked?.label ?? "";
-        const insertText = (raw ?? "").trimEnd();
-        if (!insertText) return;
-
-        // Base text + caret snapshot
-        const baseText = this.snapText ?? this.textFieldValue ?? "";
-        const caretSnap = this.snapCaret ?? this.caretPos ?? baseText.length;
-
-        // Find the last trigger before/at caret
-        const span = this.getLastTriggerSpan(baseText, caretSnap);
-
-        // If we have a trigger, KEEP everything through the trigger char (inclusive),
-        // then append the selected value. Otherwise just append at caret.
-        let next: string;
-        if (span) {
-            const keepThroughTrigger = span.start + 1; // include the trigger char
-            const prefix = baseText.slice(0, keepThroughTrigger);
-            next = prefix + insertText;
-        } else {
-            // No trigger found → append at caret
-            const before = baseText.slice(0, caretSnap);
-            const after = baseText.slice(caretSnap);
-            next = before + insertText + after;
-        }
-
-        const nextCaret = next.length;
-
-        // Clear snapshots
-        this.snapText = undefined as any;
-        this.snapCaret = undefined as any;
-
-        // Apply and tidy up autocomplete
-        setTimeout(() => {
-            this.textFieldValue = next;
-            this.cmdCtrl?.setValue(next, { emitEvent: true });
-
-            const el = this.textInput?.nativeElement;
-            if (el) {
-                el.focus();
-                el.setSelectionRange(nextCaret, nextCaret);
-            }
-            this.setCaret(nextCaret);
-
-            // After truncating to the trigger and appending, we typically close the panel
-            this.shouldAutocomplete = false;
-            if (this.autoTrigger?.panelOpen) this.autoTrigger.closePanel();
-        }, 0);
-    }
+    // Picking is acAccept() now; the Material option event is gone with its panel.
 
     // ---------- Tool lookup helpers ----------
 
@@ -1009,7 +1122,7 @@ export class SimpleMenuComponent
     /** Enter in tool mode: run the highlighted option, an exact label match, or the only
      *  match. Returns false when nothing applies so the caller can fall back to cmd. */
     private runToolFromInput(): boolean {
-        const active = this.autoTrigger?.panelOpen ? (this.autoTrigger.activeOption?.value as Cmd | undefined) : undefined;
+        const active = this.acOpen ? this.acFlat[this.acIndex] : undefined;
         if (active && typeof active !== "string" && active.tool) { this.runTool(active); return true; }
         const text = (this.currentInputString() ?? "").trim();
         if (!text) return false;
@@ -1032,7 +1145,7 @@ export class SimpleMenuComponent
         this.lastToolRun = { label: entry.label, at: now };
 
         this.shouldAutocomplete = false;
-        if (this.autoTrigger?.panelOpen) { try { this.autoTrigger.closePanel(); } catch (e) { } }
+        this.acClose();
         this.cmdCtrl.setValue("", { emitEvent: false });
         this.textFieldValue = "";
         this.cdr.markForCheck();

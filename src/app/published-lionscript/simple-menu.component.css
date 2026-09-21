@@ -1353,3 +1353,98 @@ simple-menu .menu-wrapper button[aria-expanded="true"] { background-color: #1aa3
 
 simple-menu .menu-btn-sep { background: rgba(255, 255, 255, 0.22) !important; }
 simple-menu .menu-btn-img { filter: brightness(0) invert(1); }
+
+/* ============================================================
+   THE COMPLETION LIST
+   Its own panel, fixed to the viewport and positioned from the
+   field's rect, so the toolbar's overflow cannot clip it and it
+   is sized to its content rather than to the width of the input.
+   Sections name what the rows are; the grey text on the right of
+   a row is what picking it puts in the field.
+   ============================================================ */
+.cmd-ac {
+  position: fixed;
+  z-index: 2147482500;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: #ffffff;
+  color: #0a2540;
+  border: 1px solid #cfe0e6;
+  border-radius: 10px;
+  box-shadow: 0 12px 34px rgba(10, 37, 64, 0.26), 0 2px 6px rgba(10, 37, 64, 0.12);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  padding: 4px 0 0;
+  scrollbar-width: thin;
+}
+
+.cmd-ac-head {
+  position: sticky;
+  top: 0;
+  background: #ffffff;
+  padding: 6px 12px 3px;
+  font: 700 10px system-ui, sans-serif;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #6b8794;
+  border-bottom: 1px solid #eef4f6;
+}
+
+.cmd-ac-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 5px 12px;
+  cursor: pointer;
+  line-height: 1.35;
+}
+
+.cmd-ac-row.is-on {
+  background: #e8f6fa;
+  box-shadow: inset 2px 0 0 #1aa3bd;
+}
+
+.cmd-ac-label {
+  font: 500 13px system-ui, sans-serif;
+  color: #0a2540;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cmd-ac-ins {
+  font: 400 11.5px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  color: #7c93a1;
+  white-space: nowrap;
+  flex: 0 0 auto;
+}
+
+.cmd-ac-row.is-on .cmd-ac-ins {
+  color: #12798c;
+}
+
+.cmd-ac-foot {
+  position: sticky;
+  bottom: 0;
+  background: #f7fbfc;
+  border-top: 1px solid #eef4f6;
+  padding: 4px 12px 5px;
+  font: 400 10.5px system-ui, sans-serif;
+  color: #7c93a1;
+  white-space: nowrap;
+}
+
+.cmd-ac-foot b {
+  font-weight: 700;
+  color: #4a6b7a;
+}
+
+@media (prefers-color-scheme: dark) {
+  .cmd-ac { background: #0f2436; color: #eaf6f9; border-color: #1d4459; }
+  .cmd-ac-head { background: #0f2436; color: #7fb0c2; border-bottom-color: #17344a; }
+  .cmd-ac-label { color: #eaf6f9; }
+  .cmd-ac-row.is-on { background: #16405a; }
+  .cmd-ac-ins { color: #85a6b6; }
+  .cmd-ac-foot { background: #0c1e2e; border-top-color: #17344a; color: #85a6b6; }
+  .cmd-ac-foot b { color: #bfeaf3; }
+}

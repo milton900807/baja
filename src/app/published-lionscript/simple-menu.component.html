@@ -91,10 +91,10 @@
 
       <input matInput #textInput [formControl]="cmdCtrl" [placeholder]="placeholder" autocomplete="off"
         (input)="onKeyUp($event); $event.stopPropagation()"
-        (click)="onKeyUp($event); $event.stopPropagation(); acCaretMoved()"
-        (keydown)="onCmdKeyDown($event)" (keyup)="$event.stopPropagation(); acCaretMoved($event)"
-        (keypress)="$event.stopPropagation()" (select)="acCaretMoved()"
-        (focus)="caretInWindow = true; acCaretMoved()" (blur)="caretInWindow = false; acBlur()"
+        (click)="onKeyUp($event); $event.stopPropagation()"
+        (keydown)="onCmdKeyDown($event)" (keyup)="$event.stopPropagation()"
+        (keypress)="$event.stopPropagation()"
+        (focus)="caretInWindow = true" (blur)="caretInWindow = false"
         spellcheck="false" autocorrect="off"
         autocapitalize="off" />
 
@@ -110,22 +110,8 @@
     </mat-form-field>
   </span>
 
-  <!-- THE COMPLETION LIST. Fixed to the viewport and placed from the field's own rect, so
-       the toolbar's overflow cannot clip it; sections in a fixed order, each row saying
-       what it will put in the field. mousedown, not click: the field must not lose focus
-       before the pick lands. -->
-  <div class="cmd-ac" *ngIf="acOpen" [style.left]="acStyle.left" [style.top]="acStyle.top"
-    [style.bottom]="acStyle.bottom" [style.width]="acStyle.width" [style.maxHeight]="acStyle.maxHeight"
-    [class.is-above]="acAbove" role="listbox" (mousedown)="$event.preventDefault()">
-    <ng-container *ngFor="let g of acGroups">
-      <div class="cmd-ac-head">{{ g.title }}</div>
-      <div class="cmd-ac-row" *ngFor="let c of g.items" [class.is-on]="acIsOn(c)" role="option"
-        [attr.aria-selected]="acIsOn(c)" (mousedown)="$event.preventDefault(); acAccept(c)"
-        (mouseenter)="acHover(c)">
-        <span class="cmd-ac-label">{{ c.label }}</span>
-        <span class="cmd-ac-ins" *ngIf="acRight(c)">{{ acRight(c) }}</span>
-      </div>
-    </ng-container>
-    <div class="cmd-ac-foot"><b>&#8595;&#8593;</b> move &nbsp; <b>Tab</b>/<b>Enter</b> insert &nbsp; <b>Esc</b> close</div>
-  </div>
+  <!-- The completion list is the shared one (suggest-list.ts): it builds its own panel
+       on <body>, so the toolbar's overflow cannot clip it, and it carries its own CSS and
+       key handling. What this component supplies is the candidates and what a pick means. -->
+
 </mat-toolbar>

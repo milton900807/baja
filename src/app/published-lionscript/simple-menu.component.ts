@@ -17,6 +17,7 @@ import { FormControl } from "@angular/forms";
 import { Observable, of, Subscription } from "rxjs";
 import { map, startWith } from "rxjs/operators";
 import { QueryList, ViewChildren } from "@angular/core";
+import { SuggestList, suggestContext, suggestPool, suggestRank } from "./suggest-list";
 
 
 // What a candidate IS, which decides the section it is listed under. The lionscript side
@@ -144,14 +145,9 @@ export class SimpleMenuComponent
     private snapText = "";
     private snapCaret = 0;
 
-    // ---- the completion panel (see "THE COMPLETION LIST" below) ----
-    acOpen = false;
-    acGroups: AcGroup[] = [];
-    acFlat: Cmd[] = [];          // the sections flattened, which is what Up/Down walks
-    acIndex = 0;
-    acAbove = false;
-    acStyle: { [k: string]: string } = {};
-    private acCtx: AcContext | null = null;
+    // ---- the completion panel (suggest-list.ts owns it) ----
+    private sug: SuggestList | null = null;
+    private acEl: HTMLInputElement | null = null;
 
     private lastTriggerStart: number | null = null;
     private lastTriggerKind: TriggerSpan["kind"] | null = null;
@@ -237,252 +233,43 @@ export class SimpleMenuComponent
     };
 
     // ---------- Formula-aware candidate pool ----------
-    // After "[" the candidates are row LABELS, and only those of the table written just
-    // before the bracket (Project_Assumptions[Seq → the Assumptions' labels); after any
-    // other trigger they are the tables and tags. Matches that START with the typed text
-    // come first, so Tab lands on the obvious one, then the ones that merely contain it.
+    // Both of these are the shared module's own functions now (suggest-list.ts); they stay
+    // as methods because the tool-lookup path below still calls them directly.
     private candidatePool(text: string, span: TriggerSpan): Cmd[] {
-        const ctx = this.acContext(text, span.insertStart + span.term.length);
-        return ctx ? this.acPool(ctx) : [];
+        const ctx = suggestContext(text, span.insertStart + span.term.length, "formula");
+        return ctx ? (suggestPool(this.acItems(), ctx) as Cmd[]) : [];
     }
     private rankMatches(pool: Cmd[], needle: string): Cmd[] {
-        return this.acRank(pool, needle).map((s) => s.cmd);
+        return suggestRank(pool, needle).map((s) => s.cmd as Cmd);
     }
 
     // ============================================================================
     // THE COMPLETION LIST
-    // Its own panel rather than mat-autocomplete: the Material one had to be opened and
-    // closed by hand from two dozen places that disagreed with each other, it ranked best
-    // match first and then REVERSED the list into a panel that opens downwards, and it
-    // could only say a candidate's name -- not whether that name is a table, a row of one,
-    // a column or a tag, which on this canvas is the thing you actually need to know.
+    // The list itself lives in suggest-list.ts, shared with the legacy input-textfield and
+    // with baja/lib/prompt-text.js over in the lionscript repo. What stays here is only
+    // what is particular to THIS field: where the candidates come from, the "Go to" row,
+    // and what a pick means when it is not text (a tool runs, a reference navigates).
     //
-    // WHAT OPENS IT. A trigger character (= + - * / ^ % ! < > ( [ ,) as before, and now
-    // also a bare word, so "Bud" offers Budget without "=" in front of it. It never opens
-    // on nothing found, so an unmatched word simply stays quiet -- there is no "No matches"
-    // row any more. Ctrl+Space opens it on demand, and on an empty field lists everything.
+    // WHAT OPENS IT. A trigger character (= + - * / ^ % ! < > ( [ ,), and also a bare word,
+    // so "Bud" offers Budget without "=" in front of it. It never opens on nothing found.
+    // Ctrl+Space opens it on demand, and on an empty field lists everything.
     // ============================================================================
 
-    /** The end of the word the caret is standing in, so a pick replaces all of it. */
-    private acTokenEnd(text: string, caret: number): number {
-        let i = Math.max(0, Math.min(caret ?? 0, text.length));
-        while (i < text.length && /[A-Za-z0-9_.]/.test(text[i])) i++;
-        return i;
+    /** Everything this field can offer: what was set on it, plus the menus when asked. */
+    private acItems(): Cmd[] {
+        if (!this.toolLookup) return this.commands;
+        const tools = this.allTools().map((t) => ({ ...t, kind: "tool" as CmdKind }));
+        return (this.commands as Cmd[]).concat(tools as Cmd[]);
     }
 
     /**
-     * What is being completed AT THE CARET, wherever that is. What has been typed is what
-     * lies between the start of the word and the caret -- so clicking into the middle of
-     * "Budget" and completing offers the things that start with what is to the left of the
-     * caret -- while the range a pick replaces runs to the END of that word, so the rest of
-     * it is not left behind as "Budgetget".
+     * THE CARET STANDING IN A FINISHED REFERENCE -- "...Inputs[Phase_II_Success_Rate,Value]|"
+     * -- means the thing in front of it is a cell that exists, not something to complete. So
+     * the list leads with the way to GO to it: picking it brings that cell up on the canvas
+     * and types nothing. Wherever the caret is inside the reference, not only just past it.
      */
-    private acContext(text: string, caret: number): AcContext | null {
-        const t = text ?? "";
-        const c = Math.max(0, Math.min(caret ?? 0, t.length));
-        const end = this.acTokenEnd(t, c);
-        const span = this.getLastTriggerSpan(t, c);
-
-        if (span) {
-            const from = c - span.term.length;
-            // "Budget[Re" -- the bracket scopes the list to that one table.
-            if (span.ch === "[") {
-                const m = /([A-Za-z_][\w.-]*)\s*$/.exec(t.slice(0, span.start));
-                return { scope: "bracket", table: m ? m[1] : "", term: span.term, from, to: end };
-            }
-            return { scope: "trigger", table: "", term: span.term, from, to: end };
-        }
-
-        // No trigger: complete the bare word the caret is in.
-        const w = /([A-Za-z_][A-Za-z0-9_.]*)$/.exec(t.slice(0, c));
-        if (w) return { scope: "word", table: "", term: w[1], from: c - w[1].length, to: end };
-        return null;
-    }
-
-    /** Everything that could be offered in this context, before matching. */
-    private acPool(ctx: AcContext): Cmd[] {
-        const all = this.commands;
-        if (ctx.scope === "bracket") {
-            const want = ctx.table.toLowerCase();
-            const scoped = want
-                ? all.filter((x) => (x.table ?? "").toLowerCase() === want)
-                : [];
-            // An unknown table name before the bracket: offer every row rather than nothing.
-            if (scoped.length) return scoped;
-            return all.filter((x) => x.kind === "row" || x.kind === "column");
-        }
-        // Anywhere else a row label cannot stand on its own -- it needs its table and a
-        // bracket around it -- so the list is the tables and the tags.
-        const base = all.filter((x) => x.kind !== "row" && x.kind !== "column");
-
-        // The editor's menubar runs on tool lookup: every leaf of every menu is something
-        // the field can find by name. Those never come through setCommands -- they are
-        // collected from the menus -- so they are added here, and ranked with the rest.
-        if (this.toolLookup) {
-            const tools = this.allTools().map((t) => ({ ...t, kind: "tool" as CmdKind }));
-            return base.concat(tools);
-        }
-        return base;
-    }
-
-    /**
-     * How well a candidate answers what has been typed. Lower is better, and the reasons
-     * are ordered the way a person would rank them: the whole word, then the start of it,
-     * then the start of a part of it (Peak_Share for "share"), then anywhere inside, then
-     * the letters in order but spread out. -1 means it does not answer at all.
-     */
-    private acScore(label: string, hint: string, needle: string): number {
-        if (!needle) return 6;
-        const l = label.toLowerCase();
-        const q = needle.toLowerCase();
-        if (l === q) return 0;
-        if (l.startsWith(q)) return 1;
-        if (l.split(/[_\s./()-]+/).some((w) => w && w.startsWith(q))) return 2;
-        if (l.includes(q)) return 3;
-        if ((hint ?? "").toLowerCase().includes(q)) return 4;
-        if (q.length >= 2 && this.isSubsequence(q, l)) return 5;
-        return -1;
-    }
-
-    private acRank(pool: Cmd[], needle: string): AcScored[] {
-        const out: AcScored[] = [];
-        for (const cmd of pool) {
-            const s = this.acScore(cmd.label, cmd.hint ?? "", needle);
-            if (s >= 0) out.push({ cmd, score: s });
-        }
-        out.sort(
-            (a, b) =>
-                a.score - b.score ||
-                a.cmd.label.length - b.cmd.label.length ||
-                a.cmd.label.localeCompare(b.cmd.label)
-        );
-        return out;
-    }
-
-    /** The sections, in the order they are shown, and the flat list Up/Down walks. */
-    private acBuild(ctx: AcContext, ranked: AcScored[]): void {
-        const order: CmdKind[] = ["goto", "table", "row", "column", "tag", "tool"];
-        const title = (k: CmdKind): string => {
-            const of = ctx.table ? " of " + ctx.table : "";
-            switch (k) {
-                case "goto": return "Go to";
-                case "table": return "Tables";
-                case "row": return "Rows" + of;
-                case "column": return "Columns" + of;
-                case "tag": return "Tags";
-                default: return "Tools";
-            }
-        };
-
-        const groups: AcGroup[] = [];
-        const flat: Cmd[] = [];
-        for (const k of order) {
-            const items = ranked.filter((r) => (r.cmd.kind ?? "tag") === k).map((r) => r.cmd);
-            if (!items.length) continue;
-            groups.push({ title: title(k), items });
-            for (const it of items) flat.push(it);
-        }
-        this.acGroups = groups;
-        this.acFlat = flat;
-    }
-
-    /** Where the panel goes: under the field, or above it when the room is below. */
-    private acPlace(): void {
-        const el = this.textInput?.nativeElement;
-        if (!el) return;
-        const r = el.getBoundingClientRect();
-        const longest = this.acFlat.reduce(
-            (n, c) => Math.max(n, (c.label ?? "").length + (this.acRight(c) ?? "").length),
-            12
-        );
-        const width = Math.max(240, Math.min(560, longest * 7.6 + 56));
-        const below = window.innerHeight - r.bottom;
-        this.acAbove = below < 220 && r.top > below;
-        this.acStyle = {
-            left: Math.round(Math.max(8, Math.min(r.left, window.innerWidth - width - 8))) + "px",
-            width: Math.round(width) + "px",
-            top: this.acAbove ? "" : Math.round(r.bottom + 4) + "px",
-            bottom: this.acAbove ? Math.round(window.innerHeight - r.top + 4) + "px" : "",
-            maxHeight: Math.round(Math.max(160, Math.min(360, this.acAbove ? r.top - 16 : below - 16))) + "px",
-        };
-    }
-
-    /** The grey text on the right of a row: what picking it will put in the field. */
-    acRight(c: Cmd): string {
-        if (c.kind === "goto") return c.hint ?? "";
-        const ins = (c.insert ?? c.label ?? "").trim();
-        return ins && ins !== c.label ? ins : "";
-    }
-
-    /** Recompute and show, or hide when there is nothing worth showing. */
-    acRefresh(opts: { all?: boolean } = {}): void {
-        const el = this.textInput?.nativeElement;
-        const text = this.currentInputString();
-        const caret = el?.selectionStart ?? this.caretPos ?? text.length;
-
-        // NOTHING TYPED, AND THE CARET IS IN THE FIELD -- on focus, on a click into it, or
-        // when the last character has just been deleted. There is no word to go on, so
-        // offer everything, which is what Ctrl+Space asks for anyway. Guarded on the field
-        // really holding focus, so the list does not show itself when the page merely
-        // loads and something else puts the caret there.
-        const focused =
-            !!el && typeof document !== "undefined" && document.activeElement === el;
-        const everything = () => {
-            this.acCtx = { scope: "word", table: "", term: "", from: caret, to: caret };
-            this.acBuild(this.acCtx, this.acRank(this.acPool(this.acCtx), ""));
-            this.acPrependGoto(text, caret);
-            this.acAfterBuild();
-        };
-
-        if (focused && !text.trim()) { everything(); return; }
-
-        const ctx = this.acContext(text, caret);
-        if (!ctx) {
-            // Asked for outright, at a spot with no word to go on -- a number, a bracket,
-            // an operator. Offer the lot rather than nothing.
-            if (opts.all) { everything(); return; }
-            this.acClose();
-            return;
-        }
-
-        // A bare word is only worth completing once it is a real start, and never when it
-        // already names the thing exactly -- nothing left to say.
-        if (ctx.scope === "word" && !opts.all && ctx.term.length < 1) { this.acClose(); return; }
-
-        const ranked = this.acRank(this.acPool(ctx), ctx.term);
-        const exact = ctx.term && ranked.length === 1 && ranked[0].score === 0;
-        if (!ranked.length || exact) {
-            // Nothing to complete, but the caret may still be just past a finished
-            // reference -- then the list is worth opening for the one Go to row.
-            this.acGroups = []; this.acFlat = [];
-            this.acCtx = ctx;
-            this.acPrependGoto(text, caret);
-            if (this.acFlat.length) { this.acAfterBuild(); return; }
-            this.acClose();
-            return;
-        }
-
-        this.acCtx = ctx;
-        this.acBuild(ctx, ranked);
-        this.acPrependGoto(text, caret);
-        this.acAfterBuild();
-    }
-
-    /**
-     * THE CARET SITTING JUST PAST A FINISHED REFERENCE -- "...Inputs[Phase_II_Success_Rate,Value]|"
-     * -- means the thing in front of it is a cell that exists, not something to complete.
-     * So the list leads with the way to GO to it: picking it brings that cell up on the
-     * canvas and types nothing. Only offered when the menubar handed over a way to
-     * navigate, and always first, because it is the one entry that is not a completion.
-     */
-    private acPrependGoto(text: string, caret: number): void {
-        if (typeof this.gotoRef !== "function") return;
-
-        // WHEREVER THE CARET IS IN IT. It used to want the reference to END exactly at the
-        // caret, so it was offered just past the closing bracket and nowhere else -- not
-        // with the caret in the table's name, not between the brackets, not on the bracket
-        // itself. Every reference in the field is looked at, and the one the caret is
-        // standing in (or at either end of) is the one offered.
+    private acGotoLead = (text: string, caret: number): Cmd[] => {
+        if (typeof this.gotoRef !== "function") return [];
         const t = text ?? "";
         const pos = Math.max(0, Math.min(caret, t.length));
         const re = /([A-Za-z_][A-Za-z0-9_.]*)\s*\[\s*([^\[\]]+?)\s*\]/g;
@@ -490,105 +277,74 @@ export class SimpleMenuComponent
         while ((m = re.exec(t)) !== null) {
             const from = m.index, to = from + m[0].length;
             if (pos >= from && pos <= to) { hit = m; break; }
-            if (from > pos) break;                 // past the caret: the rest cannot contain it
+            if (from > pos) break;               // past the caret: the rest cannot contain it
         }
-        if (!hit) return;
-
+        if (!hit) return [];
         const table = hit[1];
         const tags = hit[2].split(",").map((x) => x.trim()).filter(Boolean);
-        if (!tags.length) return;
-
-        const item: Cmd = {
+        if (!tags.length) return [];
+        return [{
             label: table + "[" + tags.join(",") + "]",
             insert: "",
             hint: "show this cell on the canvas",
             kind: "goto",
             goto: { table, tags },
-        };
-        this.acGroups = [{ title: "Go to", items: [item] }].concat(this.acGroups);
-        this.acFlat = [item].concat(this.acFlat);
+        } as Cmd];
+    };
+
+    /** Built once the field exists, and again if the field is replaced. */
+    private acAttach(): void {
+        const el = this.textInput?.nativeElement;
+        if (!el || this.acEl === el) return;
+        try { this.sug?.destroy(); } catch (e) { }
+        this.acEl = el;
+        this.sug = new SuggestList({
+            input: el,
+            mode: "formula",
+            groupTitles: true,
+            footer: "<b>&#8595;&#8593;</b> move &nbsp; <b>Tab</b>/<b>Enter</b> insert &nbsp; <b>Esc</b> close",
+            items: () => this.acItems(),
+            lead: this.acGotoLead,
+            onPick: (item: any) => {
+                // Neither of these is text for the field.
+                if (item.goto) {
+                    try { this.gotoRef(item.goto.table, item.goto.tags); }
+                    catch (e) { console.warn("go to reference", e); }
+                    return true;
+                }
+                if (item.tool) {
+                    try { this.runTool(item); } catch (e) { console.warn("tool", e); }
+                    return true;
+                }
+                return false;
+            },
+            // The field is a FormControl, so the text goes through the component, not
+            // through el.value -- otherwise Angular keeps the string from before the pick.
+            onInsert: (value: string, caret: number) => this.setValueStripWS(value, caret, true),
+        });
     }
 
-    private acAfterBuild(): void {
-        if (!this.acFlat.length) { this.acClose(); return; }
-        this.acIndex = 0;
-        this.acOpen = true;
-        this.shouldAutocomplete = true;
-        this.acPlace();
+    get acOpen(): boolean { return !!this.sug?.isOpen; }
+
+    /** Recompute and show, or hide when there is nothing worth showing. */
+    acRefresh(opts: { all?: boolean } = {}): void {
+        this.acAttach();
+        this.sug?.refresh(opts);
+        this.shouldAutocomplete = this.acOpen;
         this.cdr.markForCheck();
     }
 
     acClose(): void {
-        if (!this.acOpen && !this.acGroups.length) return;
-        this.acOpen = false;
-        this.acGroups = [];
-        this.acFlat = [];
-        this.acIndex = 0;
+        this.sug?.close();
         this.shouldAutocomplete = false;
         this.cdr.markForCheck();
     }
 
-    /** Up/Down through the flat list, wrapping at both ends. */
-    acMove(step: number): void {
-        if (!this.acOpen || !this.acFlat.length) return;
-        const n = this.acFlat.length;
-        this.acIndex = (this.acIndex + step + n) % n;
-        this.cdr.markForCheck();
-        setTimeout(() => {
-            try {
-                const row = document.querySelector<HTMLElement>(".cmd-ac .cmd-ac-row.is-on");
-                row?.scrollIntoView({ block: "nearest" });
-            } catch (e) { }
-        }, 0);
-    }
-
-    /** True when this row is the highlighted one (the template asks per row). */
-    acIsOn(c: Cmd): boolean {
-        return this.acOpen && this.acFlat[this.acIndex] === c;
-    }
+    /** Up/Down through the list, wrapping at both ends. */
+    acMove(step: number): void { this.sug?.move(step); }
 
     /** Put the candidate in the field, replacing exactly what was being completed. */
-    acAccept(pick?: Cmd): void {
-        const c = pick ?? this.acFlat[this.acIndex];
-        if (!c) return;
-
-        // A "Go to" row is an action on the canvas, not text for the field.
-        if (c.goto) {
-            this.acClose();
-            try { this.gotoRef(c.goto.table, c.goto.tags); }
-            catch (e) { console.warn("go to reference", e); }
-            return;
-        }
-
-        // A tool entry runs its menu item instead of being typed.
-        if (c.tool) {
-            this.acClose();
-            try { this.runTool(c); } catch (e) { console.warn("tool", e); }
-            return;
-        }
-
-        const el = this.textInput?.nativeElement;
-        const text = this.currentInputString();
-        const caret = el?.selectionStart ?? this.caretPos ?? text.length;
-        const ctx = this.acCtx ?? this.acContext(text, caret);
-        const insert = (c.insert ?? c.label ?? "").trim();
-        if (!ctx) return;
-
-        // Picking in the middle of a finished reference must not double its bracket:
-        // "=Budget[Re|nt]" taking Rent (which inserts "Rent]") would leave "Rent]]".
-        let to = ctx.to;
-        const close = insert.slice(-1);
-        if ((close === "]" || close === ")" || close === "[") && text.charAt(to) === close) to += 1;
-
-        const next = text.slice(0, ctx.from) + insert + text.slice(to);
-        const pos = ctx.from + insert.length;
-
-        this.setValueStripWS(next, pos, true);
-        this.acClose();
-        // "Budget[" completes to a table and leaves the caret inside the bracket, where the
-        // rows of that table are what comes next: offer them straight away.
-        setTimeout(() => this.acRefresh(), 0);
-    }
+    acAccept(pick?: Cmd): void { this.sug?.accept(pick as any); }
 
     private handleFocus = () => {
         const el = this.textInput?.nativeElement;
@@ -602,25 +358,9 @@ export class SimpleMenuComponent
         // Optional: block global handlers / hotkeys from seeing this first
         event.stopImmediatePropagation();
 
-        // THE LIST HAS THE KEYS WHILE IT IS OPEN. Up/Down walk it, Enter and Tab take the
-        // highlighted row, Escape puts it away without touching the text. Everything else
-        // falls through to typing, which re-asks what should be offered.
-        if (this.acOpen) {
-            if (event.key === "ArrowDown") { event.preventDefault(); this.acMove(1); return; }
-            if (event.key === "ArrowUp") { event.preventDefault(); this.acMove(-1); return; }
-            if (event.key === "Enter" || event.key === "Tab") { event.preventDefault(); this.acAccept(); return; }
-            if (event.key === "Escape") { event.preventDefault(); this.acClose(); return; }
-            if (event.key === "Home") { event.preventDefault(); this.acIndex = 0; this.cdr.markForCheck(); return; }
-            if (event.key === "End") { event.preventDefault(); this.acIndex = Math.max(0, this.acFlat.length - 1); this.cdr.markForCheck(); return; }
-        }
-
-        // Ctrl/Cmd+Space asks for the list wherever the caret is; on an empty field that is
-        // everything there is to offer.
-        if (event.code === "Space" && (event.ctrlKey || event.metaKey)) {
-            event.preventDefault();
-            this.acRefresh({ all: true });
-            return;
-        }
+        // THE LIST HAS THE KEYS WHILE IT IS OPEN -- Up/Down, Enter, Tab, Escape and
+        // Ctrl+Space. It takes them in CAPTURE on the field itself (suggest-list.ts), so
+        // they never reach here; what is left below is the field's own Enter.
 
         // Only prevent default for keys you fully handle yourself.
         // Do NOT blindly preventDefault(), or typing/autocomplete may break.
@@ -647,12 +387,6 @@ export class SimpleMenuComponent
             if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(ev.key)) return;
         }
         setTimeout(() => { try { this.acRefresh(); } catch (e) { } }, 0);
-    }
-
-    /** Hovering a row moves the highlight to it, so the mouse and keys agree. */
-    acHover(c: Cmd): void {
-        const i = this.acFlat.indexOf(c);
-        if (i >= 0 && i !== this.acIndex) { this.acIndex = i; this.cdr.markForCheck(); }
     }
 
     /** Leaving the field closes the list -- after the click that may be picking from it. */
@@ -714,6 +448,9 @@ export class SimpleMenuComponent
         typeof val === "string" ? val : val?.label ?? "";
 
     ngAfterViewInit(): void {
+        // The field is behind an *ngIf, so it can appear later or be swapped out.
+        try { this.acAttach(); } catch (e) { }
+        try { this.textInputs?.changes.subscribe(() => { try { this.acAttach(); } catch (e) { } }); } catch (e) { }
         this.cdr.detectChanges();
         const el = this.textInput?.nativeElement;
         if (el) {
@@ -724,6 +461,7 @@ export class SimpleMenuComponent
     }
 
     ngOnDestroy(): void {
+        try { this.sug?.destroy(); this.sug = null; } catch (e) { }
         this.acSub?.unsubscribe();
         const el = this.textInput?.nativeElement;
         if (el) {
@@ -1235,7 +973,7 @@ export class SimpleMenuComponent
     /** Enter in tool mode: run the highlighted option, an exact label match, or the only
      *  match. Returns false when nothing applies so the caller can fall back to cmd. */
     private runToolFromInput(): boolean {
-        const active = this.acOpen ? this.acFlat[this.acIndex] : undefined;
+        const active = this.sug?.current as any;
         if (active && typeof active !== "string" && active.tool) { this.runTool(active); return true; }
         const text = (this.currentInputString() ?? "").trim();
         if (!text) return false;

@@ -1,5 +1,6 @@
 import {
     OnInit,
+    AfterViewInit,
     Component,
     ViewChild,
     EventEmitter, ChangeDetectorRef, ChangeDetectionStrategy, Output, NgModule, ElementRef, Inject, Input
@@ -9,13 +10,14 @@ import { HookFunctionComponent } from "./hook-function-comp";
 import { PubComponent } from "./pub-component";
 import { PubComponentListener } from "./pub-component-listener";
 import { FunctionUtil } from "../functions/function-util";
+import { SuggestList } from "./suggest-list";
 
 @Component({
     selector: 'input-textfield',
     templateUrl: './text-field.component.html',
     styleUrls: ['./text-field.component.css']
 })
-export class TextFieldComponent implements OnInit, PubComponent, HookFunctionComponent {
+export class TextFieldComponent implements OnInit, AfterViewInit, PubComponent, HookFunctionComponent {
     // engine: import("./pub-component").IonEngine;
     @Input() listener: PubComponentListener;
     @Input() data: any = '';
@@ -26,13 +28,9 @@ export class TextFieldComponent implements OnInit, PubComponent, HookFunctionCom
     listenerFunction;
     options: string[] = [];
 
-    // ---- the suggestion list (see the panel in the template) ----------------------
+    // ---- the suggestion list (the shared one; see suggest-list.ts) ----------------
     @ViewChild('tfInput') tfInput: ElementRef<HTMLInputElement>;
-    acOpen = false;
-    acItems: string[] = [];
-    acIndex = 0;
-    acAbove = false;
-    acStyle: { [k: string]: string } = {};
+    private sug: SuggestList | null = null;
     /** Bumped per keystroke: a slow /gene-lookup must not overwrite a newer one. */
     private acSeq = 0;
 
@@ -50,88 +48,39 @@ export class TextFieldComponent implements OnInit, PubComponent, HookFunctionCom
         if (this.updateMeth) {
             const seq = ++this.acSeq;
             const got = await this.updateMeth(value);
-            // A reply that arrives after a later keystroke is stale: showing it would
-            // offer suggestions for text the field no longer holds.
+            // A reply that arrives after a later keystroke is stale: showing it would offer
+            // suggestions for text the field no longer holds.
             if (seq !== this.acSeq) { return; }
             this.options = Array.isArray(got) ? got : [];
         }
-        this.acRefresh();
+        try { this.sug?.refresh(); } catch (e) { }
     }
 
-    private _filter(value: string): string[] {
-        const filterValue = ('' + (value || '')).toLowerCase();
-        const out = this.options.filter(option => ('' + option).toLowerCase().includes(filterValue));
-        // The endpoint already ranks best-match first; cap the list rather than scroll
-        // through hundreds of rows on a phone.
-        return out.slice(0, 60);
-    }
-
-    /** Rebuild the list from what is in the field, and open it if anything matches. */
-    acRefresh(): void {
-        if (!this.options || !this.options.length) { this.acOpen = false; return; }
-        const items = this._filter(this.value);
-        // One option identical to what is typed is not a choice, it is what you have.
-        if (!items.length || (items.length === 1 && items[0].toLowerCase() === ('' + (this.value || '')).toLowerCase())) {
-            this.acOpen = false;
-            return;
-        }
-        this.acItems = items;
-        this.acIndex = 0;
-        this.acOpen = true;
-        this.acPlace();
-    }
-
-    /** Where the panel goes: under the field, or above it when the room is below. */
-    private acPlace(): void {
+    ngAfterViewInit(): void {
         const el = this.tfInput?.nativeElement;
         if (!el) { return; }
-        const r = el.getBoundingClientRect();
-        const longest = this.acItems.reduce((n, o) => Math.max(n, ('' + o).length), 12);
-        const width = Math.max(240, Math.min(560, Math.min(longest * 7.2 + 32, window.innerWidth - 16)));
-        const below = window.innerHeight - r.bottom;
-        this.acAbove = below < 220 && r.top > below;
-        this.acStyle = {
-            left: Math.round(Math.max(8, Math.min(r.left, window.innerWidth - width - 8))) + 'px',
-            width: Math.round(width) + 'px',
-            top: this.acAbove ? '' : Math.round(r.bottom + 4) + 'px',
-            bottom: this.acAbove ? Math.round(window.innerHeight - r.top + 4) + 'px' : '',
-            maxHeight: Math.round(Math.max(160, Math.min(360, this.acAbove ? r.top - 16 : below - 16))) + 'px',
-        };
+        // 'plain' mode: this field holds ONE value (a gene name), so the whole of it is the
+        // needle -- there are no formula triggers to parse here.
+        this.sug = new SuggestList({
+            input: el,
+            mode: 'plain',
+            groupTitles: false,
+            limit: 60,
+            items: () => this.options || [],
+            onPick: (item) => {
+                this.init_text_value = item.label;
+                this.value = item.label;
+                // Assigning through [(ngModel)] does not fire ngModelChange, so the listener
+                // has to be called here -- the Material option used to reach it via the view.
+                if (this.listenerFunction) { this.listenerFunction(this.value); }
+                if (this.optionSelected) { this.optionSelected(item.label); }
+                return true;      // handled: nothing for the list to type
+            },
+        });
     }
 
-    /** Take a suggestion: it fills the field, exactly as picking a mat-option did. */
-    acAccept(option: string): void {
-        this.acOpen = false;
-        this.init_text_value = option;
-        this.value = option;
-        // Assigning through [(ngModel)] does not fire ngModelChange, so the listener has
-        // to be called here -- the Material option used to reach it through the view.
-        if (this.listenerFunction) { this.listenerFunction(this.value); }
-        if (this.optionSelected) { this.optionSelected(option); }
-        try { this.tfInput?.nativeElement?.focus(); } catch (e) { }
-    }
-
-    acKey(e: KeyboardEvent): void {
-        if (!this.acOpen || !this.acItems.length) {
-            if (e.key === 'ArrowDown') { this.acRefresh(); }
-            return;
-        }
-        if (e.key === 'ArrowDown') {
-            e.preventDefault(); this.acIndex = Math.min(this.acItems.length - 1, this.acIndex + 1);
-        } else if (e.key === 'ArrowUp') {
-            e.preventDefault(); this.acIndex = Math.max(0, this.acIndex - 1);
-        } else if (e.key === 'Enter' || e.key === 'Tab') {
-            e.preventDefault(); this.acAccept(this.acItems[this.acIndex]);
-        } else if (e.key === 'Escape') {
-            // Only the list closes: the dialog around it stays open.
-            e.preventDefault(); e.stopPropagation(); this.acOpen = false;
-        }
-    }
-
-    acBlur(): void {
-        // A pick is a mousedown with preventDefault, so focus never leaves and this does
-        // not race it; the delay is only for a tap that lands outside the panel.
-        setTimeout(() => { this.acOpen = false; }, 120);
+    ngOnDestroy(): void {
+        try { this.sug?.destroy(); } catch (e) { }
     }
 
     ngOnInit(): void {

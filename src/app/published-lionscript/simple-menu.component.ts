@@ -22,7 +22,7 @@ import { QueryList, ViewChildren } from "@angular/core";
 // What a candidate IS, which decides the section it is listed under. The lionscript side
 // may say so outright (plate-track's getFormulaCompletions); when it does not, it is read
 // off the older shape -- hint "table"/"tag", or a `table` for a row of one.
-type CmdKind = "table" | "row" | "column" | "tag" | "tool";
+type CmdKind = "goto" | "table" | "row" | "column" | "tag" | "tool";
 
 type Cmd = {
     label: string;
@@ -31,6 +31,8 @@ type Cmd = {
     args?: string;
     hint?: string;
     kind?: CmdKind;
+    // "Go to": not typed into the field but acted on -- the cell a finished reference names.
+    goto?: { table: string; tags: string[] };
     // Tool lookup: the menu item this entry runs, and the top-level menu it lives under.
     tool?: any;
     top?: string;
@@ -192,6 +194,7 @@ export class SimpleMenuComponent
         ",",
     ];
     txtListener: any;
+    gotoRef: any = null;
 
     constructor(private cdr: ChangeDetectorRef, private zone: NgZone) { }
 
@@ -358,10 +361,11 @@ export class SimpleMenuComponent
 
     /** The sections, in the order they are shown, and the flat list Up/Down walks. */
     private acBuild(ctx: AcContext, ranked: AcScored[]): void {
-        const order: CmdKind[] = ["table", "row", "column", "tag", "tool"];
+        const order: CmdKind[] = ["goto", "table", "row", "column", "tag", "tool"];
         const title = (k: CmdKind): string => {
             const of = ctx.table ? " of " + ctx.table : "";
             switch (k) {
+                case "goto": return "Go to";
                 case "table": return "Tables";
                 case "row": return "Rows" + of;
                 case "column": return "Columns" + of;
@@ -405,6 +409,7 @@ export class SimpleMenuComponent
 
     /** The grey text on the right of a row: what picking it will put in the field. */
     acRight(c: Cmd): string {
+        if (c.kind === "goto") return c.hint ?? "";
         const ins = (c.insert ?? c.label ?? "").trim();
         return ins && ins !== c.label ? ins : "";
     }
@@ -425,6 +430,7 @@ export class SimpleMenuComponent
         const everything = () => {
             this.acCtx = { scope: "word", table: "", term: "", from: caret, to: caret };
             this.acBuild(this.acCtx, this.acRank(this.acPool(this.acCtx), ""));
+            this.acPrependGoto(text, caret);
             this.acAfterBuild();
         };
 
@@ -445,11 +451,50 @@ export class SimpleMenuComponent
 
         const ranked = this.acRank(this.acPool(ctx), ctx.term);
         const exact = ctx.term && ranked.length === 1 && ranked[0].score === 0;
-        if (!ranked.length || exact) { this.acClose(); return; }
+        if (!ranked.length || exact) {
+            // Nothing to complete, but the caret may still be just past a finished
+            // reference -- then the list is worth opening for the one Go to row.
+            this.acGroups = []; this.acFlat = [];
+            this.acCtx = ctx;
+            this.acPrependGoto(text, caret);
+            if (this.acFlat.length) { this.acAfterBuild(); return; }
+            this.acClose();
+            return;
+        }
 
         this.acCtx = ctx;
         this.acBuild(ctx, ranked);
+        this.acPrependGoto(text, caret);
         this.acAfterBuild();
+    }
+
+    /**
+     * THE CARET SITTING JUST PAST A FINISHED REFERENCE -- "...Inputs[Phase_II_Success_Rate,Value]|"
+     * -- means the thing in front of it is a cell that exists, not something to complete.
+     * So the list leads with the way to GO to it: picking it brings that cell up on the
+     * canvas and types nothing. Only offered when the menubar handed over a way to
+     * navigate, and always first, because it is the one entry that is not a completion.
+     */
+    private acPrependGoto(text: string, caret: number): void {
+        if (typeof this.gotoRef !== "function") return;
+
+        const before = (text ?? "").slice(0, Math.max(0, caret));
+        const m = /([A-Za-z_][A-Za-z0-9_.]*)\s*\[\s*([^\[\]]+?)\s*\]$/.exec(before);
+        if (!m) return;
+
+        const table = m[1];
+        const tags = m[2].split(",").map((t) => t.trim()).filter(Boolean);
+        if (!tags.length) return;
+
+        const item: Cmd = {
+            label: table + "[" + tags.join(",") + "]",
+            insert: "",
+            hint: "show this cell on the canvas",
+            kind: "goto",
+            goto: { table, tags },
+        };
+        this.acGroups = [{ title: "Go to", items: [item] }].concat(this.acGroups);
+        this.acFlat = [item].concat(this.acFlat);
     }
 
     private acAfterBuild(): void {
@@ -494,6 +539,14 @@ export class SimpleMenuComponent
     acAccept(pick?: Cmd): void {
         const c = pick ?? this.acFlat[this.acIndex];
         if (!c) return;
+
+        // A "Go to" row is an action on the canvas, not text for the field.
+        if (c.goto) {
+            this.acClose();
+            try { this.gotoRef(c.goto.table, c.goto.tags); }
+            catch (e) { console.warn("go to reference", e); }
+            return;
+        }
 
         // A tool entry runs its menu item instead of being typed.
         if (c.tool) {
@@ -772,6 +825,11 @@ export class SimpleMenuComponent
                 this.cmdCtrl.setValue(this.textFieldValue, { emitEvent: true });
             }
 
+            // createIonFunction hands back a uuid, not the function: the engine holds the
+            // real one. Same treatment as txtListener above.
+            if (this.data["gotoRef"]) {
+                this.gotoRef = LionEngine.ionfunctions[this.data["gotoRef"]] ?? null;
+            }
             if (this.data["txtListener"]) {
                 this.txtListener = LionEngine.ionfunctions[this.data["txtListener"]];
             }

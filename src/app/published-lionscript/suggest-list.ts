@@ -66,9 +66,10 @@ const WORD_CH = /[A-Za-z0-9_.]/;
 
 /* The one stylesheet. Injected once, on the document, because the panel is appended to
    <body>: inside a component's template the toolbar's overflow clipped it, and inside a
-   dialog the dialog did. */
+   dialog the dialog did. The z-index has to clear the cell's text window (2147483000) and
+   its backdrop as well -- under them the list was built correctly and painted behind. */
 const CSS = `
-.ls-sug{position:fixed;z-index:2147482500;overflow-y:auto;overflow-x:hidden;background:#fff;
+.ls-sug{position:fixed;z-index:2147483600;overflow-y:auto;overflow-x:hidden;background:#fff;
  color:#0a2540;border:1px solid #cfe0e6;border-radius:10px;
  box-shadow:0 12px 34px rgba(10,37,64,.26),0 2px 6px rgba(10,37,64,.12);
  font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding:4px 0 0;
@@ -225,6 +226,7 @@ export class SuggestList {
     private shown = false;
     private blurTimer: any = null;
     private bound: Array<[string, any]> = [];
+    private mirror: HTMLDivElement | null = null;
 
     constructor(opts: SuggestOptions) {
         this.o = opts;
@@ -296,6 +298,8 @@ export class SuggestList {
             try { this.o.input.removeEventListener(ev, fn); } catch (e) { }
         }
         this.bound = [];
+        try { this.mirror?.parentNode?.removeChild(this.mirror); } catch (e) { }
+        this.mirror = null;
         this.close();
     }
 
@@ -343,9 +347,63 @@ export class SuggestList {
         return ins && ins !== c.label ? ins : "";
     }
 
+    /**
+     * WHERE THE CARET IS, in a textarea. Anchoring to the element is right for a one-line
+     * input, where the box IS the line -- but the cell's text window is a 700px textarea,
+     * and a list pinned to the bottom of that sits nowhere near what is being typed. The
+     * text up to the caret is laid out in a hidden mirror of the textarea (same font,
+     * padding, border and width), and the caret's line is read off it.
+     */
+    private caretRect(): { left: number; top: number; bottom: number } | null {
+        const el: any = this.o.input;
+        if (!el || el.tagName !== "TEXTAREA") return null;
+        try {
+            const cs = getComputedStyle(el);
+            let m = this.mirror;
+            if (!m) {
+                m = document.createElement("div");
+                m.setAttribute("aria-hidden", "true");
+                document.body.appendChild(m);
+                this.mirror = m;
+            }
+            const copy = ["fontFamily", "fontSize", "fontWeight", "fontStyle", "letterSpacing",
+                "lineHeight", "textTransform", "wordSpacing", "textIndent", "paddingTop",
+                "paddingRight", "paddingBottom", "paddingLeft", "borderTopWidth",
+                "borderRightWidth", "borderBottomWidth", "borderLeftWidth", "boxSizing"];
+            for (const k of copy) (m.style as any)[k] = (cs as any)[k];
+            m.style.position = "absolute";
+            m.style.visibility = "hidden";
+            m.style.whiteSpace = "pre-wrap";
+            m.style.wordWrap = "break-word";
+            m.style.overflowWrap = "break-word";
+            m.style.left = "-9999px";
+            m.style.top = "0";
+            m.style.width = el.clientWidth + "px";
+
+            const caret = el.selectionStart == null ? ("" + el.value).length : el.selectionStart;
+            m.textContent = ("" + el.value).slice(0, caret);
+            const mark = document.createElement("span");
+            // Something with width, or the span collapses and offsetTop is unreliable.
+            mark.textContent = ("" + el.value).slice(caret) || ".";
+            m.appendChild(mark);
+
+            const r = el.getBoundingClientRect();
+            const lh = parseFloat(cs.lineHeight) || (parseFloat(cs.fontSize) * 1.2) || 16;
+            const x = r.left + mark.offsetLeft - el.scrollLeft;
+            const y = r.top + mark.offsetTop - el.scrollTop;
+            // A caret scrolled out of sight must not drag the list off with it.
+            const top = Math.max(r.top, Math.min(y, r.bottom - lh));
+            return { left: Math.max(r.left, Math.min(x, r.right - 8)), top, bottom: top + lh };
+        } catch (e) { return null; }
+    }
+
     private place(): void {
         if (!this.el) return;
-        const r = this.o.input.getBoundingClientRect();
+        const box = this.o.input.getBoundingClientRect();
+        const c = this.caretRect();
+        const r: any = c
+            ? { left: c.left, top: c.top, bottom: c.bottom, right: box.right }
+            : box;
         const longest = this.flat.reduce(
             (n, c) => Math.max(n, (c.label ?? "").length + (this.right(c) ?? "").length), 12);
         const width = Math.max(240, Math.min(560,

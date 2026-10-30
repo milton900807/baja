@@ -408,7 +408,7 @@ export class LoginComponent {
    * The medical disclaimer in the template is deliberately NOT here.
    */
   clinicBanner: string = ((typeof window !== 'undefined' && (window as any)['env']?.['clinicBanner'])
-    || 'Fundraising for rare disease');
+    || 'No charge to run a campaign, 100% of the funds you raise go right into your cause.');
   clinicTag: string = ((typeof window !== 'undefined' && (window as any)['env']?.['clinicTag'])
     || 'Understand it. Share it. Fund it.');
   clinicTitle: string = ((typeof window !== 'undefined' && (window as any)['env']?.['clinicTitle'])

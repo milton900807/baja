@@ -89,16 +89,10 @@ import { b2cPolicies, rarePolicies } from '../onedrive/auth-config';
         <ul class="cl-list">
           <li *ngFor="let f of clinicFeatures">{{ f }}</li>
         </ul>
-        <!-- The medical disclaimer is NOT configurable. Everything else on this card can be
-             reworded from env.js without a rebuild, but a sentence that exists to stop
-             someone reading a treatment decision into a gene drawing should not be
-             removable by editing a config file. -->
-        <p class="cl-note">
-          <span *ngIf="clinicNote">{{ clinicNote }} </span>
-          This is a tool for reading and understanding genetic information. It is
-          <b>not medical advice</b>, and it does not diagnose or recommend treatment —
-          those decisions belong with your clinical team.
-        </p>
+        <!-- The sign-in card carries no medical disclaimer: this screen shows nobody's
+             genetic information, and the owner asked for it off. The note that remains is
+             whatever env.js sets, which is a sentence about where donations go. -->
+        <p class="cl-note" *ngIf="clinicNote">{{ clinicNote }}</p>
       </div>
 
       <ul class="features" *ngIf="!freeMode && !clinicMode">

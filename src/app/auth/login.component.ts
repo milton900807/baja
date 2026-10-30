@@ -37,8 +37,7 @@ import { b2cPolicies, rarePolicies } from '../onedrive/auth-config';
            product. -->
       <div class="beta-banner" role="status" *ngIf="clinicMode || freeMode">
         <span class="beta-tag">{{ clinicMode ? 'gene.clinic' : 'Free version' }}</span>
-        <span class="beta-text">{{ clinicMode ? 'For a deeper understanding of genetic medicine'
-          : 'Sign in to continue' }}</span>
+        <span class="beta-text">{{ clinicMode ? clinicBanner : 'Sign in to continue' }}</span>
       </div>
 
       <div class="head" *ngIf="!clinicMode">
@@ -67,7 +66,7 @@ import { b2cPolicies, rarePolicies } from '../onedrive/auth-config';
           </svg>
         </div>
         <div class="cl-word">gene<span class="cl-dot">.</span>clinic</div>
-        <div class="cl-tag">Rare disease, explained</div>
+        <div class="cl-tag">{{ clinicTag }}</div>
       </div>
 
       <!-- Arriving from "Free version (with limited features)": say what the free tier IS before asking
@@ -86,11 +85,16 @@ import { b2cPolicies, rarePolicies } from '../onedrive/auth-config';
 
       <!-- gene.clinic: understanding a gene, not operating a design tool. -->
       <div class="clinic" *ngIf="clinicMode">
-        <div class="cl-title">Understanding a rare condition, gene by gene</div>
+        <div class="cl-title">{{ clinicTitle }}</div>
         <ul class="cl-list">
           <li *ngFor="let f of clinicFeatures">{{ f }}</li>
         </ul>
+        <!-- The medical disclaimer is NOT configurable. Everything else on this card can be
+             reworded from env.js without a rebuild, but a sentence that exists to stop
+             someone reading a treatment decision into a gene drawing should not be
+             removable by editing a config file. -->
         <p class="cl-note">
+          <span *ngIf="clinicNote">{{ clinicNote }} </span>
           This is a tool for reading and understanding genetic information. It is
           <b>not medical advice</b>, and it does not diagnose or recommend treatment —
           those decisions belong with your clinical team.
@@ -396,9 +400,27 @@ export class LoginComponent {
   clinicFeatures: string[] = ((typeof window !== 'undefined' && (window as any)['env']?.['clinicFeatures']) || [
     'See the gene, and the change in it, drawn in plain language',
     'Understand where a variant sits and what it affects',
-    'Follow what researchers are working on for this gene',
-    'Keep your own notes and share a clear summary with your care team',
+    'Follow the work being done towards a therapy for it',
+    'Raise awareness with a page anyone can open, and no account to read it',
+    'Run a fundraising campaign for that work, with a total that moves as gifts arrive',
   ]);
+
+  /**
+   * The rest of the gene.clinic wording, in one place and overridable from env.js the same
+   * way the lists are. These are on the first screen a family sees, and a first screen is
+   * worded and re-worded; having to rebuild and redeploy the whole front end to change a
+   * sentence is how a first screen ends up saying something nobody means any more.
+   *
+   * The medical disclaimer in the template is deliberately NOT here.
+   */
+  clinicBanner: string = ((typeof window !== 'undefined' && (window as any)['env']?.['clinicBanner'])
+    || 'Understanding rare disease, and funding the work on it');
+  clinicTag: string = ((typeof window !== 'undefined' && (window as any)['env']?.['clinicTag'])
+    || 'Rare disease: understood, shared, funded');
+  clinicTitle: string = ((typeof window !== 'undefined' && (window as any)['env']?.['clinicTitle'])
+    || 'Understand a rare condition, and raise what it takes to treat it');
+  clinicNote: string = ((typeof window !== 'undefined' && (window as any)['env']?.['clinicNote'])
+    || 'Campaigns raised here go to the programme the campaign names; this site takes no part of a donation.');
 
 
   // Product highlights shown on the login card. Overridable via window.env['loginFeatures'].

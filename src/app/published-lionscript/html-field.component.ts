@@ -53,8 +53,34 @@ export class HTMLFieldComponent implements OnInit, PubComponent {
         t = t.replace(/(href|src|xlink:href)\s*=\s*(["']?)\s*javascript:[^"'>\s]*/gi, '$1=$2#');
         return t;
     }
+    // THE SAME MARKUP MUST GIVE BACK THE SAME OBJECT.
+    //
+    // [innerHTML]='safe(html)' is called on every change-detection pass, and
+    // bypassSecurityTrustHtml hands back a NEW object each time. Angular compares bindings
+    // by identity, so it concluded the HTML had changed on every pass and rebuilt the whole
+    // subtree -- several times a second, and again on every mousedown.
+    //
+    // That is why buttons in these widgets did nothing. A click is only dispatched when the
+    // press and the release land on the same element; the button the user pressed was gone
+    // before they let go, so the browser dispatched the click on the surviving parent, and
+    // nothing listening for the button ever heard it. Inline handlers were lost for the same
+    // reason. Measured on a page that rebuilds its markup on pointerdown: the mousedown
+    // already reports the parent, and no click event is dispatched at all.
+    //
+    // Caching the result by the exact string means the binding is identical from one pass to
+    // the next, so Angular leaves the subtree alone and the DOM stops moving under people.
+    // Two entries are enough (the two bindings in the template), with room to spare and a
+    // clear-out rather than unbounded growth if the markup really does keep changing.
+    private safeCache = new Map<string, SafeHtml>();
     safe(v: any): SafeHtml {
-        return this.sanitizer.bypassSecurityTrustHtml(this.scrub(v));
+        const t = '' + (v == null ? '' : v);
+        let out = this.safeCache.get(t);
+        if (!out) {
+            if (this.safeCache.size > 8) this.safeCache.clear();
+            out = this.sanitizer.bypassSecurityTrustHtml(this.scrub(t));
+            this.safeCache.set(t, out);
+        }
+        return out;
     }
     
     

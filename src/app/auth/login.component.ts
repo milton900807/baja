@@ -392,11 +392,11 @@ export class LoginComponent {
    * Overridable the same way the scientist list is, via window.env['clinicFeatures'].
    */
   clinicFeatures: string[] = ((typeof window !== 'undefined' && (window as any)['env']?.['clinicFeatures']) || [
+    'No charge to run a campaign, and no share of what you raise',
+    'A live page to share, and a display for the room, with no account needed to watch it',
+    'Donations go straight to your own account, minus the card processor\'s own fee',
     'See the gene, and the change in it, drawn in plain language',
-    'Understand where a variant sits and what it affects',
     'Follow the work being done towards a therapy for it',
-    'Raise awareness with a page anyone can open, and no account to read it',
-    'Run a fundraising campaign for that work, with a total that moves as gifts arrive',
   ]);
 
   /**
@@ -408,13 +408,16 @@ export class LoginComponent {
    * The medical disclaimer in the template is deliberately NOT here.
    */
   clinicBanner: string = ((typeof window !== 'undefined' && (window as any)['env']?.['clinicBanner'])
-    || 'Understanding rare disease, and funding the work on it');
+    || 'Fundraising for rare disease, with nothing taken off the top');
   clinicTag: string = ((typeof window !== 'undefined' && (window as any)['env']?.['clinicTag'])
-    || 'Rare disease: understood, shared, funded');
+    || 'Understand it. Share it. Fund it.');
   clinicTitle: string = ((typeof window !== 'undefined' && (window as any)['env']?.['clinicTitle'])
-    || 'Understand a rare condition, and raise what it takes to treat it');
+    || 'Raise money for a rare disease, and keep all of it');
+  // Said exactly, because "free" on a page about money is a claim people check: this site
+  // takes nothing, and the card processor's fee is not ours to waive.
   clinicNote: string = ((typeof window !== 'undefined' && (window as any)['env']?.['clinicNote'])
-    || 'Campaigns raised here go to the programme the campaign names; this site takes no part of a donation.');
+    || 'There is no charge for this and no share of what you raise. '
+     + 'Gifts arrive in your own payment account, less the fee the card processor charges.');
 
 
   // Product highlights shown on the login card. Overridable via window.env['loginFeatures'].

@@ -85,8 +85,8 @@ import { b2cPolicies, rarePolicies } from '../onedrive/auth-config';
 
       <!-- gene.clinic: understanding a gene, not operating a design tool. -->
       <div class="clinic" *ngIf="clinicMode">
-        <div class="cl-title">{{ clinicTitle }}</div>
-        <ul class="cl-list">
+        <div class="cl-title" *ngIf="clinicTitle">{{ clinicTitle }}</div>
+        <ul class="cl-list" *ngIf="clinicFeatures?.length">
           <li *ngFor="let f of clinicFeatures">{{ f }}</li>
         </ul>
         <!-- The sign-in card carries no medical disclaimer: this screen shows nobody's
@@ -413,11 +413,11 @@ export class LoginComponent {
    * Overridable the same way the scientist list is, via window.env['clinicFeatures'].
    */
   clinicFeatures: string[] = ((typeof window !== 'undefined' && (window as any)['env']?.['clinicFeatures']) || [
-    'No charge to run a campaign, and no share of what you raise',
-    'A live page to share, and a display for the room, with no account needed to watch it',
+    // What is left of this list after the owner went through it: the one line that says
+    // something the banner above does not, which is where the money actually lands. The
+    // other four repeated the banner or described the product. An empty list draws no
+    // bullets and no gap, so emptying it the rest of the way needs no code change.
     'Donations go straight to your own account, minus the card processor\'s own fee',
-    'See the gene, and the change in it, drawn in plain language',
-    'Follow the work being done towards a therapy for it',
   ]);
 
   /**
@@ -432,8 +432,12 @@ export class LoginComponent {
     || 'No charge to run a campaign, 100% of the funds you raise go right into your cause.');
   clinicTag: string = ((typeof window !== 'undefined' && (window as any)['env']?.['clinicTag'])
     || 'Understand it. Share it. Fund it.');
-  clinicTitle: string = ((typeof window !== 'undefined' && (window as any)['env']?.['clinicTitle'])
-    || 'Raise money for a rare disease, and keep all of it');
+  // No heading above the list any more, at the owner's request. The banner, the wordmark
+  // and the tagline have all already said what this is by the time the reader gets here,
+  // and a fourth line saying it again was the one that could go. Nothing is hard-coded in
+  // its place: set clinicTitle in env.js and the heading comes back, leave it and there is
+  // no heading and no empty space where one would have been.
+  clinicTitle: string = ('' + ((typeof window !== 'undefined' && (window as any)['env']?.['clinicTitle']) || ''));
   // Said exactly, because "free" on a page about money is a claim people check: this site
   // takes nothing, and the card processor's fee is not ours to waive.
   clinicNote: string = ((typeof window !== 'undefined' && (window as any)['env']?.['clinicNote'])

@@ -26,12 +26,14 @@
       <mat-icon>newspaper</mat-icon>
     </button>
 
-    <!-- Between the news and the citation, because it belongs with them: the three
-         buttons that lead OUT of the app rather than acting on what is in it. Opens in a
-         new tab and never closes the workspace -- a tutorial is usually watched beside the
-         thing it is about, not instead of it. The page is a static asset, so the link
-         works for anyone it is sent to, signed in or not. -->
-    <button mat-icon-button class="video-btn" (click)="openTutorials()"
+    <!-- Between the news and the citation, because it belongs with them: the buttons
+         that lead OUT of the app rather than acting on what is in it. Opens in a new tab
+         and never closes the workspace -- a tutorial is usually watched beside the thing
+         it is about, not instead of it.
+         Shown only to the account that authors this material. The page is a static asset
+         and the link still works for anyone it is sent to; what is hidden is the standing
+         invitation to a page of demos in a header everyone sees. -->
+    <button *ngIf="isAuthorAccount" mat-icon-button class="video-btn" (click)="openTutorials()"
             title="Video tutorials" aria-label="Video tutorials">
       <mat-icon>smart_display</mat-icon>
     </button>
@@ -50,7 +52,7 @@
 
     <!-- Record and play, for the one account that authors demos. Immediately before the
          account chip, so they read as belonging to that person rather than to the app. -->
-    <ng-container *ngIf="isRecorderUser">
+    <ng-container *ngIf="isAuthorAccount">
       <button mat-icon-button class="rec-btn" (click)="startRecording()"
               title="Record what you do, then emit a script that replays it"
               aria-label="Record a session">
@@ -96,7 +98,7 @@
              application being recorded. A menu item covers nothing: it is only on screen
              while the menu is open, and the menu is not what anyone is demonstrating. The
              label says which of the two it will do, read when the menu opens. -->
-        <button mat-menu-item *ngIf="isRecorderUser" (click)="recordVideo()">
+        <button mat-menu-item *ngIf="isAuthorAccount" (click)="recordVideo()">
           <mat-icon>{{ videoRecording ? 'stop_circle' : 'videocam' }}</mat-icon>
           <span>{{ videoRecording ? 'Stop screen recording' : 'Record screen to video' }}</span>
         </button>

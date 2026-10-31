@@ -1000,24 +1000,26 @@ export class AppComponent implements OnInit {
     this.oidc.logout('/login');
   }
 
-  // ---- RECORD AND PLAY, IN THE HEADER, FOR ONE ACCOUNT ----------------------
+  // ---- THE AUTHORING BUTTONS, IN THE HEADER, FOR ONE ACCOUNT ----------------
   //
-  // The editor already carries these, but they are authoring tools for building demos and
-  // they are wanted from wherever the app happens to be rather than only on the screen that
-  // owns them. The header is the one row present on every screen, so they go beside the
-  // account chip.
+  // Record, play back a recording, record the screen to video, and the video tutorials
+  // page: four buttons that exist for making demo material rather than for using the
+  // application. The editor already carries the first two, but they are wanted from
+  // wherever the app happens to be rather than only on the screen that owns them, and the
+  // header is the one row present on every screen.
   //
   // Compared trimmed and case-insensitively: the token carries whatever the provider sent,
   // and a stray capital would hide the buttons from the one person meant to see them with
   // nothing on screen to explain why.
   //
-  // This is a UI convenience and NOT a permission. Both scripts live in baja-apps and
-  // anyone who knows their names can run them; nothing here is a security control.
-  private static readonly RECORDER_USERS = ['jeffmilto@gmail.com'];
-  get isRecorderUser(): boolean {
+  // This is a UI convenience and NOT a permission. The scripts live in baja-apps and the
+  // tutorials page is a static asset; anyone who knows their names can reach them, and
+  // nothing here is a security control.
+  private static readonly AUTHOR_ACCOUNTS = ['jeffmilto@gmail.com'];
+  get isAuthorAccount(): boolean {
     try {
       const e = ('' + (this.oidcUser?.email || '')).trim().toLowerCase();
-      return !!e && AppComponent.RECORDER_USERS.indexOf(e) >= 0;
+      return !!e && AppComponent.AUTHOR_ACCOUNTS.indexOf(e) >= 0;
     } catch (e) { return false; }
   }
   // The screen that owns a graph registers these when it starts; the header only calls

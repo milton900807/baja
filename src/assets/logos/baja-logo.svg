@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="15 14 44 42" role="img" aria-label="Baja">
+  <title>Baja</title>
+  <style>
+    /* Black on a light background, white on a dark one. A browser applies this inside an
+       SVG loaded as an image, so one file is the tab icon in both themes rather than a
+       black mark that vanishes on a dark tab strip. */
+    svg { color: #111; }
+    @media (prefers-color-scheme: dark) { svg { color: #fff; } }
+  </style>
+<g fill="currentColor">
+    <!-- A cypress in one colour and as few pieces as it can be made of: a leaning trunk,
+         two limbs of different lengths, a crown that is wide and flat and trails downwind,
+         and the ground. No second tone, no rock, no cracks. This one has to work at 16
+         pixels in a tab and in one ink on a letterhead, which is what simple has to mean
+         here. The asymmetry is the whole point: two limbs of the same length read as a
+         wine glass, which is what the first attempt looked like. -->
+    <path d="M26.8 51 C27.6 45.4 28.6 40.6 30.2 35.6 L33.6 36.6 C32.2 41.2 31.2 46 30.6 51 Z"/>
+    <path d="M30.8 36 C28.4 34 25.6 32.6 22.4 31.6 L21.9 33.4 C24.8 34.4 27.3 35.8 29.6 37.8 Z"/>
+    <path d="M31.8 35.2 C36.4 32.4 42.4 30.6 49.6 29.8 L49.8 31.8 C43.4 32.8 38.2 34.6 34.2 37.4 Z"/>
+    <path d="
+      M19.8 27.6
+      C17.4 26.6 17.8 24.4 20.6 23.7 C22.4 23.2 24.2 23.4 25.4 24
+      C26.2 21.8 28.8 20.4 31.6 20.1 C33 18.3 36 17.5 38.4 18.3
+      C40.2 16.8 43.4 16.8 45.2 18.4 C48.2 18.2 50.9 19.4 51.8 21.2
+      C54.8 21.5 56.6 22.9 56 24.5 C58 25.1 58.5 26.4 57 27.3
+      C55.2 28.3 51.4 28.4 48 27.6 C46 28.9 42.2 29.4 38.8 28.7
+      C35.8 29.8 31.6 29.7 28.6 28.5 C26 29.2 22 28.8 19.8 27.6 Z"/>
+    <path d="M23.6 53 C27.2 52 30.2 51.6 32.9 51.65 C35.6 51.7 38.4 52.2 41.8 53.3
+      L41.4 54.9 C38.2 53.9 35.5 53.5 32.9 53.45 C30.3 53.4 27.5 53.8 24 54.7 Z"/>
+  </g>
+</svg>

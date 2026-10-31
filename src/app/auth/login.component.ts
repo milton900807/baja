@@ -53,32 +53,44 @@ import { b2cPolicies, rarePolicies } from '../onedrive/auth-config';
            to go missing from /eln later. -->
       <div class="head clinic-head" *ngIf="clinicMode">
         <div class="cl-mark" aria-hidden="true">
-          <!-- The viewBox frames the tower rather than the 64-square it was drawn in:
-               it is a tall narrow thing, and filling the height is what makes it a mark
-               rather than a sticker in the middle of a box. -->
-          <svg viewBox="22 6 20 50" width="46" height="52">
-          <g fill="none">
-            <!-- COIT TOWER: a plain fluted column, a band of tall arched openings near the
-                 top, a cornice above them, a flat roof, a plinth. Drawn as a silhouette
-                 with the arches cut out of it rather than as a line drawing, because this
-                 mark is also 26 pixels wide in the toolbar, where thin strokes turn to
-                 grey mush and a solid shape still reads as a tower. -->
-            <path fill="#16c47f" fill-rule="evenodd" d="
-              M26.8 50 L27.5 17 L36.5 17 L37.2 50 Z
-              M25.9 11.6 L38.1 11.6 L37.6 17 L26.4 17 Z
-              M28.0 15.8 L28.0 13.6 A1.1 1.1 0 0 1 30.2 13.6 L30.2 15.8 Z
-              M30.9 15.8 L30.9 13.6 A1.1 1.1 0 0 1 33.1 13.6 L33.1 15.8 Z
-              M33.8 15.8 L33.8 13.6 A1.1 1.1 0 0 1 36.0 13.6 L36.0 15.8 Z
-            "/>
-            <!-- cornice and roof -->
-            <path fill="#12a7e8" d="M24.8 9.2 H39.2 V11.6 H24.8 Z"/>
-            <!-- plinth -->
-            <path fill="#12a7e8" d="M24.4 50 H39.6 V53.4 H24.4 Z"/>
-            <!-- the flutes: three, not twenty, or they fill in at small sizes -->
-            <g stroke="#06251b" stroke-width="0.9" opacity="0.55" stroke-linecap="round">
-              <path d="M29.7 47.5 L30 20"/><path d="M32 47.5 L32 20"/><path d="M34.3 47.5 L34 20"/>
-            </g>
+          <!-- The viewBox frames the tree rather than the square it was drawn in, so it
+               fills the mark instead of sitting in the middle of a box. -->
+          <svg viewBox="13 14 46 43" width="56" height="52">
+
+        <g fill="none">
+          <!-- THE LONE CYPRESS: a bare trunk off a rock ledge, limbs forking into a crown far
+               wider than it is tall and flat across the top. Foliage in clumps with sky between
+               them and open air under the crown, because that openness is what says cypress
+               rather than lollipop -- and clumps still read at 26 pixels, where drawn needles
+               would turn to a smudge. -->
+          <!-- the outcrop, in rock colour rather than in the palette: anything bright under a
+               tree reads as a pot. Asymmetric, with a notch, so it is a piece of a cliff and not
+               a shape. -->
+          <path fill="#3d6076" d="M16.8 51.4 C19.6 49.2 23.6 47.8 27.4 47.6 C30 47.4 31.6 48.2 33.6 48
+            C36.6 47.7 39.4 48.4 42.2 50 C44.6 51.4 46.2 53.2 47 55.6 L15.6 55.6 Z"/>
+          <g stroke="#2b485a" stroke-width="1" opacity="0.9" stroke-linecap="round">
+            <path d="M22 50.6 L20.4 55"/><path d="M29.6 49.2 L28.8 55.2"/><path d="M38.6 50.4 L40.6 55.2"/>
           </g>
+          <!-- the trunk, out of the rock and leaning to the light -->
+          <path fill="#2f9e6e" d="M29.2 48.4 C29 42.4 29.4 37.6 30.8 33.2 L33.6 34
+            C32.4 38 32.1 42.8 32.3 48.4 Z"/>
+          <!-- the limbs -->
+          <g stroke="#2f9e6e" stroke-width="1.7" stroke-linecap="round">
+            <path d="M31 33.8 C27.2 31.4 23.4 29.8 19.2 28.8"/>
+            <path d="M31.8 32.6 C33 29.4 34.8 27 37.2 25.2"/>
+            <path d="M31.3 33.2 C35 30.8 39.4 29 44.4 28"/>
+            <path d="M30.6 37.4 C28.2 36 26.2 35.2 23.8 34.8"/>
+          </g>
+          <!-- the crown -->
+          <path fill="#16c47f" d="
+            M18 28.4 C15.4 27.4 15.2 25.2 18 24 C20.2 23 23.4 23 25.4 23.8
+            C25.2 20.8 29 18.6 33.4 18.8 C36 16.6 40.4 16.6 43 18.6
+            C47 18.2 50.8 19.6 52 21.8 C55 22.6 56 24.4 54.4 25.8
+            C52.8 27.2 49 27.6 45 27 C42.8 28.4 39 29 35.4 28.4
+            C32.4 29.6 28 29.6 25 28.6 C22.6 29.6 19.8 29.2 18 28.4 Z"/>
+          <path fill="#16c47f" d="M33.8 29 C37.2 27.6 42.6 27.2 47.4 27.8 C50.2 28.1 51.8 28.8 51.4 29.4
+            C50.8 30.2 46.8 30.8 42.4 30.6 C37.8 30.4 35 29.8 33.8 29 Z"/>
+        </g>
           </svg>
         </div>
         <div class="cl-word">gene<span class="cl-dot">.</span>clinic</div>

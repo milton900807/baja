@@ -41,7 +41,7 @@ import { b2cPolicies, rarePolicies } from '../onedrive/auth-config';
       </div>
 
       <div class="head" *ngIf="!clinicMode">
-        <div class="logo"><img src="assets/img/icons/yak.png" alt="Sign in" /></div>
+        <div class="logo"><img src="assets/logos/cypress.svg" alt="Sign in" /></div>
       </div>
 
       <!-- gene.clinic's own header. The yak is the BajaBio GeneTx Designer's mark, and a

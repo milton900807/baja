@@ -23,7 +23,7 @@ export class FileIcons implements PipeTransform {
         } else if ( filename.endsWith ( '.json')){
             return '/assets/img/icons/png/layers-2x.png'
         } else if ( filename.endsWith ( '.baja') ){
-            return '/assets/logos/baja-icon.svg'
+            return '/assets/logos/cypress.svg'
         }
         else {
             return '/assets/img/icons/png/file-2x.png'

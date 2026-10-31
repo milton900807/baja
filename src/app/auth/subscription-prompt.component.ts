@@ -14,7 +14,7 @@ import { SubscriptionService } from './subscription.service';
       <div class="brandline"></div>
 
       <div class="head">
-        <div class="logo"><img src="assets/img/icons/yak.png" alt="" /></div>
+        <div class="logo"><img src="assets/logos/cypress.svg" alt="" /></div>
         <h1>Subscribe to continue</h1>
         <p class="sub" *ngIf="userEmail">Signed in as {{ userEmail }}</p>
       </div>

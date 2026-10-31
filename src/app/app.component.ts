@@ -1012,7 +1012,7 @@ export class AppComponent implements OnInit {
   // A hostname is matched exactly or as a suffix, so one entry covers www. as well. With
   // nothing set, or nothing matching, the bull stays -- a missing entry must never leave
   // an empty square where the mark goes.
-  private static readonly DEFAULT_LOGO = 'assets/logos/baja-logo.png';
+  private static readonly DEFAULT_LOGO = 'assets/logos/cypress.svg';
   get brandLogo(): string {
     try {
       const v = (window as any)['env']?.['brandLogo'];

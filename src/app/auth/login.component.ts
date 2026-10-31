@@ -58,38 +58,83 @@ import { b2cPolicies, rarePolicies } from '../onedrive/auth-config';
           <svg viewBox="13 14 46 43" width="56" height="52">
 
         <g fill="none">
-          <!-- THE LONE CYPRESS: a bare trunk off a rock ledge, limbs forking into a crown far
-               wider than it is tall and flat across the top. Foliage in clumps with sky between
-               them and open air under the crown, because that openness is what says cypress
-               rather than lollipop -- and clumps still read at 26 pixels, where drawn needles
-               would turn to a smudge. -->
-          <!-- the outcrop, in rock colour rather than in the palette: anything bright under a
-               tree reads as a pot. Asymmetric, with a notch, so it is a piece of a cliff and not
-               a shape. -->
-          <path fill="#3d6076" d="M16.8 51.4 C19.6 49.2 23.6 47.8 27.4 47.6 C30 47.4 31.6 48.2 33.6 48
-            C36.6 47.7 39.4 48.4 42.2 50 C44.6 51.4 46.2 53.2 47 55.6 L15.6 55.6 Z"/>
-          <g stroke="#2b485a" stroke-width="1" opacity="0.9" stroke-linecap="round">
-            <path d="M22 50.6 L20.4 55"/><path d="M29.6 49.2 L28.8 55.2"/><path d="M38.6 50.4 L40.6 55.2"/>
+          <!-- THE LONE CYPRESS, drawn from the photograph.
+               Three things do the work here. The crown is in TWO greens, a darker mass behind
+               and a lit surface in front, which is what makes a flat shape look like a tree. Its
+               top edge is lobed rather than smooth, because cypress foliage grows in tufts and a
+               clean outline reads as a cartoon. The limbs are tapered shapes rather than even
+               strokes, so they thin out the way a branch does. It stays a silhouette throughout:
+               this mark is also 26 pixels wide in a toolbar. -->
+
+          <!-- the outcrop: a ledge, in rock colour rather than in the palette, because anything
+               bright under a tree reads as a plant pot. Kept low and asymmetric so it is a piece
+               of a cliff and not a plinth. -->
+          <path fill="#34566b" d="M18.2 55.6 C18.8 53.4 20.8 51.4 23.6 50.4 C26 49.6 28.4 49.6 30.4 50
+            C32 50.3 33.2 50.2 34.8 50 C37.8 49.6 40.6 50.4 42.6 52 C44.2 53.2 45 54.4 45.4 55.6 Z"/>
+          <path fill="#4a7085" opacity="0.8" d="M23.6 50.4 C26 49.6 28.4 49.6 30.4 50 C32 50.3 33.2 50.2 34.8 50
+            C37.8 49.6 40.6 50.4 42.6 52 C40.2 51.2 37.4 50.9 34.8 51.2 C33 51.4 31.6 51.5 30 51.2
+            C27.6 50.8 25.4 50.9 23.6 50.4 Z"/>
+          <g stroke="#28414f" stroke-width="0.8" stroke-linecap="round" opacity="0.75">
+            <path d="M24.4 52.4 C24.1 53.6 24 54.6 24 55.5"/>
+            <path d="M31.4 52.2 C31.2 53.6 31.1 54.6 31.2 55.5"/>
+            <path d="M38.6 52.4 C39.2 53.4 39.6 54.6 39.8 55.5"/>
           </g>
-          <!-- the trunk, out of the rock and leaning to the light -->
-          <path fill="#2f9e6e" d="M29.2 48.4 C29 42.4 29.4 37.6 30.8 33.2 L33.6 34
-            C32.4 38 32.1 42.8 32.3 48.4 Z"/>
-          <!-- the limbs -->
-          <g stroke="#2f9e6e" stroke-width="1.7" stroke-linecap="round">
-            <path d="M31 33.8 C27.2 31.4 23.4 29.8 19.2 28.8"/>
-            <path d="M31.8 32.6 C33 29.4 34.8 27 37.2 25.2"/>
-            <path d="M31.3 33.2 C35 30.8 39.4 29 44.4 28"/>
-            <path d="M30.6 37.4 C28.2 36 26.2 35.2 23.8 34.8"/>
+
+          <!-- the trunk: a root flare into the rock, a lean, a taper -->
+          <path fill="#2f8a64" d="M26.8 51 C27.4 47.4 28 43.6 29 39.2 C29.5 37 30 35.1 30.6 33.4
+            L33.2 34 C32.6 35.7 32.1 37.6 31.7 39.6 C30.9 44 30.6 47.6 30.8 51
+            C29.6 50.5 28 50.5 26.8 51 Z"/>
+
+          <!-- the limbs, tapered, forking where the photograph forks -->
+          <path fill="#2f8a64" d="M30.4 35 C27.2 33 23.4 31.4 18.8 30.3 L18.4 31.9
+            C22.8 33.2 26.4 34.9 29.4 37.2 Z"/>
+          <path fill="#2f8a64" d="M31.6 33.2 C33.4 30.2 35.8 27.6 38.8 25.6 L39.8 26.8
+            C37.2 29.1 35.2 31.6 33.8 34.6 Z"/>
+          <path fill="#2f8a64" d="M31 33.8 C34.8 31.2 39.4 29.2 45 28.2 L45.2 29.8
+            C40.2 31.1 36.2 33 32.9 35.6 Z"/>
+          <g stroke="#2f8a64" stroke-width="0.85" stroke-linecap="round">
+            <path d="M30 38.6 C27.6 37.2 25.4 36.4 23 36"/>
+            <path d="M27.2 33.4 C25.2 32.4 23.4 31.8 21.4 31.4"/>
+            <path d="M34.2 30.6 C35.6 28.8 37 27.6 38.8 26.4"/>
+            <path d="M37.4 30.4 C39.8 29.2 42.4 28.4 45.2 28"/>
           </g>
-          <!-- the crown -->
+
+          <!-- the crown behind: the mass the light does not reach -->
+          <path fill="#0d8f5a" d="
+            M17.4 28.6 C14.4 27.6 14.4 25.2 17.4 24 C19.8 23 22.8 23 24.8 23.8
+            C25 20.8 28.8 18.6 33.2 18.8 C36 16.6 40.4 16.6 43 18.6
+            C47.2 18.2 51 19.6 52.2 21.8 C55.4 22.6 56.4 24.6 54.6 26
+            C52.8 27.4 49 27.8 45 27.2 C42.8 28.6 39 29.2 35.4 28.6
+            C32.4 29.8 28 29.8 25 28.8 C22.6 29.8 19.2 29.4 17.4 28.6 Z"/>
+          <!-- the crown in front: the lit surface, lobed along the top -->
           <path fill="#16c47f" d="
-            M18 28.4 C15.4 27.4 15.2 25.2 18 24 C20.2 23 23.4 23 25.4 23.8
-            C25.2 20.8 29 18.6 33.4 18.8 C36 16.6 40.4 16.6 43 18.6
-            C47 18.2 50.8 19.6 52 21.8 C55 22.6 56 24.4 54.4 25.8
-            C52.8 27.2 49 27.6 45 27 C42.8 28.4 39 29 35.4 28.4
-            C32.4 29.6 28 29.6 25 28.6 C22.6 29.6 19.8 29.2 18 28.4 Z"/>
-          <path fill="#16c47f" d="M33.8 29 C37.2 27.6 42.6 27.2 47.4 27.8 C50.2 28.1 51.8 28.8 51.4 29.4
-            C50.8 30.2 46.8 30.8 42.4 30.6 C37.8 30.4 35 29.8 33.8 29 Z"/>
+            M19 26.2
+            C17 25.2 17.4 23.4 19.6 22.7 C21.2 22.2 22.8 22.4 23.8 23
+            C24.2 20.9 26.4 19.5 28.8 19.2
+            C29.8 17.5 32.4 16.7 34.6 17.4
+            C36.1 15.9 38.9 15.9 40.6 17.4
+            C43.2 17.1 45.7 18.1 46.6 19.8
+            C49.2 20 50.9 21.2 50.5 22.6
+            C52.3 23 52.9 24.2 51.7 25
+            C50.3 26 47 26.2 44 25.6
+            C41.8 26.6 38.4 27 35.4 26.4
+            C32.8 27.4 29 27.4 26.4 26.4
+            C24.2 27.2 20.8 27 19 26.2 Z"/>
+          <!-- the trailing plate, low and downwind -->
+          <path fill="#0d8f5a" d="M35 28.6 C38.4 27.3 43.4 27 47.8 27.5 C50.4 27.8 51.8 28.4 51.4 29
+            C50.8 29.8 47 30.4 43 30.2 C38.8 30 36.1 29.4 35 28.6 Z"/>
+          <!-- the left limb carries its own tuft, the way it does in the photograph -->
+          <path fill="#0d8f5a" d="M16.6 30.8 C18.6 29.6 21.6 29.2 23.8 29.8 C25 30.1 25.4 30.7 24.8 31.2
+            C23.6 32.1 20.8 32.4 18.6 31.9 C17.2 31.6 16.4 31.2 16.6 30.8 Z"/>
+          <path fill="#16c47f" d="M17.4 30 C19.2 29 21.8 28.7 23.6 29.2 C24.6 29.5 24.9 30 24.4 30.4
+            C23.4 31.2 21 31.4 19.2 31 C18 30.7 17.3 30.3 17.4 30 Z"/>
+          <!-- tufts where the light catches the top -->
+          <g stroke="#52e49e" stroke-width="0.85" stroke-linecap="round" opacity="0.7">
+            <path d="M26.2 19.6 C27.2 18.9 28.4 18.5 29.6 18.4"/>
+            <path d="M34.4 17.4 C35.8 16.7 37.6 16.6 39 17"/>
+            <path d="M43.2 19.2 C44.6 19.2 45.8 19.6 46.6 20.4"/>
+            <path d="M20.6 23.2 C21.6 22.7 22.6 22.6 23.4 22.8"/>
+          </g>
         </g>
           </svg>
         </div>

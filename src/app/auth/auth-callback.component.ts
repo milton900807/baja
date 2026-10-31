@@ -62,7 +62,19 @@ export class AuthCallbackComponent implements OnInit {
 
       await this.auth.handleCallback(merged);
 
-      const dest = sessionStorage.getItem('oidc.returnTo') || '/';
+      // WHERE SIGNING IN LEAVES YOU. The guard stores the page somebody was trying to
+      // reach, and that is always the right answer when it is there. When it is not --
+      // somebody who chose Log in from the public campaigns page, or from the front door
+      // -- the fallback used to be '/', which is now the campaign directory: signing in
+      // put you back on the page you had just left, with nothing to show for it.
+      //
+      // So the fallback is the application's own landing page, and the three entry points
+      // are not treated as destinations: they are where people arrive, not where a signed
+      // in account belongs.
+      const HOME = (((window as any)['env'] || {})['init'] || '/app/baja/init');
+      const stored = sessionStorage.getItem('oidc.returnTo') || '';
+      const entry = /^\/(campaigns|login|auth)?\/?(\?|#|$)/.test(stored);
+      const dest = (stored && !entry) ? stored : HOME;
       sessionStorage.removeItem('oidc.returnTo');
       // Clean the URL of the auth params before navigating.
       window.history.replaceState({}, document.title, window.location.pathname);
@@ -72,7 +84,7 @@ export class AuthCallbackComponent implements OnInit {
       // existed. Routing on inside the same page left that identity empty, so the first
       // file list after signing in came back "Missing user id" and only a manual refresh
       // fixed it. Loading the destination afresh boots the shell with the session in place.
-      const safe = (typeof dest === 'string' && dest.startsWith('/') && !dest.startsWith('//')) ? dest : '/';
+      const safe = (typeof dest === 'string' && dest.startsWith('/') && !dest.startsWith('//')) ? dest : HOME;
       window.location.replace(window.location.origin + safe);
     } catch (e: any) {
       this.error = e?.message || String(e);

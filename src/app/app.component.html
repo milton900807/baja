@@ -2,8 +2,11 @@
   <mat-toolbar *ngIf="showToolbar" class="custom-toolbar" [color]="fg"
     [ngStyle]="{ 'background-color': 'white', 'position': 'relative', 'z-index': 5 }"
     style="max-height:36px;font-size:small">
-    <img src="assets/logos/baja-logo.png" class="baja-brand-logo"
-      style="width:26px;height:26px;margin-right:8px;vertical-align:middle;flex:0 0 auto;" />
+    <!-- The mark for whichever site this is. One build serves more than one domain, so the
+         file is named in assets/env.js rather than compiled in: see brandLogo below. The
+         bull is what shows when nothing says otherwise. -->
+    <img [src]="brandLogo" [alt]="brandAlt" class="baja-brand-logo"
+      style="width:26px;height:26px;margin-right:8px;vertical-align:middle;flex:0 0 auto;object-fit:contain;" />
 
     <button mat-icon-button [matMenuTriggerFor]="menu" [disabled]="!isSignedIn"
       [title]="isSignedIn ? 'Menu' : 'Sign in to use the menu'"

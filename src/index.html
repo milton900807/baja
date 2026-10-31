@@ -43,6 +43,22 @@
         var t = (window.env && window.env.siteTitle)
           || (/(^|\.)gene\.clinic$/.test(h) ? 'Gene.Clinic fundraising' : 'BajaBio GeneTx Designer');
         document.title = t;
+        // The tab icon, from the same place the toolbar mark comes from. A crawler never
+        // runs this; a person looking at their tabs does.
+        var L = window.env && window.env.brandLogo;
+        if (L && typeof L === 'object') {
+          for (var k in L) {
+            var d = ('' + k).toLowerCase().replace(/^\.+/, '');
+            if (d && (h === d || h.slice(-(d.length + 1)) === '.' + d)) { L = L[k]; break; }
+          }
+        }
+        if (typeof L === 'string' && L) {
+          var link = document.querySelector('link[rel="icon"]') || document.createElement('link');
+          link.setAttribute('rel', 'icon');
+          link.setAttribute('href', L);
+          link.removeAttribute('type');
+          if (!link.parentNode) document.head.appendChild(link);
+        }
       } catch (e) { }
     })();
   </script>

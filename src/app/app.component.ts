@@ -1000,6 +1000,41 @@ export class AppComponent implements OnInit {
     this.oidc.logout('/login');
   }
 
+  // ---- THE MARK IN THE TOOLBAR ----------------------------------------------
+  //
+  // One build serves gene.clinic and baja.bio, so the logo cannot be compiled in: the
+  // fundraising site should not be wearing the design tool's bull. It is named in
+  // assets/env.js, which is a file per deployment and is not replaced by a build:
+  //
+  //   window.env.brandLogo = 'assets/logos/violet.svg';                 everywhere, or
+  //   window.env.brandLogo = { 'gene.clinic': 'assets/logos/violet.svg' };  by hostname
+  //
+  // A hostname is matched exactly or as a suffix, so one entry covers www. as well. With
+  // nothing set, or nothing matching, the bull stays -- a missing entry must never leave
+  // an empty square where the mark goes.
+  private static readonly DEFAULT_LOGO = 'assets/logos/baja-logo.png';
+  get brandLogo(): string {
+    try {
+      const v = (window as any)['env']?.['brandLogo'];
+      if (typeof v === 'string' && v.trim()) return v.trim();
+      if (v && typeof v === 'object') {
+        const h = ('' + window.location.hostname).toLowerCase();
+        for (const k of Object.keys(v)) {
+          const d = ('' + k).toLowerCase().replace(/^\.+/, '');
+          if (d && (h === d || h.endsWith('.' + d)) && ('' + v[k]).trim()) return ('' + v[k]).trim();
+        }
+      }
+    } catch (e) { }
+    return AppComponent.DEFAULT_LOGO;
+  }
+  get brandAlt(): string {
+    try {
+      const v = ('' + ((window as any)['env']?.['brandName'] || '')).trim();
+      if (v) return v;
+    } catch (e) { }
+    return 'BajaBio';
+  }
+
   // ---- THE AUTHORING BUTTONS, IN THE HEADER, FOR ONE ACCOUNT ----------------
   //
   // Record, play back a recording, record the screen to video, and the video tutorials

@@ -83,8 +83,13 @@ import { b2cPolicies, rarePolicies } from '../onedrive/auth-config';
         </ul>
       </div>
 
-      <!-- gene.clinic: understanding a gene, not operating a design tool. -->
-      <div class="clinic" *ngIf="clinicMode">
+      <!-- gene.clinic: understanding a gene, not operating a design tool.
+           Empty by default now. The heading, the bullets and the note were each saying a
+           version of what the banner and the tagline above them already say, and on a
+           sign-in page every extra line is one more thing between arriving and starting.
+           The block draws only when env.js puts something in it, so this is a wording
+           change on the server rather than a rebuild. -->
+      <div class="clinic" *ngIf="clinicMode && (clinicTitle || clinicFeatures?.length || clinicNote)">
         <div class="cl-title" *ngIf="clinicTitle">{{ clinicTitle }}</div>
         <ul class="cl-list" *ngIf="clinicFeatures?.length">
           <li *ngFor="let f of clinicFeatures">{{ f }}</li>
@@ -412,13 +417,13 @@ export class LoginComponent {
    *
    * Overridable the same way the scientist list is, via window.env['clinicFeatures'].
    */
-  clinicFeatures: string[] = ((typeof window !== 'undefined' && (window as any)['env']?.['clinicFeatures']) || [
-    // What is left of this list after the owner went through it: the one line that says
-    // something the banner above does not, which is where the money actually lands. The
-    // other four repeated the banner or described the product. An empty list draws no
-    // bullets and no gap, so emptying it the rest of the way needs no code change.
-    'Donations go straight to your own account, minus the card processor\'s own fee',
-  ]);
+  // No bullets. The list went from five to one to none as the owner read the page back,
+  // and the last one said what the note under it said. env.js can still set a list and it
+  // will draw; nothing is compiled in for it to fall back to.
+  clinicFeatures: string[] = (() => {
+    const v = (typeof window !== 'undefined' && (window as any)['env']?.['clinicFeatures']);
+    return Array.isArray(v) ? v : [];
+  })();
 
   /**
    * The rest of the gene.clinic wording, in one place and overridable from env.js the same
@@ -438,11 +443,10 @@ export class LoginComponent {
   // its place: set clinicTitle in env.js and the heading comes back, leave it and there is
   // no heading and no empty space where one would have been.
   clinicTitle: string = ('' + ((typeof window !== 'undefined' && (window as any)['env']?.['clinicTitle']) || ''));
-  // Said exactly, because "free" on a page about money is a claim people check: this site
-  // takes nothing, and the card processor's fee is not ours to waive.
-  clinicNote: string = ((typeof window !== 'undefined' && (window as any)['env']?.['clinicNote'])
-    || 'There is no charge for this and no share of what you raise. '
-     + 'Gifts arrive in your own payment account, less the fee the card processor charges.');
+  // The yellow-barred note is gone with the bullets. It said what the banner says, at more
+  // length, in the place a reader has already decided to sign in. Still settable in env.js
+  // if it is ever wanted back.
+  clinicNote: string = ('' + ((typeof window !== 'undefined' && (window as any)['env']?.['clinicNote']) || ''));
 
 
   // Product highlights shown on the login card. Overridable via window.env['loginFeatures'].

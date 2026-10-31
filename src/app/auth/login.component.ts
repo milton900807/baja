@@ -47,22 +47,38 @@ import { b2cPolicies, rarePolicies } from '../onedrive/auth-config';
       <!-- gene.clinic's own header. The yak is the BajaBio GeneTx Designer's mark, and a
            family arriving here has no reason to know it -- a logo you do not recognise on a
            sign-in page is a reason to hesitate, not a reassurance.
-           
+
            Drawn inline rather than loaded as an asset: it ships with the bundle, so there is
            no second request, nothing to 404 on a domain whose assets are new, and no image
-           to go missing from /eln later. A double helix, because it is the one mark that
-           says "this is about genes" without a word. -->
+           to go missing from /eln later. -->
       <div class="head clinic-head" *ngIf="clinicMode">
         <div class="cl-mark" aria-hidden="true">
-          <svg viewBox="0 0 64 64" width="52" height="52">
-            <g fill="none" stroke-linecap="round" stroke-width="3.4">
-              <path d="M22 6 C22 20 42 26 42 32 C42 38 22 44 22 58" stroke="#16c47f"/>
-              <path d="M42 6 C42 20 22 26 22 32 C22 38 42 44 42 58" stroke="#12a7e8"/>
-              <g stroke="#bfe8ff" stroke-width="2.2" opacity="0.85">
-                <path d="M25 14 L39 14"/><path d="M28 21 L36 21"/>
-                <path d="M28 43 L36 43"/><path d="M25 50 L39 50"/>
-              </g>
+          <!-- The viewBox frames the tower rather than the 64-square it was drawn in:
+               it is a tall narrow thing, and filling the height is what makes it a mark
+               rather than a sticker in the middle of a box. -->
+          <svg viewBox="22 6 20 50" width="46" height="52">
+          <g fill="none">
+            <!-- COIT TOWER: a plain fluted column, a band of tall arched openings near the
+                 top, a cornice above them, a flat roof, a plinth. Drawn as a silhouette
+                 with the arches cut out of it rather than as a line drawing, because this
+                 mark is also 26 pixels wide in the toolbar, where thin strokes turn to
+                 grey mush and a solid shape still reads as a tower. -->
+            <path fill="#16c47f" fill-rule="evenodd" d="
+              M26.8 50 L27.5 17 L36.5 17 L37.2 50 Z
+              M25.9 11.6 L38.1 11.6 L37.6 17 L26.4 17 Z
+              M28.0 15.8 L28.0 13.6 A1.1 1.1 0 0 1 30.2 13.6 L30.2 15.8 Z
+              M30.9 15.8 L30.9 13.6 A1.1 1.1 0 0 1 33.1 13.6 L33.1 15.8 Z
+              M33.8 15.8 L33.8 13.6 A1.1 1.1 0 0 1 36.0 13.6 L36.0 15.8 Z
+            "/>
+            <!-- cornice and roof -->
+            <path fill="#12a7e8" d="M24.8 9.2 H39.2 V11.6 H24.8 Z"/>
+            <!-- plinth -->
+            <path fill="#12a7e8" d="M24.4 50 H39.6 V53.4 H24.4 Z"/>
+            <!-- the flutes: three, not twenty, or they fill in at small sizes -->
+            <g stroke="#06251b" stroke-width="0.9" opacity="0.55" stroke-linecap="round">
+              <path d="M29.7 47.5 L30 20"/><path d="M32 47.5 L32 20"/><path d="M34.3 47.5 L34 20"/>
             </g>
+          </g>
           </svg>
         </div>
         <div class="cl-word">gene<span class="cl-dot">.</span>clinic</div>

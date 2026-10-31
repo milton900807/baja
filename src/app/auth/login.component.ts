@@ -153,14 +153,35 @@ import { b2cPolicies, rarePolicies } from '../onedrive/auth-config';
   `,
   styles: [`
 
-    /* ---- Phone: icons and actions only. The product copy, the tier lists, the demo
-       links and the small print are hidden so the whole page fits one screen. ---- */
-    .login-wrap.mobile { padding: 16px; min-height: 100vh; min-height: 100dvh; align-items: center; justify-content: center; }
+    /* ---- Phone: the whole page, and it scrolls ----------------------------------
+       It used to be trimmed to one screen: the banner's sentence, what this is for, the
+       tier lists and the small print were all hidden so that nothing fell below the fold.
+       That left a phone showing a logo and two sign-in buttons, with no way to read any of
+       it -- the page could not scroll, so the only way on was to sign in.
+
+       Nothing is hidden now. Instead this element is the scroller: the page starts at the
+       top and a thumb reaches the rest. Nothing in the app above it can scroll (html, body,
+       app-root, the shell and the route host are all overflow:hidden), so the scrolling has
+       to happen here, which means the min-height that pushed it past the viewport has to
+       go and the height has to come from the host instead.
+
+       The palm is fixed rather than absolute: an absolutely positioned child of a scroller
+       scrolls with the content, and the artwork would slide off the top. The gradients
+       behind it stay put on their own -- an element's background does not scroll with its
+       content. ---- */
+    .login-wrap.mobile {
+      flex: 1 1 auto; min-height: 0; height: auto; max-height: 100%;
+      overflow-y: auto; overflow-x: hidden;
+      -webkit-overflow-scrolling: touch; overscroll-behavior: contain;
+      align-items: flex-start; justify-content: center;
+      padding: 18px 16px 32px;
+    }
     .login-wrap.mobile .login-card { padding: 22px 18px; width: 100%; max-width: 440px; margin: 0 auto; }
-    .login-wrap.mobile .palm-bg { opacity: .35; }
-    .login-wrap.mobile .beta-text, .login-wrap.mobile .features, .login-wrap.mobile .freeuse,
-    .login-wrap.mobile .clinic, .login-wrap.mobile .demo-row, .login-wrap.mobile .secure,
-    .login-wrap.mobile .enterprise-btn, .login-wrap.mobile .cl-tag, .login-wrap.mobile .hint { display: none !important; }
+    .login-wrap.mobile .palm-bg { opacity: .35; position: fixed; }
+    /* The two demo links sit side by side on a desktop; on a phone they are two full-width
+       taps instead, which is the same shape as the sign-in buttons under them. */
+    .login-wrap.mobile .demo-row { flex-direction: column; gap: 10px; }
+    .login-wrap.mobile .demo-link { width: 100%; box-sizing: border-box; text-align: center; }
     .login-wrap.mobile .head { margin-bottom: 14px; text-align: center; }
     .login-wrap.mobile .logo img { width: 60px; height: 60px; }
     /* Wide, full-width sign-in buttons: the icon and the "Login with ..." label on one row,

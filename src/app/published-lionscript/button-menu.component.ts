@@ -1,4 +1,4 @@
-import { Component, ElementRef, HostListener, OnInit, ViewChild, ViewEncapsulation } from "@angular/core";
+import { Component, ElementRef, OnInit, ViewChild, ViewEncapsulation } from "@angular/core";
 import { PubComponent } from "./pub-component";
 import { LionEngine } from "../engine/io-engine";
 import { PubComponentListener } from "./pub-component-listener";
@@ -43,8 +43,6 @@ export class ButtonMenuComponent implements OnInit, PubComponent {
     data: any;
     resolveFunction: any;
     title: string;
-
-    constructor(private hostEl: ElementRef) { }
 
     buttons: any[] = [];
 
@@ -100,28 +98,18 @@ export class ButtonMenuComponent implements OnInit, PubComponent {
     }
 
     /**
-     * A click outside the bar closes an open menu and dismisses the results panel.
+     * NO DOCUMENT-LEVEL LISTENERS HERE.
      *
-     * The panel's own content can carry buttons that dismiss it, but not every answer
-     * has one -- an error is a line of text -- and a panel with no way out is worse than
-     * no panel. This component put it on the screen, so this component can always take it
-     * off again.
+     * This component briefly registered @HostListener("document:mousedown") to dismiss
+     * the panel on an outside click. A handler on the document runs inside the Angular
+     * zone for every mousedown anywhere in the application -- including every press on
+     * the editor canvas, which has mouse handling of its own and is the busiest surface
+     * in the app. A toolbar is not entitled to a say in every click in the product, and
+     * one widget's convenience is not worth a global hook.
+     *
+     * So dismissal is the panel content's own business: whatever renders into it renders
+     * a way out with it, and submit() replaces the content each time anyway.
      */
-    @HostListener("document:mousedown", ["$event"])
-    onDocumentMouseDown(event: any): void {
-        try {
-            const host = this.hostEl && this.hostEl.nativeElement;
-            if (host && event && event.target && host.contains(event.target)) { return; }
-        } catch (e) { return; }
-        this.openMenu = null;
-        this.clearResults();
-    }
-
-    @HostListener("document:keydown.escape")
-    onEscape(): void {
-        this.openMenu = null;
-        this.clearResults();
-    }
 
     /** Fire the input's ion-function with the typed text on the item, then clear it. */
     submit(item: any): void {

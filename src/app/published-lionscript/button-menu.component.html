@@ -68,4 +68,11 @@
 
     </ng-container>
   </div>
+
+  <!-- WHERE A COMMAND'S ANSWER GOES. The caller renders into this element rather than
+       opening a window of its own: an answer about what is on the canvas belongs under
+       the box it was asked in, and a modal it spawned sat on top of whatever the command
+       then opened. Empty means hidden (see :empty in the stylesheet), so it costs nothing
+       until something is put in it. -->
+  <div #inputResults class="menu-input__results"></div>
 </div>

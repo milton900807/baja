@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewEncapsulation } from "@angular/core";
+import { Component, ElementRef, HostListener, OnInit, ViewChild, ViewEncapsulation } from "@angular/core";
 import { PubComponent } from "./pub-component";
 import { LionEngine } from "../engine/io-engine";
 import { PubComponentListener } from "./pub-component-listener";
@@ -44,10 +44,19 @@ export class ButtonMenuComponent implements OnInit, PubComponent {
     resolveFunction: any;
     title: string;
 
+    constructor(private hostEl: ElementRef) { }
+
     buttons: any[] = [];
 
     /** The menu item whose popup is open, or null. One at a time. */
     openMenu: any = null;
+
+    /**
+     * The panel under the bar that a command's answer is rendered into. Handed to the
+     * caller on the item (see submit), the same way the typed text is: the caller owns
+     * what goes in it, this component owns where it sits and when it is dismissed.
+     */
+    @ViewChild("inputResults") inputResults: ElementRef;
 
     init(): string {
         return "";
@@ -82,12 +91,50 @@ export class ButtonMenuComponent implements OnInit, PubComponent {
         }
     }
 
+    /** Empty the results panel. It is hidden while empty, so this closes it. */
+    clearResults(): void {
+        try {
+            const el = this.inputResults && this.inputResults.nativeElement;
+            if (el) { el.innerHTML = ""; }
+        } catch (e) { }
+    }
+
+    /**
+     * A click outside the bar closes an open menu and dismisses the results panel.
+     *
+     * The panel's own content can carry buttons that dismiss it, but not every answer
+     * has one -- an error is a line of text -- and a panel with no way out is worse than
+     * no panel. This component put it on the screen, so this component can always take it
+     * off again.
+     */
+    @HostListener("document:mousedown", ["$event"])
+    onDocumentMouseDown(event: any): void {
+        try {
+            const host = this.hostEl && this.hostEl.nativeElement;
+            if (host && event && event.target && host.contains(event.target)) { return; }
+        } catch (e) { return; }
+        this.openMenu = null;
+        this.clearResults();
+    }
+
+    @HostListener("document:keydown.escape")
+    onEscape(): void {
+        this.openMenu = null;
+        this.clearResults();
+    }
+
     /** Fire the input's ion-function with the typed text on the item, then clear it. */
     submit(item: any): void {
         const text = ("" + (item?.["value"] ?? "")).trim();
         if (!text) { return; }
         item["value"] = text;
         this.openMenu = null;
+        // Where to put the answer. Handed over on the item so the caller needs no
+        // selector and no knowledge of this component's markup; without it the caller
+        // opens a window of its own, which is what this replaces.
+        try {
+            item["resultsHost"] = (this.inputResults && this.inputResults.nativeElement) || null;
+        } catch (e) { item["resultsHost"] = null; }
         this.click(item);
         // Cleared after firing, not before: the handler reads item.value synchronously
         // when it starts, and leaving the text in place made every later Enter re-run

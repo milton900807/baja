@@ -327,3 +327,39 @@
   min-width: 0;
   max-width: none;
 }
+
+/* ---- where a command's answer goes ------------------------------------- *
+   Under the box it was asked in, the full width of the bar. It used to be a
+   modal: that covered the canvas the answer was about, and anything the
+   command then opened appeared BEHIND it, because the modal was the newer
+   layer. A panel anchored to the bar has neither problem.                   */
+.menu-input__results {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 50;                            /* above the canvas, below a menu popup */
+  max-height: 72vh;
+  overflow-y: auto;
+  margin: 6px 10px 0;
+  padding: 14px 16px;
+  background: #071a30;
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 12px;
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.55);
+  font-family: Arial, Helvetica, sans-serif;
+  text-align: left;
+}
+
+/* Nothing in it means nothing to show. This is what makes the panel cost
+   nothing when idle: the caller empties it to dismiss it, and the component
+   empties it on Escape or a click outside the bar. */
+.menu-input__results:empty {
+  display: none;
+}
+
+/* The panel is positioned against the bar, so the bar is the frame. */
+.button-menu {
+  position: relative;
+}

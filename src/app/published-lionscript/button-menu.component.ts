@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild, ViewEncapsulation } from "@angular/core";
+import { Component, OnInit, ViewEncapsulation } from "@angular/core";
 import { PubComponent } from "./pub-component";
 import { LionEngine } from "../engine/io-engine";
 import { PubComponentListener } from "./pub-component-listener";
@@ -49,13 +49,6 @@ export class ButtonMenuComponent implements OnInit, PubComponent {
     /** The menu item whose popup is open, or null. One at a time. */
     openMenu: any = null;
 
-    /**
-     * The panel under the bar that a command's answer is rendered into. Handed to the
-     * caller on the item (see submit), the same way the typed text is: the caller owns
-     * what goes in it, this component owns where it sits and when it is dismissed.
-     */
-    @ViewChild("inputResults") inputResults: ElementRef;
-
     init(): string {
         return "";
     }
@@ -89,40 +82,12 @@ export class ButtonMenuComponent implements OnInit, PubComponent {
         }
     }
 
-    /** Empty the results panel. It is hidden while empty, so this closes it. */
-    clearResults(): void {
-        try {
-            const el = this.inputResults && this.inputResults.nativeElement;
-            if (el) { el.innerHTML = ""; }
-        } catch (e) { }
-    }
-
-    /**
-     * NO DOCUMENT-LEVEL LISTENERS HERE.
-     *
-     * This component briefly registered @HostListener("document:mousedown") to dismiss
-     * the panel on an outside click. A handler on the document runs inside the Angular
-     * zone for every mousedown anywhere in the application -- including every press on
-     * the editor canvas, which has mouse handling of its own and is the busiest surface
-     * in the app. A toolbar is not entitled to a say in every click in the product, and
-     * one widget's convenience is not worth a global hook.
-     *
-     * So dismissal is the panel content's own business: whatever renders into it renders
-     * a way out with it, and submit() replaces the content each time anyway.
-     */
-
     /** Fire the input's ion-function with the typed text on the item, then clear it. */
     submit(item: any): void {
         const text = ("" + (item?.["value"] ?? "")).trim();
         if (!text) { return; }
         item["value"] = text;
         this.openMenu = null;
-        // Where to put the answer. Handed over on the item so the caller needs no
-        // selector and no knowledge of this component's markup; without it the caller
-        // opens a window of its own, which is what this replaces.
-        try {
-            item["resultsHost"] = (this.inputResults && this.inputResults.nativeElement) || null;
-        } catch (e) { item["resultsHost"] = null; }
         this.click(item);
         // Cleared after firing, not before: the handler reads item.value synchronously
         // when it starts, and leaving the text in place made every later Enter re-run

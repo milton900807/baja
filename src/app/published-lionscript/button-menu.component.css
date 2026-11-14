@@ -237,11 +237,12 @@
   border-color: #22c55e;
 }
 
+/* Fixed, with top/left set from the button's rectangle when it opens: see
+   toggleMenu(). Absolute inside the row meant any ancestor with overflow set
+   clipped the popup away, which is how two menus came to open invisibly. */
 .menu-pop {
-  position: absolute;
-  top: calc(100% + 6px);
-  left: 0;
-  z-index: 60;
+  position: fixed;
+  z-index: 2147483000;
   min-width: 280px;
   max-width: 360px;
   max-height: 70vh;
@@ -321,9 +322,9 @@
 
 :host-context(.baja-mobile) .menu-pop {
   position: fixed;
-  left: 8px;
+  left: 8px !important;
   right: 8px;
-  top: 64px;
+  top: 64px !important;
   min-width: 0;
   max-width: none;
 }

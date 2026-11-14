@@ -58,9 +58,33 @@ export class ButtonMenuComponent implements OnInit, PubComponent {
         this.openMenu = null;
     }
 
-    /** Open this menu, or close it if it is the one already open. */
-    toggleMenu(item: any): void {
-        this.openMenu = (this.openMenu === item) ? null : item;
+    /** Where the open popup sits, in viewport coordinates. */
+    menuTop = 0;
+    menuLeft = 0;
+
+    /**
+     * Open this menu, or close it if it is the one already open.
+     *
+     * The popup is positioned against the VIEWPORT, from the button's own rectangle,
+     * rather than against the row. Inside the row it was correct and invisible: the
+     * toolbar lives in a card barely taller than its buttons, so a popup hanging below
+     * the row was clipped away by whichever ancestor sets overflow. Measuring here costs
+     * one layout read on a click and cannot be clipped by anything.
+     */
+    toggleMenu(item: any, event?: any): void {
+        if (this.openMenu === item) { this.openMenu = null; return; }
+        try {
+            const el = event && (event.currentTarget || event.target);
+            const r = el && el.getBoundingClientRect ? el.getBoundingClientRect() : null;
+            if (r) {
+                this.menuTop = Math.round(r.bottom + 6);
+                // Kept on screen: a menu opened near the right edge would otherwise run off
+                // it, and 300 is the popup's own minimum width.
+                const maxLeft = Math.max(8, (window.innerWidth || 1024) - 300);
+                this.menuLeft = Math.round(Math.min(Math.max(8, r.left), maxLeft));
+            }
+        } catch (e) { }
+        this.openMenu = item;
     }
 
     /** An entry inside a menu: close the menu, then fire the entry's own function. */

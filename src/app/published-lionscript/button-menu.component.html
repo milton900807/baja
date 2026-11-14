@@ -29,12 +29,18 @@
           [class.circle-btn--open]="openMenu === b"
           [attr.title]="b.tooltip || b.label || ''"
           [attr.aria-expanded]="openMenu === b"
-          (click)="toggleMenu(b)">
+          (click)="toggleMenu(b, $event)">
           <span *ngIf="b.icon" class="material-icons circle-btn__icon">{{ b.icon }}</span>
           <span *ngIf="b.iconSymbol" class="material-symbols-outlined circle-btn__icon">{{ b.iconSymbol }}</span>
           <span *ngIf="!b.icon && !b.iconSymbol" class="circle-btn__label">{{ b.label }}</span>
         </button>
-        <div *ngIf="openMenu === b" class="menu-pop">
+        <!-- Positioned from the button's own screen rectangle, measured when it opens.
+             It was absolute inside the row, which is correct until an ancestor clips: the
+             toolbar sits in a card a few pixels taller than its buttons, so a popup hanging
+             below it was being cut off by whichever ancestor sets overflow. Fixed to the
+             viewport, it cannot be clipped by anything. -->
+        <div *ngIf="openMenu === b" class="menu-pop"
+          [style.top.px]="menuTop" [style.left.px]="menuLeft">
           <div class="menu-pop__title">{{ b.label }}</div>
           <button *ngFor="let it of b.items" type="button" class="menu-pop__item"
             [disabled]="it.disabled" (click)="pick(it)">

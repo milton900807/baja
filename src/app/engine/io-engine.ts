@@ -2,6 +2,12 @@ import { Observable } from 'rxjs';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
+// EMPTY, not null. catchError must hand back something subscribable: returning null throws
+// "You provided 'null' where a stream was expected" out of the error handler itself, so every
+// failed request also threw an uncaught TypeError into the zone and tore down the subscriber
+// chain. The promise is already resolved with the error by then, so the stream has nothing
+// left to do: EMPTY completes without emitting and the subscribe body never runs.
+import { EMPTY } from 'rxjs';
 import { ComponentFactoryResolver, Injectable, NgZone, ChangeDetectorRef } from '@angular/core';
 import { IoniScriptLib } from './io-lib';
 import { IoniScriptManager } from './io-manager';
@@ -979,7 +985,7 @@ export class LionEngine {
                             catchError((error: any): Observable<{}> => {
                                 console.log(" failed" + JSON.stringify(error));
                                 resolve(error);
-                                return null;
+                                return EMPTY;
                             }))
                         .subscribe(response => {
                             resolve(response);
@@ -2103,7 +2109,7 @@ export class LionEngine {
                 catchError((error: any): Observable<{}> => {
                     console.log(" failed" + JSON.stringify(error));
                     resolve(error);
-                    return null;
+                    return EMPTY;
                 }))
                 .subscribe(res => {
 
@@ -2149,7 +2155,7 @@ export class LionEngine {
                 catchError((error: any): Observable<{}> => {
                     console.log(" failed" + JSON.stringify(error));
                     resolve(error);
-                    return null;
+                    return EMPTY;
                 }))
                 .subscribe(res => {
                     if (res != null && res['guid'] != null) {
@@ -2178,7 +2184,7 @@ export class LionEngine {
                 catchError((error: any): Observable<{}> => {
                     // console.log ( " failed" + err );
                     resolve(error);
-                    return null;
+                    return EMPTY;
                 }
                 )).subscribe(res => {
                     if (res != null && res['guid'] != null) {
